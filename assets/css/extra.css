@@ -1,0 +1,154 @@
+/* ════ EXTRA.CSS v3 ═══════════════════════════════════════════════ */
+
+/* ── Grid de partes ────────────────────────────────────────────── */
+.partes-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+@media(max-width:1100px){ .partes-grid{ grid-template-columns:repeat(3,1fr); } }
+@media(max-width:768px) { .partes-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:480px) { .partes-grid{ grid-template-columns:repeat(2,1fr); gap:.6rem; } }
+
+/* ── Carta de pieza ─────────────────────────────────────────────── */
+.pub-card-img-wrap {
+  aspect-ratio:4/3;
+  background:var(--bg-2)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='%23363C45' viewBox='0 0 16 16'%3E%3Cpath d='M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0'/%3E%3Cpath d='M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52z'/%3E%3C/svg%3E")
+    center/48px no-repeat;
+  overflow:hidden; position:relative; display:block;
+}
+.pub-card-img { width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s; }
+.pub-card:hover .pub-card-img { transform:scale(1.07); }
+
+/* ── Input file — tema oscuro (no más botón blanco) ────────────── */
+input[type="file"].form-control::file-selector-button {
+  background:var(--bg-3)!important; border:1px solid var(--border)!important;
+  color:var(--text-1)!important; padding:.35rem .9rem!important;
+  margin-right:.75rem!important; border-radius:6px 0 0 6px!important;
+  cursor:pointer!important; font-size:.875rem!important;
+  transition:background .15s!important;
+}
+input[type="file"].form-control::file-selector-button:hover { background:var(--accent)!important; color:#000!important; }
+input[type="file"].form-control { color:var(--text-2)!important; }
+
+/* ── Botón flotante Volver ──────────────────────────────────────── */
+.btn-float-back {
+  position:fixed; bottom:2rem; left:2rem; width:48px; height:48px;
+  border-radius:50%; background:var(--accent); color:#000;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.25rem; box-shadow:0 4px 18px rgba(0,0,0,.45);
+  z-index:999; cursor:pointer; transition:transform .2s; border:none; text-decoration:none;
+}
+.btn-float-back:hover { transform:scale(1.12); color:#000; }
+
+/* ── Estrellas ──────────────────────────────────────────────────── */
+.star-rate { display:flex;flex-direction:row-reverse;gap:.15rem;margin:.25rem 0; }
+.star-rate input { display:none; }
+.star-rate label { font-size:2rem;cursor:pointer;color:var(--text-3);transition:color .1s;line-height:1; }
+.star-rate label:hover, .star-rate label:hover ~ label, .star-rate input:checked ~ label { color:var(--accent); }
+.star-display i { font-size:.95rem; }
+.star-display .filled { color:var(--accent); }
+.star-display .empty  { color:var(--text-3); }
+
+/* ── Reseñas ────────────────────────────────────────────────────── */
+.review-card { background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin-bottom:.75rem; }
+.review-author { font-weight:700;color:var(--accent);font-size:.9rem; }
+.review-body   { color:var(--text-2);font-size:.88rem;margin-top:.35rem; }
+.review-empty  { text-align:center;padding:2.5rem 1rem;color:var(--text-3);font-size:.95rem; }
+
+/* ── Filtros catálogo ───────────────────────────────────────────── */
+.filter-bar { background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem; }
+.filter-label { color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.4rem; }
+.sec-pill { display:inline-block;background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);border-radius:20px;padding:.3rem .9rem;font-size:.8rem;cursor:pointer;text-decoration:none;transition:all .15s; }
+.sec-pill:hover,.sec-pill.active { background:var(--accent);border-color:var(--accent);color:#000;text-decoration:none; }
+
+/* ── Sección card (landing) ─────────────────────────────────────── */
+.sec-card { background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:border-color .2s,transform .2s;display:block;text-decoration:none; }
+.sec-card:hover { border-color:var(--accent);transform:translateY(-4px);text-decoration:none; }
+.sec-icon { width:50px;height:50px;background:var(--accent-dim);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1.4rem;margin-bottom:.85rem; }
+.sec-name { font-weight:700;color:var(--text-1);font-size:.95rem; }
+.sec-count { font-size:.75rem;color:var(--accent);margin-top:.35rem; }
+
+/* ── Hero ───────────────────────────────────────────────────────── */
+.hero-section { position:relative;min-height:440px;background:var(--bg-2) center/cover no-repeat;display:flex;align-items:center;overflow:hidden; }
+.hero-overlay { position:absolute;inset:0;background:linear-gradient(135deg,rgba(11,14,17,.97)0%,rgba(11,14,17,.75)100%); }
+.hero-content { position:relative;z-index:1;padding:4rem 1rem;width:100%; }
+.hero-title { font-size:clamp(2rem,5vw,3.2rem);font-weight:800;color:#fff;line-height:1.1; }
+.hero-title span { color:var(--accent); }
+
+/* ── Stats bar ──────────────────────────────────────────────────── */
+.stats-bar { background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
+.stat-pill-num { font-size:2rem;font-weight:800;color:var(--accent);line-height:1; }
+.stat-pill-lbl { font-size:.75rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.07em;margin-top:.2rem; }
+
+/* ── Carrito badge en nav ───────────────────────────────────────── */
+.cart-btn { position:relative; }
+.cart-count { position:absolute;top:-6px;right:-6px;background:var(--accent);color:#000;font-size:.6rem;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1; }
+
+/* ── Stat cards clickables ──────────────────────────────────────── */
+a.stat-card { text-decoration:none!important; }
+a.stat-card:hover { transform:translateY(-6px)!important;box-shadow:0 8px 28px rgba(0,0,0,.4)!important;border-color:var(--accent)!important; }
+
+/* ── About section ──────────────────────────────────────────────── */
+.about-section { background:var(--bg-1);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
+.contact-item { display:flex;align-items:center;gap:.75rem;padding:.6rem 0; }
+.contact-icon { width:38px;height:38px;background:var(--accent-dim);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1rem;flex-shrink:0; }
+.public-footer { background:var(--bg-1);border-top:1px solid var(--border); }
+
+/* ── Textarea auto-expandible ───────────────────────────────────── */
+textarea.auto-exp { resize:vertical;min-height:90px;transition:height .15s; }
+textarea.auto-exp:focus { min-height:140px; }
+
+/* ── Carrito page ───────────────────────────────────────────────── */
+.cart-item { background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.75rem; }
+
+/* ── Nav link activo ────────────────────────────────────────────── */
+.public-nav .nav-link.nav-active { color:#fff!important;font-weight:700; }
+
+/* ════ EXTRA.CSS v5 — setupfix5 ═════════════════════════════════ */
+
+/* ── Nav activo unificado (Bootstrap Scrollspy + PHP para Catálogo) ── */
+.public-nav .nav-link.active { color:#fff!important;font-weight:700; }
+
+/* ── Autocompletado del navegador — ya no se ve blanco con texto negro ── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-2) inset !important;
+  box-shadow: 0 0 0 1000px var(--bg-2) inset !important;
+  -webkit-text-fill-color: var(--text-1) !important;
+  caret-color: var(--text-1) !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ── Cabecera del dashboard — texto un poco mas chico, sin doble fila ── */
+.dash-title { font-size:1.05rem; line-height:1.3; }
+.dash-title i { font-size:.95rem; }
+@media(max-width:420px){ .dash-title{ font-size:.95rem; } }
+
+/* ── Boton "Crear cuenta" junto a Iniciar sesion ── */
+.btn-crear-cuenta { white-space:nowrap; }
+.admin-nav { height:auto; min-height:58px; padding:.4rem 0; }
+.admin-nav .nav-link { font-size:.78rem; padding:.3rem .5rem; }
+
+.admin-nav .navbar-brand span { font-size: .95rem; }
+.admin-nav .navbar-brand img { height: 22px; }
+.admin-nav .nav-link {
+  font-size: .72rem;
+  padding: .3rem .45rem;
+  white-space: nowrap;
+}
+.admin-nav .nav-link i { font-size: .78rem; }
+.admin-nav .btn-outline-secondary,
+.admin-nav .btn-danger { font-size: .72rem; padding: .3rem .55rem; }
+
+.public-nav .nav-link {
+  font-size: .82rem;
+  padding: .35rem .5rem;
+  white-space: nowrap;
+}
+.public-nav .btn-outline-warning,
+.public-nav .btn-outline-secondary {
+  font-size: .78rem;
+  padding: .32rem .6rem;
+  white-space: nowrap;
+}

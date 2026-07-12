@@ -1,0 +1,11 @@
+{
+    "name": "rastro/inventario",
+    "description": "Rastro del Istmo - Sistema de Inventario",
+    "require": {
+        "phpoffice/phpspreadsheet": "^3.0",
+        "tecnickcom/tcpdf": "^6.6"
+    },
+    "autoload": {
+        "psr-4": { "App\\": "app/" }
+    }
+}

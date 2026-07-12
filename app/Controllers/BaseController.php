@@ -1,0 +1,38 @@
+<?php
+/**
+ * BaseController — Base con sesión, permisos, flash y vistas.
+ * Implementa ErrorHandlerInterface.
+ */
+abstract class BaseController implements ErrorHandlerInterface {
+    protected function requireAuth(): void {
+        if (empty($_SESSION["user"])) {
+            header("Location: " . APP_URL . "/login.php"); exit;
+        }
+    }
+    protected function requirePermission(string $mod, string $acc = "puede_ver"): void {
+        $this->requireAuth();
+        if (!(new UserModel())->hasPermission($_SESSION["user"]["id"], $mod, $acc)) {
+            $this->flash("Sin permiso para esta acción.", "danger");
+            header("Location: " . APP_URL . "/admin/"); exit;
+        }
+    }
+    protected function view(string $tpl, array $data = []): void {
+        extract($data);
+        include BASE_PATH . "/app/Views/" . $tpl . ".php";
+    }
+    public function redirect(string $url, string $msg = "", string $type = "success"): void {
+        if ($msg) $_SESSION["flash"] = ["msg" => $msg, "type" => $type];
+        header("Location: " . $url); exit;
+    }
+    protected function flash(string $msg, string $type = "success"): void {
+        $_SESSION["flash"] = ["msg" => $msg, "type" => $type];
+    }
+    public function handle(\Throwable $e): void {
+        error_log("[RASTRO] " . $e->getMessage());
+        $this->flash("Error interno: " . htmlspecialchars($e->getMessage()), "danger");
+    }
+    protected function isPost(): bool { return $_SERVER["REQUEST_METHOD"] === "POST"; }
+    protected function ip(): string {
+        return $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "0.0.0.0";
+    }
+}

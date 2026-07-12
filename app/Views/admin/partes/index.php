@@ -1,0 +1,60 @@
+<?php $title="Inventario"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
+<div class="page-header mb-4">
+  <div><h4 class="fw-bold text-white mb-0"><i class="bi bi-box-seam me-2 text-warning"></i>Inventario de Partes</h4></div>
+  <a href="<?=APP_URL?>/admin/?mod=partes&action=crear" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg me-1"></i>Nueva Parte</a>
+</div>
+<!-- Filtros admin -->
+<form class="mb-4" method="GET" id="fAdm">
+  <input type="hidden" name="mod" value="partes">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4"><input type="text" name="q" class="form-control dark-input form-control-sm" placeholder="Buscar nombre, marca..." value="<?=htmlspecialchars($q??"")?>"></div>
+    <div class="col-md-3">
+      <select name="filtro" class="form-select dark-input form-select-sm" onchange="this.form.submit()">
+        <option value="all"       <?=($filtro??"all")==="all"       ?"selected":""?>>Todas</option>
+        <option value="con_stock" <?=($filtro??"")==="con_stock" ?"selected":""?>>Con stock</option>
+        <option value="stock_bajo"<?=($filtro??"")==="stock_bajo"?"selected":""?>>Stock bajo (≤5)</option>
+        <option value="agotado"   <?=($filtro??"")==="agotado"   ?"selected":""?>>Agotadas</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select name="orden" class="form-select dark-input form-select-sm" onchange="this.form.submit()">
+        <option value="recientes"  <?=($orden??"recientes")==="recientes"  ?"selected":""?>>Más recientes</option>
+        <option value="precio_asc" <?=($orden??"")==="precio_asc" ?"selected":""?>>Precio ↑</option>
+        <option value="precio_desc"<?=($orden??"")==="precio_desc"?"selected":""?>>Precio ↓</option>
+        <option value="stock_asc"  <?=($orden??"")==="stock_asc"  ?"selected":""?>>Stock ↑</option>
+        <option value="stock_desc" <?=($orden??"")==="stock_desc" ?"selected":""?>>Stock ↓</option>
+        <option value="nombre"     <?=($orden??"")==="nombre"     ?"selected":""?>>Nombre A–Z</option>
+        <option value="mas_vendidas"<?=($orden??"")==="mas_vendidas"?"selected":""?>>Más vendidas</option>
+      </select>
+    </div>
+    <div class="col-md-2 d-flex gap-2">
+      <button type="submit" class="btn btn-gold btn-sm flex-fill"><i class="bi bi-search"></i></button>
+      <a href="<?=APP_URL?>/admin/?mod=partes" class="btn btn-outline-secondary btn-sm"><i class="bi bi-x"></i></a>
+    </div>
+  </div>
+</form>
+<div class="dark-card"><div class="table-responsive">
+<table class="table dark-table mb-0">
+  <thead><tr><th>#</th><th>Img</th><th>Nombre</th><th>Auto</th><th>Sección</th><th>Precio</th><th>Stock</th><th>Firma</th><th>Acciones</th></tr></thead>
+  <tbody>
+  <?php foreach($partes as $p): ?>
+  <tr>
+    <td class="small text-secondary"><?=$p["id"]?></td>
+    <td><?php if($p["thumbnail"]): ?><img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($p["thumbnail"])?>" class="thumb-sm" alt=""><?php else: ?><div class="thumb-placeholder"><i class="bi bi-gear"></i></div><?php endif; ?></td>
+    <td class="fw-semibold text-white"><?=htmlspecialchars($p["nombre"])?></td>
+    <td class="small text-secondary"><?=htmlspecialchars(($p["marca"]??"")." ".($p["modelo"]??""))?></td>
+    <td class="small text-secondary"><?=htmlspecialchars($p["seccion"]??"—")?></td>
+    <td class="fw-bold text-success">$<?=number_format($p["precio"],2)?></td>
+    <td><?php $c=$p["cantidad"]; if($c>5) echo"<span class=\"chip-success\">$c</span>"; elseif($c>0) echo"<span class=\"chip-warning\">$c</span>"; else echo"<span class=\"chip-danger\">Agotada</span>"; ?></td>
+    <td><?=$p["firma_digital"]?"<i class=\"bi bi-shield-check text-success fs-5\"></i>":"<i class=\"bi bi-shield-x text-secondary\"></i>"?></td>
+    <td>
+      <a href="<?=APP_URL?>/admin/?mod=partes&action=editar&id=<?=$p["id"]?>" class="icon-btn" title="Editar"><i class="bi bi-pencil-square text-warning"></i></a>
+      <a href="<?=APP_URL?>/admin/?mod=partes&action=eliminar&id=<?=$p["id"]?>" class="icon-btn" title="Desactivar" onclick="return confirm('¿Desactivar?')"><i class="bi bi-trash text-danger"></i></a>
+      <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="icon-btn" title="Ver público" target="_blank"><i class="bi bi-eye text-info"></i></a>
+    </td>
+  </tr>
+  <?php endforeach; ?>
+  <?php if(empty($partes)): ?><tr><td colspan="9" class="text-center text-secondary py-4">Sin resultados con esos filtros.</td></tr><?php endif; ?>
+  </tbody>
+</table></div></div>
+<?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>
