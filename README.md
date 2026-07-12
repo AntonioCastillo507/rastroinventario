@@ -1,75 +1,113 @@
-# RastroinventariO — Sistema de Inventario de Partes de Autos
+# Rastro del Istmo — Sistema de Inventario y Venta de Repuestos de Autos Usados
 
-> **Proyecto Final** — Desarrollo de Software VII
-> Prof. Ing. Irina Fong | Universidad Tecnológica de Panamá
-
----
-
-## Instalación rápida
-
-1. Copia la carpeta `rastroinventario/` en `C:\wamp64\www\`
-2. Inicia WampServer (ícono verde en bandeja)
-3. Abre: http://localhost/rastroinventario/setup.php
-4. **Elimina `setup.php`** cuando termine
-
-**Admin:** admin@rastroinventario.com / root2514
+> Universidad Tecnológica de Panamá — Facultad de Ingeniería en Sistemas Computacionales
+> Desarrollo de Software VII — Grupo 1GS131 — I Semestre 2026
+> Proyecto asignado: *Sistema de Inventario o Rastro*
 
 ---
 
-## Imágenes propias (assets/img/)
+## 1. Información General y Evidencia Práctica
 
-| Archivo       | Uso                              | Tamaño recomendado |
-|---------------|----------------------------------|--------------------|
-| `logo.png`    | Logo en navbar y footer          | ~200×60 px         |
-| `hero-bg.jpg` | Fondo de la portada pública      | 1920×800 px        |
-| `no-image.jpg`| Partes sin foto                  | 400×400 px         |
-| `carro1.jpg`  | Imagen decorativa (opcional)     | 800×500 px         |
-| `carro2.jpg`  | Imagen decorativa (opcional)     | 800×500 px         |
+### 1.1. Nombre del Proyecto
+**Rastro del Istmo** — Sistema de Inventario y Venta de Repuestos de Autos Usados.
+
+### 1.2. Integrantes del Equipo
+
+| Nombre | Cédula | Rol en el desarrollo |
+|---|---|---|
+| Antonio Castillo | 🔲 *8-1038-2499* | 🔲 *Líder de Proyecto — Arquitectura backend (MVC, modelos, controladores), seguridad (firmas digitales, CSRF, control de acceso) y base de datos. Frontend — Vistas, CSS y diseño de interfaz (panel admin + tienda pública)* |
+| Ian Torres | 🔲 *20-53-8265* | 🔲 *Carga de Datos de Prueba — ayudar a poblar el inventario semilla (las partes de autos, imágenes de prueba)* |
+| Jamir Montenegro | 🔲 *8-1017-1078* | 🔲 *Documentación — README, diagramas UML, manual de usuario* |
+| Samuel Elzaghir | 🔲 *20-70-8278* | 🔲 *Pruebas y QA — Casos de prueba, validación de formularios, revisión de bugs* |
+
+### 1.3. Fecha del Sistema y Versión
+- **Versión actual:** v1.6.0
+- **Última actualización:** Julio 2026
+
+### 1.4. 🎥 Demostración en Video
+🔲 **PENDIENTE:** [Enlace al video](PENDIENTE-agregar-link-de-YouTube-o-Drive)
 
 ---
 
-## Arquitectura MVC
+## 2. Requisitos de Infraestructura
 
-```
-rastroinventario/
-├── app/
-│   ├── Config/        Database.php, config.php
-│   ├── Interfaces/    CrudInterface, ErrorHandlerInterface
-│   ├── Utils/         Sanitizer, Validator, CsrfToken, DigitalSignature, ImageHelper
-│   ├── Models/        BaseModel + 8 modelos específicos
-│   ├── Controllers/   BaseController + 10 controladores
-│   └── Views/         layouts/, auth/, admin/*, public/
-├── assets/css/        style.css (tema oscuro/oro)
-├── assets/js/         main.js
-├── assets/img/        ← PON AQUÍ TUS IMÁGENES PROPIAS
-├── uploads/           parts/ + thumbnails/ (subidas por admin)
-├── admin/index.php    Dispatcher del panel admin
-├── bootstrap.php      Autoloader manual
-├── index.php          Portada pública
-├── login.php / logout.php
-└── setup.php          (eliminar después de instalar)
+### 2.1. Entorno de Ejecución
+- **PHP:** 8.1 o superior
+- **Motor de base de datos:** MySQL 5.7+ / MariaDB 10.4+
+- **Servidor local sugerido:** WampServer
+- **Dependencias (Composer):** `phpoffice/phpspreadsheet` ^3.0 (reportes Excel), `tecnickcom/tcpdf` ^6.6 (facturas PDF firmadas)
+
+### 2.2. Guía de Despliegue Rápido
+
+**1. Clonar el repositorio:**
+```bash
+git clone https://github.com/AntonioCastillo507/rastroinventario.git
 ```
 
+**2. Colocarlo en el servidor local:**
+Copia la carpeta dentro de `C:\wamp64\www\` e inicia WampServer.
+
+**3. Configurar la base de datos:**
+`app/Config/Database.php` ya trae la configuración por defecto de WampServer:
+```
+Host: localhost
+Usuario: root
+Contraseña: (vacía)
+Base de datos: rastroinventario
+```
+Si tu MySQL usa otro usuario o contraseña, edita esas constantes en ese archivo.
+
+**4. Instalar dependencias:**
+```bash
+composer install
+```
+
+**5. Backup de la base de datos:**
+📎 Estructura y datos semilla: [`backup.sql`](./backup.sql)
+
 ---
 
-## Requisitos cumplidos
+## 3. Matriz de Roles y Credenciales de Prueba
 
-| # | Requisito | Implementación |
-|---|-----------|----------------|
-| RNF-01 | CSRF en todos los POST | `CsrfToken::verify()` |
-| RNF-02 | Conexión mediante clase | `Database` Singleton PDO |
-| RNF-03 | Sanitizar y validar | `Sanitizer` + `Validator` |
-| RNF-04 | Bloqueo al 3.er intento + bitácora IPs | `AuthController` + `login_logs` |
-| RNF-05 | Contraseña bcrypt 8-12 chars | `Validator::password()` |
-| RNF-06 | Firma digital HMAC-SHA256 | `DigitalSignature` en ventas y partes |
-| — | OWASP / PDO prepared | Todos los modelos |
-| — | MVC + SOLID + DRY | Arquitectura completa |
-| — | Interfaces como contratos | `CrudInterface`, `ErrorHandlerInterface` |
-| — | Roles y permisos por módulo | Tabla `permisos` + `UserModel::hasPermission()` |
-| — | Thumbnails automáticos | `ImageHelper` con GD |
-| — | Página pública con comentarios | `PublicController` + moderación admin |
+| Rol de Usuario | Usuario de Acceso | Contraseña de Prueba | Permisos / Qué puede hacer |
+|---|---|---|---|
+| Administrador | `admin@rastroinventario.com` | `root2514` | Control total: usuarios, roles, inventario, ventas, secciones, reportes, auditoría de firmas |
+| Vendedor | `vendedor1@rastroinventario.com` | `vend2025` | Ver inventario y registrar ventas |
+| Consultor | `consultor1@rastroinventario.com` | `cons2025` | Solo consulta de inventario, sin editar ni vender |
+| Cliente (tienda pública) | *(crear una cuenta nueva desde el registro público)* | — | Comprar, comentar y ver su historial de pedidos — **sin acceso al panel `/admin/`** (bloqueado a nivel de rol) |
 
 ---
 
-**Autor:** Antonio Agustín Castillo Pérez
-**GitHub:** AntonioCastillo507
+## 4. Directrices Técnicas y Reglas del Backend
+
+### 4.1. Control de Acceso Seguro
+- Contraseñas de 8 a 12 caracteres → `app/Utils/Validator.php` (`password()`)
+- Bloqueo automático al 3er intento fallido → `app/Models/UserModel.php` (`incrementIntentos`, `bloquear`)
+- Auditoría de accesos (IP, fecha, éxito/fallo) → tabla `login_logs`, registrada desde `app/Controllers/AuthController.php` (`doLogin`)
+
+### 4.2. Mitigación OWASP y DRY
+- Token CSRF en todo formulario POST → `app/Utils/CsrfToken.php`
+- Consultas 100% con PDO preparado (sin concatenar SQL) → `app/Config/Database.php` + todos los `Model`
+- Sanitización y validación centralizadas → `app/Utils/Sanitizer.php`, `app/Utils/Validator.php`
+- Manejo de errores centralizado por contrato → `app/Interfaces/ErrorHandlerInterface.php`, implementado en `app/Controllers/BaseController.php`, invocado desde `index.php` y `admin/index.php` (try/catch global)
+- **Control de acceso roto (OWASP A01) mitigado**: `admin/index.php` valida, antes de despachar a cualquier módulo, que (1) haya sesión iniciada y (2) el usuario tenga al menos un permiso de staff en la tabla `permisos` — así una cuenta Cliente autenticada no puede ni siquiera cargar el Dashboard, y cada módulo sigue verificando su propio permiso puntual (ver/crear/editar/borrar) vía `UserModel::hasPermission()`
+
+### 4.3. Sello de Integridad (Firma Digital)
+Al registrar una venta (`vendido_parte`) o una parte de inventario, el backend calcula un HMAC-SHA256 sobre los datos críticos (precio, cantidad, usuario, fecha) con una clave secreta del servidor → `app/Utils/HmacCrypto.php` (implementa `CryptoInterface`), invocado desde `app/Utils/DigitalSignature.php`, y guardado en la columna `firma_digital`. Si alguien altera esos datos directo en la base de datos, la firma deja de coincidir y la manipulación queda expuesta.
+
+---
+
+## 5. Manual de Usuario Operativo (Flujo de Pantallas)
+
+🔲 **PENDIENTE:** [Ver video de uso del sistema](PENDIENTE)
+
+### 5.1. Guía Visual (resumen del flujo)
+1. **Login** (`/admin/`) — correo y contraseña; 3 intentos fallidos bloquean la cuenta
+2. **Dashboard** — resumen del inventario, menú horizontal con acceso a todos los módulos
+3. **Agregar** — Inventario → Nueva Parte → marca/modelo/año del auto, sección, precio, thumbnail + imagen grande
+4. **Buscar** — Inventario → barra de búsqueda y filtros por marca, precio, sección
+5. **Modificar** — ícono de editar sobre cualquier parte o auto
+6. **Vender** — Inventario → Vender → registra en `vendido_parte` con firma digital
+7. **Catálogo público** (`/`) — listado con thumbnails → clic en una parte → detalle con costo, unidades y comentarios de visitantes
+
+🔲 **PENDIENTE:** agregar capturas de pantalla reales de cada paso antes de la entrega.
