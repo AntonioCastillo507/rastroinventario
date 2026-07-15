@@ -102,7 +102,7 @@ Al registrar una venta (`vendido_parte`) o una parte de inventario, el backend c
 🎥 [Ver video de uso del sistema](https://utpac-my.sharepoint.com/:v:/g/personal/antonio_castillo2_utp_ac_pa/IQB2OR8cAfv0QqIYSp6T83uPAXF06pk2A8d2YFLlOKJPgs8?e=f7uTyi)
 
 ### 5.1. Guía Visual (resumen del flujo)
-1. **Login** (`/admin/`) — correo y contraseña; 3 intentos fallidos bloquean la cuenta
+1. **Inicio** (`/rastroinventario/`) — la primera impresion del usuario al entrar
 
    ![Login](docs/screenshots/01-login.png)
 
