@@ -5,7 +5,7 @@ define("DB_PASS",  "");
 define("DB_NAME",  "rastroinventario");
 define("APP_URL",  "http://localhost/rastroinventario");
 define("HMAC_KEY", "R4str0_S3cr3t_Inv_2025!");
-define("RSA_KEY_PASSPHRASE", "R4str0_RSA_Ph2026!Pty");
+require_once __DIR__ . "/rsa_secret.php"; // passphrase fuera del repositorio, ver .gitignore
 // ── EmailJS () ──────────────────────
 define("EMAILJS_ENABLED", true);
 define("EMAILJS_SERVICE_ID", "service_k7lz71j");

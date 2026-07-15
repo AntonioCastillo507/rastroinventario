@@ -203,6 +203,17 @@ class PedidoController extends BaseController {
         $um=new UserModel(); $user=$um->findById($_SESSION["user"]["id"]); $error=""; $success="";
         if ($this->isPost()){
             CsrfToken::verify();
+            if (isset($_POST["nueva"])) {
+                $actual=$_POST["actual"]??""; $nueva=$_POST["nueva"]??""; $conf=$_POST["confirmar"]??"";
+                if (!password_verify($actual,$user["password"])) { $error="La contraseña actual no es correcta."; }
+                elseif ($nueva!==$conf) { $error="La nueva contraseña y su confirmación no coinciden."; }
+                else {
+                    $vp=(new Validator())->password("nueva",$nueva);
+                    if ($vp->isValid()) { $um->updatePassword($_SESSION["user"]["id"],password_hash($nueva,PASSWORD_BCRYPT)); $success="Contraseña actualizada correctamente."; }
+                    else { $error=$vp->first(); }
+                }
+                $this->view("public/mi_perfil",compact("user","error","success")); return;
+            }
             $upd=["nombre"=>Sanitizer::post("nombre"),"telefono"=>Sanitizer::post("telefono"),"direccion"=>Sanitizer::post("direccion")];
             $v=(new Validator())->required("nombre",$upd["nombre"],"Nombre");
             if ($v->isValid()){ $um->updateProfile($_SESSION["user"]["id"],$upd); $_SESSION["user"]["nombre"]=$upd["nombre"]; $success="Perfil actualizado."; $user=$um->findById($_SESSION["user"]["id"]); }

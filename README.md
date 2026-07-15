@@ -25,7 +25,7 @@
 - **Última actualización:** Julio 2026
 
 ### 1.4. 🎥 Demostración en Video
-🔲 **PENDIENTE:** [Enlace al video](PENDIENTE-agregar-link-de-YouTube-o-Drive)
+🎥 [Ver demostración en video](https://utpac-my.sharepoint.com/:v:/g/personal/antonio_castillo2_utp_ac_pa/IQB2OR8cAfv0QqIYSp6T83uPAXF06pk2A8d2YFLlOKJPgs8?e=f7uTyi)
 
 ---
 
@@ -99,15 +99,33 @@ Al registrar una venta (`vendido_parte`) o una parte de inventario, el backend c
 
 ## 5. Manual de Usuario Operativo (Flujo de Pantallas)
 
-🔲 **PENDIENTE:** [Ver video de uso del sistema](PENDIENTE)
+🎥 [Ver video de uso del sistema](https://utpac-my.sharepoint.com/:v:/g/personal/antonio_castillo2_utp_ac_pa/IQB2OR8cAfv0QqIYSp6T83uPAXF06pk2A8d2YFLlOKJPgs8?e=f7uTyi)
 
 ### 5.1. Guía Visual (resumen del flujo)
 1. **Login** (`/admin/`) — correo y contraseña; 3 intentos fallidos bloquean la cuenta
+
+   ![Login](docs/screenshots/01-login.png)
+
 2. **Dashboard** — resumen del inventario, menú horizontal con acceso a todos los módulos
+
+   ![Dashboard](docs/screenshots/02-dashboard.png)
+
 3. **Agregar** — Inventario → Nueva Parte → marca/modelo/año del auto, sección, precio, thumbnail + imagen grande
+
+   ![Agregar parte](docs/screenshots/03-agregar-parte.png)
+
 4. **Buscar** — Inventario → barra de búsqueda y filtros por marca, precio, sección
+
+   ![Buscar](docs/screenshots/04-buscar.png)
+
 5. **Modificar** — ícono de editar sobre cualquier parte o auto
+
+   ![Modificar](docs/screenshots/05-modificar.png)
+
 6. **Vender** — Inventario → Vender → registra en `vendido_parte` con firma digital
+
+   ![Vender](docs/screenshots/06-vender.png)
+
 7. **Catálogo público** (`/`) — listado con thumbnails → clic en una parte → detalle con costo, unidades y comentarios de visitantes
 
-🔲 **PENDIENTE:** agregar capturas de pantalla reales de cada paso antes de la entrega.
+   ![Catálogo público](docs/screenshots/07-catalogo-publico.png)

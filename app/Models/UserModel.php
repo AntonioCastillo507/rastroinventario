@@ -1,5 +1,8 @@
 <?php
 class UserModel extends BaseModel {
+    public function updatePassword(int $id, string $hash): void {
+        $this->db->prepare("UPDATE usuarios SET password=? WHERE id=?")->execute([$hash, $id]);
+    }
     protected string $table = "usuarios";
     public function findByEmail(string $email): array|false {
         $s=$this->db->prepare("SELECT * FROM usuarios WHERE email=?"); $s->execute([$email]); return $s->fetch();

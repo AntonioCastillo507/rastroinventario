@@ -1,5 +1,30 @@
 <?php
 class UserController extends BaseController {
+    public function miClave(): void {
+        $this->requireAuth();
+        $error = ""; $success = "";
+        if ($this->isPost()) {
+            CsrfToken::verify();
+            $actual = $_POST["actual"] ?? "";
+            $nueva  = $_POST["nueva"]  ?? "";
+            $conf   = $_POST["confirmar"] ?? "";
+            $user   = $this->um->findById($_SESSION["user"]["id"]);
+            if (!$user || !password_verify($actual, $user["password"])) {
+                $error = "La contraseña actual no es correcta.";
+            } elseif ($nueva !== $conf) {
+                $error = "La nueva contraseña y su confirmación no coinciden.";
+            } else {
+                $v = (new Validator())->password("nueva", $nueva);
+                if ($v->isValid()) {
+                    $this->um->updatePassword($_SESSION["user"]["id"], password_hash($nueva, PASSWORD_BCRYPT));
+                    $success = "Contraseña actualizada correctamente.";
+                } else {
+                    $error = $v->first();
+                }
+            }
+        }
+        $this->view("admin/usuarios/clave", compact("error","success"));
+    }
     private UserModel $um;
     private RolModel  $rm;
     public function __construct() { $this->um = new UserModel(); $this->rm = new RolModel(); }

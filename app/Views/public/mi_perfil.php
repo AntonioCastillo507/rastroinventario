@@ -27,4 +27,20 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
     </div>
   </div>
 </div>
+<div class="container-xl">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div style="background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-top:1.5rem;margin-bottom:2rem">
+        <h5 class="fw-bold text-white mb-3"><i class="bi bi-key-fill me-2 text-warning"></i>Cambiar Contraseña</h5>
+        <form action="<?=APP_URL?>/?action=mi_perfil" method="POST">
+          <?=CsrfToken::field()?>
+          <div class="mb-3"><label class="form-label-dark">Contraseña actual</label><input type="password" name="actual" class="form-control dark-input" required autocomplete="current-password"></div>
+          <div class="mb-3"><label class="form-label-dark">Nueva contraseña (8-12 caracteres)</label><input type="password" name="nueva" class="form-control dark-input" required minlength="8" maxlength="12" autocomplete="new-password"></div>
+          <div class="mb-4"><label class="form-label-dark">Confirmar nueva contraseña</label><input type="password" name="confirmar" class="form-control dark-input" required minlength="8" maxlength="12" autocomplete="new-password"></div>
+          <button type="submit" class="btn btn-outline-warning fw-bold w-100"><i class="bi bi-shield-lock me-2"></i>Actualizar Contraseña</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <?php include BASE_PATH."/app/Views/layouts/public_footer.php"; ?>

@@ -8,8 +8,8 @@
       <div class="col-md-4">
         <h6 class="text-warning fw-bold mb-3">Contáctanos</h6>
         <div class="contact-item"><div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div><span class="text-secondary small">Panamá, República de Panamá</span></div>
-        <div class="contact-item"><div class="contact-icon"><i class="bi bi-telephone-fill"></i></div><span class="text-secondary small">+507 6000-0000</span></div>
-        <div class="contact-item"><div class="contact-icon"><i class="bi bi-envelope-fill"></i></div><span class="text-secondary small">info@rastrodelistmo.com</span></div>
+        <div class="contact-item"><div class="contact-icon"><i class="bi bi-telephone-fill"></i></div><span class="text-secondary small">+507 6542-0519</span></div>
+        <div class="contact-item"><div class="contact-icon"><i class="bi bi-envelope-fill"></i></div><span class="text-secondary small">chapimaster507@gmail.com</span></div>
       </div>
       <div class="col-md-4">
         <h6 class="text-warning fw-bold mb-3">Horario</h6>

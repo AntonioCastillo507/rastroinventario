@@ -96,7 +96,7 @@ class FacturaController extends BaseController {
         $pdf->SetFont("helvetica","",9);
         $pdf->SetTextColor(132, 142, 156);
         $pdf->SetXY(15, 22);
-        $pdf->Cell(0, 5, "Ciudad de Panama, Republica de Panama  |  +507 6000-0000  |  info@rastrodelistmo.com", 0, 1, "L");
+        $pdf->Cell(0, 5, "Ciudad de Panama, Republica de Panama  |  +507 6542-0519  |  chapimaster507@gmail.com", 0, 1, "L");
 
         $pdf->SetTextColor(240, 185, 11);
         $pdf->SetFont("helvetica","B",14);

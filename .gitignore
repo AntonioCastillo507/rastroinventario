@@ -1,1 +1,3 @@
 /vendor/
+app/Config/rsa_secret.php
+ssl/*.key
