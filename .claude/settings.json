@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./app/Config/rsa_secret.php)",
+      "Read(./.env)"
+    ]
+  }
+}
