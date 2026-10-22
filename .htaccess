@@ -1,1 +1,9 @@
 Options -Indexes
+
+# Archivos que no deben servirse nunca por HTTP (respaldos, llaves, logs, docs internos, composer)
+<FilesMatch "\.(sql|log|key|crt|pem|md|lock|json|bak|ini|env)$">
+    Require all denied
+</FilesMatch>
+
+# Carpetas internas completas
+RedirectMatch 403 ^/rastroinventario/(vendor|docs|\.git|\.claude)(/|$)

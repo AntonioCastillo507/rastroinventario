@@ -1,0 +1,2 @@
+# Código interno (config, modelos, controladores, vistas): no se pide directo por HTTP
+Require all denied

@@ -43,7 +43,9 @@ class PedidoController extends BaseController {
         $um=new UserModel();
         $existe=$um->findByEmail($email);
         if ($existe) {
-            $usuarioId=$existe["id"];
+            // Correo ya registrado: nunca se abre sesión sin contraseña, hay que iniciar sesión primero.
+            $_SESSION["compra_error"]="Ya existe una cuenta con ese correo. Inicia sesión para continuar con tu compra.";
+            $this->redirect(APP_URL."/?action=comprar&id=".$parteId);
         } else {
             $uid=$um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT),"telefono"=>$tel,"direccion"=>$dir]);
             if (!$uid){ $_SESSION["compra_error"]="Error al crear la cuenta."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
@@ -157,7 +159,11 @@ class PedidoController extends BaseController {
             $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass);
             if (!$v->isValid()){ $_SESSION["carrito_error"]=$v->first(); $this->redirect(APP_URL."/?action=carrito"); }
             $um=new UserModel(); $existe=$um->findByEmail($email);
-            if ($existe){ $usuarioId=$existe["id"]; }
+            if ($existe){
+                // No se asigna el pedido a una cuenta ajena sin autenticarse.
+                $_SESSION["carrito_error"]="Ya existe una cuenta con ese correo. Inicia sesión para finalizar tu pedido.";
+                $this->redirect(APP_URL."/?action=carrito");
+            }
             else {
                 $uid=$um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT),"telefono"=>$tel,"direccion"=>$dir]);
                 $um->assignClienteRole($uid); $usuarioId=$uid;

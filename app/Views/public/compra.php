@@ -1,7 +1,6 @@
 <?php
 $title="Comprar — Rastro del Istmo";
 include BASE_PATH."/app/Views/layouts/public_header.php";
-$err=$_SESSION["compra_error"]??""; unset($_SESSION["compra_error"]);
 ?>
 <a href="javascript:history.back()" class="btn-float-back" title="Volver"><i class="bi bi-arrow-left"></i></a>
 <div class="container-xl py-5">
