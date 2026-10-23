@@ -30,7 +30,13 @@ class ParteModel extends BaseModel {
     }
     public function findFeatured(int $limit=8): array { return $this->findPublic("",0,$limit,"",0,0,"stock"); }
     public function search(string $q): array { return $this->findPublic($q); }
-    public function decrementarStock(int $id,int $qty): bool { return $this->exec("UPDATE partes SET cantidad=cantidad-? WHERE id=? AND cantidad>=?",[$qty,$id,$qty]); }
+    /** Descuenta stock de forma atómica; false si qty < 1 o no alcanzó el stock (ninguna fila afectada) */
+    public function decrementarStock(int $id,int $qty): bool {
+        if ($qty<1) return false;
+        $s=$this->db->prepare("UPDATE partes SET cantidad=cantidad-? WHERE id=? AND cantidad>=?");
+        $s->execute([$qty,$id,$qty]);
+        return $s->rowCount()===1;
+    }
     public function updateFirma(int $id,string $f): void { $this->exec("UPDATE partes SET firma_digital=? WHERE id=?",[$f,$id]); }
     public function countAll(): int { return (int)$this->db->query("SELECT COUNT(*) FROM partes WHERE activo=1")->fetchColumn(); }
     public function countStockBajo(): int { return (int)$this->db->query("SELECT COUNT(*) FROM partes WHERE activo=1 AND cantidad<=5")->fetchColumn(); }

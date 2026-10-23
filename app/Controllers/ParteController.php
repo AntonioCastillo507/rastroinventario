@@ -45,13 +45,17 @@ class ParteController extends BaseController {
         if ($this->isPost()) {
             CsrfToken::verify();
             $upd=["nombre"=>Sanitizer::post("nombre"),"descripcion"=>Sanitizer::post("descripcion"),"auto_id"=>Sanitizer::post("auto_id","int")?:null,"seccion_id"=>Sanitizer::post("seccion_id","int")?:null,"precio"=>Sanitizer::post("precio","float"),"cantidad"=>Sanitizer::post("cantidad","int")];
-            if (!empty($_FILES["imagen"]["name"])&&$_FILES["imagen"]["error"]===UPLOAD_ERR_OK) {
-                $r=ImageHelper::upload($_FILES["imagen"],"parte");
-                if ($r){ImageHelper::delete($parte["imagen_grande"],$parte["thumbnail"]);$upd["thumbnail"]=$r["thumbnail"];$upd["imagen_grande"]=$r["original"];}
+            $v=(new Validator())->required("nombre",$upd["nombre"],"Nombre")->numeric("precio",$upd["precio"],0.01)->numeric("cantidad",$upd["cantidad"],0);
+            if ($v->isValid()) {
+                if (!empty($_FILES["imagen"]["name"])&&$_FILES["imagen"]["error"]===UPLOAD_ERR_OK) {
+                    $r=ImageHelper::upload($_FILES["imagen"],"parte");
+                    if ($r){ImageHelper::delete($parte["imagen_grande"],$parte["thumbnail"]);$upd["thumbnail"]=$r["thumbnail"];$upd["imagen_grande"]=$r["original"];}
+                }
+                $this->pm->update($id,$upd); $nueva=$this->pm->findById($id);
+                $this->pm->updateFirma($id,DigitalSignature::signParte($nueva));
+                $this->redirect(APP_URL."/admin/?mod=partes","Parte actualizada.");
             }
-            $this->pm->update($id,$upd); $nueva=$this->pm->findById($id);
-            $this->pm->updateFirma($id,DigitalSignature::signParte($nueva));
-            $this->redirect(APP_URL."/admin/?mod=partes","Parte actualizada.");
+            $error=$v->first(); $parte=array_merge($parte,$upd); // conserva lo escrito
         }
         $this->view("admin/partes/form",compact("parte","autos","secciones","error","id"));
     }
