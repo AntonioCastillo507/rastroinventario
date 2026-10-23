@@ -51,7 +51,7 @@
 | b214f54 | 2B-3: validación de cantidad y precio, sin sobreventa, carrito transaccional | Sí |
 | 4711641 | 2B-4: bloqueo temporal de login (3 intentos / 15 min por correo + IP) y mensajes genéricos | Sí |
 | 4c0f54f | ESTADO.md como memoria del proyecto y línea en CLAUDE.md | Sí |
-| (sin commit aún) | Hallazgo 13: se elimina el módulo Herramientas (`HerramientasController`, su vista, el `require_once` en `bootstrap.php` y la entrada en `admin/index.php`) | No |
+| fca464f | Hallazgo 13: se elimina el módulo Herramientas (`HerramientasController`, su vista, el `require_once` en `bootstrap.php` y la entrada en `admin/index.php`) | No |
 
 ## Pendiente inmediato
 - [x] Limpieza de datos de prueba confirmada (2026-10-23). Línea base antes de las pruebas del navegador: 16 usuarios, 6 pedidos, 4 roles y 23 filas de `login_logs` (las 3 filas extra sobre las 20 esperadas son logins exitosos del administrador desde `::1`, ids 57 a 59).
@@ -130,4 +130,4 @@
 ## Registro de sesiones
 - 2026-10-22 y 2026-10-23: auditoría de seguridad, etapas 1, 2A y 2B completas (ver tabla de commits).
 - 2026-10-23: verificación. Conteos de base revisados (solo `login_logs` difería, por 3 logins legítimos del administrador). Pruebas en el navegador integrado todas OK: carrito, factura PDF del pedido 1, login del administrador y compra normal (pedido 18, usuario 36, factura PDF descargable). Los commits 2B ya están en GitHub. Un solo commit de ESTADO.md, sin push.
-- 2026-10-23: hallazgo 13. Se eliminó el módulo Herramientas completo (opción A): borrados `HerramientasController.php` y `app/Views/admin/herramientas/index.php`, quitados el `require_once` de `bootstrap.php` y la entrada del mapa en `admin/index.php`. `php -l` OK, 0 referencias restantes en el código, conteos de la base sin cambios (17, 7, 4, 24). Navegador con el administrador (sesión iniciada por Tony): `/admin/` carga el dashboard y `?mod=herramientas` redirige a `/admin/`. No se hizo POST a `limpiarPrueba`. Sin commit, sin push.
+- 2026-10-23: hallazgo 13. Se eliminó el módulo Herramientas completo (opción A): borrados `HerramientasController.php` y `app/Views/admin/herramientas/index.php`, quitados el `require_once` de `bootstrap.php` y la entrada del mapa en `admin/index.php`. `php -l` OK, 0 referencias restantes en el código, conteos de la base sin cambios (17, 7, 4, 24). Navegador con el administrador (sesión iniciada por Tony): `/admin/` carga el dashboard y `?mod=herramientas` redirige a `/admin/`. No se hizo POST a `limpiarPrueba`. Commit fca464f, sin push.
