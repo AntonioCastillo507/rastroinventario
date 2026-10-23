@@ -37,6 +37,13 @@ class ParteModel extends BaseModel {
         $s->execute([$qty,$id,$qty]);
         return $s->rowCount()===1;
     }
+    /** Devuelve stock (cancelación de pedido); false si qty < 1 o la pieza no existe */
+    public function incrementarStock(int $id,int $qty): bool {
+        if ($qty<1) return false;
+        $s=$this->db->prepare("UPDATE partes SET cantidad=cantidad+? WHERE id=?");
+        $s->execute([$qty,$id]);
+        return $s->rowCount()===1;
+    }
     public function updateFirma(int $id,string $f): void { $this->exec("UPDATE partes SET firma_digital=? WHERE id=?",[$f,$id]); }
     public function countAll(): int { return (int)$this->db->query("SELECT COUNT(*) FROM partes WHERE activo=1")->fetchColumn(); }
     public function countStockBajo(): int { return (int)$this->db->query("SELECT COUNT(*) FROM partes WHERE activo=1 AND cantidad<=5")->fetchColumn(); }

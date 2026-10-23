@@ -23,31 +23,8 @@ class PedidoAdminController extends BaseController {
         $validos = ["pendiente","procesando","entregado","cancelado"];
         if (!in_array($estado,$validos)) $this->redirect(APP_URL."/admin/?mod=pedidos","Estado inválido.","danger");
 
-        $pedido = $this->pm->findWithItems($id);
-        $anterior = $pedido["estado"] ?? "";
-
-        $this->pm->updateEstado($id,$estado);
-
-        // ── Auto-registrar venta cuando se marca como ENTREGADO ──
-        $msg = "Estado actualizado.";
-        if ($estado === "entregado" && $anterior !== "entregado" && $pedido) {
-            $vm = new VentaModel();
-            $registradas = 0;
-            foreach ($pedido["items"] as $item) {
-                if ($item["parte_id"]) {
-                    $vm->registrar([
-                        "parte_id"    => $item["parte_id"],
-                        "cantidad"    => $item["cantidad"],
-                        "precio_venta"=> $item["precio_unitario"],
-                        "usuario_id"  => $pedido["usuario_id"],
-                        "fecha"       => date("Y-m-d H:i:s"),
-                    ]);
-                    $registradas++;
-                }
-            }
-            if ($registradas > 0) $msg = "Pedido entregado. $registradas venta(s) registrada(s) automáticamente. ✔";
-        }
-
-        $this->redirect(APP_URL."/admin/?mod=pedidos&action=detalle&id=".$id,$msg);
+        // Stock y ventas se ajustan dentro del modelo, en una sola transacción
+        $r = $this->pm->cambiarEstado($id,$estado);
+        $this->redirect(APP_URL."/admin/?mod=pedidos&action=detalle&id=".$id,$r["msg"],$r["ok"]?"success":"danger");
     }
 }

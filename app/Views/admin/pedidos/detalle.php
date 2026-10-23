@@ -56,18 +56,26 @@
     <div class="dark-card mb-4">
       <div class="dark-card-header"><i class="bi bi-arrow-repeat me-2"></i>Actualizar Estado</div>
       <div class="card-body p-4">
-        <form action="<?=APP_URL?>/admin/?mod=pedidos&action=cambiarEstado&id=<?=$pedido["id"]?>" method="POST">
+        <?php $siguientes=PedidoModel::transicionesPermitidas($pedido["estado"]); ?>
+        <?php if($siguientes): ?>
+        <form action="<?=APP_URL?>/admin/?mod=pedidos&action=cambiarEstado&id=<?=$pedido["id"]?>" method="POST"
+              onsubmit="var e=this.estado.value;return e==='entregado'?confirm('Entregado es definitivo: no se podrá cambiar después. ¿Continuar?'):(e==='cancelado'?confirm('Se devolverá el stock del pedido. ¿Cancelar el pedido?'):true);">
           <?=CsrfToken::field()?>
           <label class="form-label-dark">Estado del pedido</label>
-          <select name="estado" class="form-select dark-input mb-3">
-            <option value="pendiente"  <?=$pedido["estado"]==="pendiente" ?"selected":""?>>Pendiente</option>
-            <option value="procesando" <?=$pedido["estado"]==="procesando"?"selected":""?>>Procesando</option>
-            <option value="entregado"  <?=$pedido["estado"]==="entregado" ?"selected":""?>>Entregado</option>
-            <option value="cancelado"  <?=$pedido["estado"]==="cancelado" ?"selected":""?>>Cancelado</option>
+          <select name="estado" class="form-select dark-input mb-3" required>
+            <option value="" disabled selected>Actual: <?=ucfirst($pedido["estado"])?></option>
+            <?php foreach($siguientes as $e): ?>
+            <option value="<?=$e?>"><?=ucfirst($e)?></option>
+            <?php endforeach; ?>
           </select>
           <button type="submit" class="btn btn-gold fw-bold w-100"><i class="bi bi-save me-2"></i>Guardar Estado</button>
         </form>
-        <div class="mt-3 text-secondary small"><i class="bi bi-info-circle me-1"></i>Al marcar como <strong>Entregado</strong>, la venta se registra automáticamente.</div>
+        <?php else: ?>
+        <div class="text-secondary small"><i class="bi bi-lock me-1"></i>Este pedido ya fue entregado y no se puede cambiar.</div>
+        <?php endif; ?>
+        <div class="mt-3 text-secondary small"><i class="bi bi-info-circle me-1"></i>
+          <strong>Entregado</strong> registra la venta y es definitivo. <strong>Cancelado</strong> devuelve el stock; si se reabre, se descuenta de nuevo (si hay stock).
+        </div>
       </div>
     </div>
     <a href="<?=APP_URL?>/admin/?mod=factura&action=generar&id=<?=$pedido["id"]?>" class="btn btn-outline-warning w-100 mb-2" target="_blank">
