@@ -1,5 +1,18 @@
-Options -Indexes
+Options -Indexes -ExecCGI -Includes
 
-<FilesMatch "\.(php|php3|php4|php5|phtml|phar|cgi|pl|shtml)$">
-    Require all denied
+# Aquí nunca se ejecuta nada: ni PHP ni CGI ni SSI, sin importar dónde esté la extensión (x.php.jpg)
+RemoveHandler .php .php3 .php4 .php5 .phtml .phar .cgi .pl .shtml
+RemoveType .php .php3 .php4 .php5 .phtml .phar .shtml
+<IfModule php_module>
+    php_flag engine off
+</IfModule>
+
+# Solo se sirven imágenes; todo lo demás (svg, html, js, php...) queda negado
+Require all denied
+<FilesMatch "^[A-Za-z0-9][A-Za-z0-9_-]*(\.[0-9]+(_th)?)?\.(jpe?g|png|gif|webp)$">
+    Require all granted
 </FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>

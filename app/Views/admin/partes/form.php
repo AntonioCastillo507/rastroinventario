@@ -48,7 +48,7 @@
     <div class="col-12">
       <label class="form-label-dark">Imagen de la Parte</label>
       <input type="file" name="imagen" class="form-control dark-input" accept="image/*">
-      <div class="text-secondary small mt-1">JPG / PNG / GIF / WebP — máximo 5 MB. Se genera thumbnail automáticamente (320×240 px).</div>
+      <div class="text-secondary small mt-1">JPG / PNG / GIF / WebP — máximo 5 MB. Se vuelve a codificar y se genera la miniatura (420×315 px).</div>
       <?php if(!empty($parte["thumbnail"])): ?>
       <div class="mt-3 d-flex align-items-center gap-3">
         <img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($parte["thumbnail"])?>" class="thumb-preview" alt="Imagen actual">
