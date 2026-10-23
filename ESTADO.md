@@ -46,17 +46,33 @@
 | c8c4a44 | Etapa 1: compra de invitado ya no inicia sesión en cuentas existentes; archivos sensibles bloqueados por `.htaccess` y fuera de git | Sí |
 | 5ed1f59 | Etapa 2A: facturas (IDOR), sesiones y cookies seguras, roles y cuentas desactivadas | Sí |
 | 9c3342b | Llave RSA y certificado regenerados; aviso si falta la passphrase | Sí |
-| cda46c5 | 2B-1: el módulo `pedidos` ya está en roles | No |
-| 52ed90b | 2B-2: acciones que cambiaban datos por GET pasan a POST con CSRF; corregido `CsrfToken::verify()` | No |
-| b214f54 | 2B-3: validación de cantidad y precio, sin sobreventa, carrito transaccional | No |
-| 4711641 | 2B-4: bloqueo temporal de login (3 intentos / 15 min por correo + IP) y mensajes genéricos | No |
+| cda46c5 | 2B-1: el módulo `pedidos` ya está en roles | Sí |
+| 52ed90b | 2B-2: acciones que cambiaban datos por GET pasan a POST con CSRF; corregido `CsrfToken::verify()` | Sí |
+| b214f54 | 2B-3: validación de cantidad y precio, sin sobreventa, carrito transaccional | Sí |
+| 4711641 | 2B-4: bloqueo temporal de login (3 intentos / 15 min por correo + IP) y mensajes genéricos | Sí |
+| 4c0f54f | ESTADO.md como memoria del proyecto y línea en CLAUDE.md | Sí |
 
 ## Pendiente inmediato
-- [ ] Confirmar que la limpieza de datos de prueba terminó. Conteos esperados: 16 usuarios, 6 pedidos, 4 roles, 20 filas de `login_logs`.
-- [ ] Probar en el navegador: carrito (añadir, cambiar cantidad con Enter, quitar), compra normal con correo propio, login del administrador, "Ver Factura PDF" en un pedido real.
-- [ ] `git push` de los commits 2B (cda46c5 a 4711641).
+- [x] Limpieza de datos de prueba confirmada (2026-10-23). Línea base antes de las pruebas del navegador: 16 usuarios, 6 pedidos, 4 roles y 23 filas de `login_logs` (las 3 filas extra sobre las 20 esperadas son logins exitosos del administrador desde `::1`, ids 57 a 59).
+- [x] Pruebas en el navegador (2026-10-23): carrito (añadir, cambiar cantidad con Enter, quitar), login del administrador, "Ver Factura PDF" del pedido 1 y compra normal. Todo OK.
+- [x] `git push` de los commits 2B (cda46c5 a 4711641): hecho, `origin/mejoras` los contiene.
+- [ ] Decidir qué hacer con los datos de prueba de la compra 2d: pedido 18 y usuario 36 (`prueba2d@example.invalid`). No borrar sin respaldo, ids exactos y OK de Tony.
 - [ ] Hacer copia segura de `ssl/rastro.key` y `app/Config/rsa_secret.php` fuera del proyecto (gestor de contraseñas o USB). Sin la passphrase la llave no sirve.
-- [ ] Borrar el volcado `rastro_pre2B_*.sql` de `C:\wamp64\respaldo_rastro\` cuando todo esté verificado.
+- [ ] Borrar los volcados `rastro_pre2B_*.sql` y `rastro_pre2d_*.sql` de `C:\wamp64\respaldo_rastro\` cuando todo esté verificado.
+
+## Conteos actuales de la base (2026-10-23, después de las pruebas)
+| Tabla | Conteo |
+|---|---|
+| usuarios | 17 |
+| pedidos | 7 |
+| roles | 4 |
+| login_logs | 24 |
+
+- Diferencia contra la línea base (16, 6, 4, 23): +1 usuario y +1 pedido de la compra de prueba 2d, y +1 login del administrador (id 60).
+- Datos de prueba creados en 2d: pedido id 18 (1 pieza, Bujías NGK, estado pendiente) y usuario id 36 (`prueba2d@example.invalid`). Los ids son altos porque el auto_increment siguió subiendo con las pruebas anteriores.
+- Respaldo previo a 2d: `C:\wamp64\respaldo_rastro\rastro_pre2d_20261023_093549.sql`.
+- Al cerrar esas pruebas se cerró la sesión del administrador en el navegador integrado.
+- El navegador integrado cancela los diálogos `confirm()`. Para probar "quitar del carrito" hubo que aceptar el aviso desde la página; no es un fallo de la app.
 
 ## Hallazgos de la auditoría
 | # | Tema | Estado |
@@ -112,3 +128,4 @@
 
 ## Registro de sesiones
 - 2026-10-22 y 2026-10-23: auditoría de seguridad, etapas 1, 2A y 2B completas (ver tabla de commits).
+- 2026-10-23: verificación. Conteos de base revisados (solo `login_logs` difería, por 3 logins legítimos del administrador). Pruebas en el navegador integrado todas OK: carrito, factura PDF del pedido 1, login del administrador y compra normal (pedido 18, usuario 36, factura PDF descargable). Los commits 2B ya están en GitHub. Un solo commit de ESTADO.md, sin push.
