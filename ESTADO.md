@@ -81,9 +81,9 @@
 | roles | 4 |
 | login_logs | 30 |
 | vendido_parte | 6 |
-| partes | 50 (49 + la parte de prueba 54) |
+| partes | 50 (49 + la parte de prueba 54, inactiva) |
 
-- Pendiente de decidir con Tony: la parte de prueba **id 54** ("PRUEBA_SUBIDA hallazgo 12 (borrar con OK)", cantidad 0) y sus 2 archivos sin seguimiento en git: `uploads/parts/parte_89c906a47ab458f474c71b47bc9067b7.png` y `uploads/thumbnails/parte_89c906a47ab458f474c71b47bc9067b7_th.jpg`. No borrar sin respaldo y OK de Tony (borrarla desde el panel desactiva la parte y borra las 2 imágenes; la fila queda con activo=0). No agregar esos archivos a ningún commit. Respaldo previo: `C:\wamp64\respaldo_rastro\rastro_pre_subida_20261023_141327.sql`.
+- Parte de prueba **id 54** ("PRUEBA_SUBIDA hallazgo 12 (borrar con OK)", cantidad 0): con OK de Tony se eliminó desde el panel el 2026-10-23; sus 2 imágenes ya no están en `uploads/` (50 originales y 50 miniaturas, como antes). **La fila sigue en la base con `activo = 0`** (el panel solo desactiva): quitarla en la limpieza de datos de prueba, con respaldo, id exacto y OK de Tony. Respaldo previo a las pruebas: `C:\wamp64\respaldo_rastro\rastro_pre_subida_20261023_141327.sql`.
 
 - Diferencia contra la línea base (16, 6, 4, 23): +2 usuarios (36 y 37) y +2 pedidos (18 y 19) de las compras de prueba 2d y del Error 1, y +6 logins en `login_logs`, todos del administrador desde `::1`.
 - Datos de prueba creados: pedido 18 (1 pieza, Bujías NGK, pendiente) y usuario 36 (`prueba2d@example.invalid`) en 2d; pedido 19 y usuario 37 (`prueba-itbms@example.invalid`) en el Error 1. Los ids son altos porque el auto_increment siguió subiendo con las pruebas anteriores.
@@ -106,7 +106,7 @@
 | 9 | Bloqueo permanente de cuentas y enumeración de usuarios | Hecho en el login |
 | 10 | Escalada de privilegios por roles | Hecho |
 | 11 | Errores visibles en pantalla (`display_errors`, `die()` con mensaje) | Hecho en el código (121afda). Falta el ajuste de despliegue en `php.ini` y Apache (ver "Antes de publicar") |
-| 12 | Subida de archivos (`ImageHelper.php`) | Hecho (ver "Registro de sesiones"). Falta borrar la parte de prueba 54 con OK de Tony |
+| 12 | Subida de archivos (`ImageHelper.php`) | Hecho (ver "Registro de sesiones"). Queda la fila inactiva de la parte de prueba 54 para la limpieza de datos de prueba |
 | 13 | `HerramientasController::limpiarPrueba` borra todo; no debe existir en producción | Hecho (módulo Herramientas eliminado) |
 | 14 | Política de contraseñas (8 a 12 caracteres, sin recuperación) | Pendiente |
 | 15 | Inyección de fórmulas en Excel (`ReporteController`) | Hecho (ver "Registro de sesiones") |
