@@ -23,6 +23,8 @@ try {
         default              => $ctrl->home(),
     };
 } catch (\Throwable $e) {
+    // Si falla la propia portada, redirigir a ella sería un bucle
+    if ($action === "home") paginaError(registrarError($e), 500);
     if (isset($ctrl) && $ctrl instanceof ErrorHandlerInterface) { $ctrl->handle($e); }
     else { error_log("[RASTRO] " . $e->getMessage()); }
     header("Location: " . APP_URL . "/"); exit;

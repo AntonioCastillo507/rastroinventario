@@ -42,6 +42,8 @@ try {
     $method = method_exists($ctrl,$action) ? $action : "index";
     $ctrl->$method();
 } catch (\Throwable $e) {
+    // Si falla el propio dashboard, redirigir a él sería un bucle
+    if ($mod === "dashboard") paginaError(registrarError($e), 500);
     if (isset($ctrl) && $ctrl instanceof ErrorHandlerInterface) { $ctrl->handle($e); }
     else { error_log("[RASTRO] " . $e->getMessage()); }
     header("Location: " . APP_URL . "/admin/"); exit;

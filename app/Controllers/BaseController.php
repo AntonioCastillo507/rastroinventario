@@ -28,8 +28,8 @@ abstract class BaseController implements ErrorHandlerInterface {
         $_SESSION["flash"] = ["msg" => $msg, "type" => $type];
     }
     public function handle(\Throwable $e): void {
-        error_log("[RASTRO] " . $e->getMessage());
-        $this->flash("Error interno: " . htmlspecialchars($e->getMessage()), "danger");
+        $ref = registrarError($e);
+        $this->flash("Ocurrió un error interno. Intenta de nuevo; si sigue, indica el código de referencia $ref.", "danger");
     }
     protected function isPost(): bool { return $_SERVER["REQUEST_METHOD"] === "POST"; }
     protected function ip(): string {

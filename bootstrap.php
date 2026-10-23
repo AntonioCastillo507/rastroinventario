@@ -4,6 +4,59 @@ define("UPLOAD_PATH", BASE_PATH . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SE
 
 date_default_timezone_set("America/Panama");
 
+// Errores: nada interno a pantalla, todo al registro del servidor (logs/error.log)
+error_reporting(E_ALL);
+ini_set("display_errors", "0");
+ini_set("display_startup_errors", "0");
+ini_set("html_errors", "0");
+ini_set("log_errors", "1");
+ini_set("zend.exception_ignore_args", "1");
+if (!is_dir(BASE_PATH . "/logs")) @mkdir(BASE_PATH . "/logs", 0755, true);
+ini_set("error_log", BASE_PATH . "/logs/error.log");
+header_remove("X-Powered-By");
+
+// Guarda el error real en el registro y devuelve un código corto para buscarlo
+function registrarError(\Throwable $e, string $donde = ""): string {
+    $ref = strtoupper(bin2hex(random_bytes(3)));
+    // Una sola línea: un dato del usuario con saltos de línea no puede falsificar entradas
+    $msg = preg_replace('/\s+/', " ", $e->getMessage());
+    error_log("[RASTRO][$ref] $donde" . get_class($e) . ": $msg en " . $e->getFile() . ":" . $e->getLine());
+    return $ref;
+}
+
+// Página genérica, sin base de datos ni vistas, para que funcione aunque MySQL esté caído
+function paginaError(string $ref, int $codigo = 500): void {
+    if (!headers_sent()) {
+        http_response_code($codigo);
+        header("Content-Type: text/html; charset=UTF-8");
+        header("Cache-Control: no-store");
+    }
+    $volver = defined("APP_URL") ? '<p><a href="' . htmlspecialchars(APP_URL) . '/">Volver al inicio</a></p>' : "";
+    echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Algo salió mal</title>'
+       . '<meta name="viewport" content="width=device-width, initial-scale=1"></head>'
+       . '<body style="font-family:sans-serif;max-width:32rem;margin:4rem auto;padding:0 1rem">'
+       . '<h1>Algo salió mal</h1>'
+       . '<p>Ocurrió un error interno. Intenta de nuevo; si sigue, indica el código de referencia <b>'
+       . htmlspecialchars($ref) . '</b>.</p>' . $volver . '</body></html>';
+    exit;
+}
+
+// Excepciones que nadie capturó (login, registro, logout, sesión, guardia de admin)
+set_exception_handler(function (\Throwable $e): void {
+    paginaError(registrarError($e), 500);
+});
+
+// Errores fatales y de compilación: no se pueden capturar, pero sí registrar
+register_shutdown_function(function (): void {
+    $err = error_get_last();
+    $fatales = E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR;
+    if ($err === null || !($err["type"] & $fatales)) return;
+    $ref = strtoupper(bin2hex(random_bytes(3)));
+    $msg = preg_replace('/\s+/', " ", $err["message"]);
+    error_log("[RASTRO][$ref] Fatal: $msg en " . $err["file"] . ":" . $err["line"]);
+    if (!headers_sent()) paginaError($ref, 500);
+});
+
 require_once BASE_PATH."/app/Config/config.php";
 require_once BASE_PATH."/app/Interfaces/CrudInterface.php";
 require_once BASE_PATH."/app/Interfaces/ErrorHandlerInterface.php";

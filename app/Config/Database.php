@@ -14,8 +14,7 @@ class Database {
                 );
                 self::$conn->exec("SET time_zone = '-05:00'"); // Panama UTC-5
             } catch (PDOException $e) {
-                http_response_code(500);
-                die("<b>Error de BD:</b> ".htmlspecialchars($e->getMessage()));
+                paginaError(registrarError($e, "BD: "), 503);
             }
         }
         return self::$conn;

@@ -8,7 +8,8 @@ class ReporteController extends BaseController {
     private function checkSpreadsheet(): bool {
         $autoload = BASE_PATH.DIRECTORY_SEPARATOR."vendor".DIRECTORY_SEPARATOR."autoload.php";
         if (!file_exists($autoload)) {
-            $this->flash("Ejecuta primero: composer install (ver INSTRUCCIONES.md)", "danger");
+            error_log("[RASTRO] PhpSpreadsheet no instalado: falta vendor/autoload.php (ejecutar composer install, ver INSTRUCCIONES.md)");
+            $this->flash("Los reportes no están disponibles por ahora.", "danger");
             $this->redirect(APP_URL."/admin/?mod=reportes");
         }
         require_once $autoload;

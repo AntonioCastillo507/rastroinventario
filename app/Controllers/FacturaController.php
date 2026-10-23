@@ -11,8 +11,9 @@ class FacturaController extends BaseController {
         $path = BASE_PATH.DIRECTORY_SEPARATOR."vendor".DIRECTORY_SEPARATOR."tecnickcom"
                .DIRECTORY_SEPARATOR."tcpdf".DIRECTORY_SEPARATOR."tcpdf.php";
         if (!file_exists($path)) {
+            error_log("[RASTRO] TCPDF no instalado: falta vendor/ (ejecutar composer install, ver INSTRUCCIONES.md)");
             http_response_code(503);
-            die("<b>TCPDF no instalado.</b> Ejecuta: <code>composer install</code> en la carpeta del proyecto. Ver INSTRUCCIONES.md");
+            die("El servicio de facturas no está disponible por ahora.");
         }
         require_once BASE_PATH."/vendor/autoload.php";
     }
