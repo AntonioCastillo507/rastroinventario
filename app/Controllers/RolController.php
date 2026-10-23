@@ -1,8 +1,13 @@
 <?php
 class RolController extends BaseController {
     private RolModel $rm;
-    const MODULOS = ["usuarios","roles","partes","autos","secciones","ventas","comentarios"];
+    const MODULOS = ["usuarios","roles","partes","autos","secciones","ventas","comentarios","pedidos"];
     public function __construct() { $this->rm = new RolModel(); }
+
+    /** Solo módulos conocidos: ignora cualquier clave inventada en el POST */
+    private function permisosDelPost(): array {
+        return array_intersect_key((array)($_POST["permisos"] ?? []), array_flip(self::MODULOS));
+    }
 
     public function index(): void {
         $this->requirePermission("roles");
@@ -19,7 +24,7 @@ class RolController extends BaseController {
             $v = (new Validator())->required("nombre", $nombre, "Nombre del rol");
             if ($v->isValid()) {
                 $id = $this->rm->create(["nombre"=>$nombre,"descripcion"=>$desc]);
-                if ($id) { $this->rm->savePermisos($id,$_POST["permisos"]??[]); $this->redirect(APP_URL."/admin/?mod=roles","Rol creado."); }
+                if ($id) { $this->rm->savePermisos($id,$this->permisosDelPost()); $this->redirect(APP_URL."/admin/?mod=roles","Rol creado."); }
                 $error = "Ese nombre de rol ya existe.";
             } else $error = $v->first();
         }
@@ -37,7 +42,7 @@ class RolController extends BaseController {
         if ($this->isPost()) {
             CsrfToken::verify();
             $this->rm->update($id,["nombre"=>Sanitizer::post("nombre"),"descripcion"=>Sanitizer::post("descripcion")]);
-            $this->rm->savePermisos($id,$_POST["permisos"]??[]);
+            $this->rm->savePermisos($id,$this->permisosDelPost());
             $this->redirect(APP_URL."/admin/?mod=roles","Rol actualizado.");
         }
         $this->view("admin/roles/form", compact("rol","permisos","modulos","error","id"));
