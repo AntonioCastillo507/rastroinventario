@@ -18,7 +18,7 @@
 | Antonio Castillo | 🔲 *8-1038-2499* | 🔲 *Líder de Proyecto — Arquitectura backend (MVC, modelos, controladores), seguridad (firmas digitales, CSRF, control de acceso) y base de datos. Frontend — Vistas, CSS y diseño de interfaz (panel admin + tienda pública)* |
 | Ian Torres | 🔲 *20-53-8265* | 🔲 *Carga de Datos de Prueba — ayudar a poblar el inventario semilla (las partes de autos, imágenes de prueba)* |
 | Jamir Montenegro | 🔲 *8-1017-1078* | 🔲 *Documentación — README, diagramas UML, manual de usuario* |
-| Samuel Elzaghir | 🔲 *20-70-8278* | 🔲 *Pruebas y QA — Casos de prueba, validación de formularios, revisión de bugs* |
+| Christian Dominguez | 🔲 *8-999-892* | 🔲 *Pruebas y QA — Casos de prueba, validación de formularios, revisión de bugs* |
 
 ### 1.3. Fecha del Sistema y Versión
 - **Versión actual:** v1.6.0
