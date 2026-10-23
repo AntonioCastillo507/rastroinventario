@@ -1,0 +1,60 @@
+<?php
+/**
+ * Contraseñas muy comunes (hallazgo 14). Todo en minúsculas y sin acentos ni espacios,
+ * tal como las deja Validator::plano(). Como el mínimo es de 8 caracteres, aquí solo
+ * importan las de 8 o más; las "bases" cubren la base más números o símbolos pegados.
+ */
+return [
+    // Se rechazan tal cual (8 caracteres o más)
+    "exactas" => [
+        "12345678", "123456789", "11111111", "00000000", "87654321", "98765432", "12341234", "12121212",
+        "qwertyui", "asdfghjk", "zxcvbnm1", "1q2w3e4r", "1qaz2wsx", "q1w2e3r4", "zaq12wsx", "abcd1234",
+        "abc12345", "abcdefgh", "abcdefghi", "password", "password1", "password!", "passw0rd", "p@ssw0rd",
+        "contrasena", "contrasena1", "iloveyou", "trustno1", "sunshine", "princess", "football", "baseball",
+        "monkey123", "dragon123", "master123", "welcome1", "letmein1", "admin123", "admin1234", "usuario1",
+        "teamo123", "tequiero", "holamundo", "123456abc", "1234abcd", "12345abc", "123123123", "1234567a",
+        "1234567890", "12345678910", "123456789012", "0123456789", "0987654321", "9876543210",
+        "1234567891", "1q2w3e4r5t", "1q2w3e4r5t6y", "1qaz2wsx3edc", "qazwsxedcrfv", "asdfghjkl1",
+        "qwertyuiop", "qwertyuiop1", "qwertyuiop123", "zxcvbnm123", "qwertyuiopasdfghjkl",
+        "qwerty123456", "qwerty12345", "qwertyuiop12", "abcdefghij", "abcdefghijk", "abcdefghijklmnop",
+        "abcd123456", "abc1234567", "abcde12345", "password123", "password1234", "password12345",
+        "password123456", "password1!", "password01", "password10", "password99", "passw0rd123",
+        "contrasena12", "contrasena123", "contrasena1234", "contrasena2024",
+        "contrasena2025", "contrasena2026", "micontrasena", "micontrasena1", "micontrasena123",
+        "clave12345", "clave123456", "miclave123", "miclave1234", "miclave12345", "claveclave",
+        "administrador", "administrator", "administrador1", "administrador123", "admin12345",
+        "admin123456", "adminadmin", "adminadmin1", "admin1234567", "usuario123", "usuario1234",
+        "usuario12345", "bienvenido1", "bienvenido123", "bienvenido12", "welcome123", "welcome1234",
+        "welcome12345", "letmein123", "letmein1234", "iloveyou123", "iloveyou12", "iloveyou1234",
+        "teamo12345", "tequiero123", "tequiero12", "tequieromucho", "teamomucho", "mamapapa123",
+        "panama1234", "panama12345", "panama123456", "panama2024", "panama2025", "panama2026",
+        "panama5070", "panama5071", "ciudaddepanama", "vivapanama",
+        "rastro1234", "rastro12345", "rastro123456", "rastrodelistmo", "rastrodelistmo1",
+        "rastroinventario", "rastro2026", "rastro2025", "rastro2024", "inventario123", "inventario1",
+        "football123", "futbol1234", "futbol12345", "baseball123", "dragon1234", "dragon12345",
+        "monkey1234", "monkey12345", "master1234", "master12345", "sunshine12",
+        "princess12", "princess123", "superman123", "batman1234", "shadow1234",
+        "michael123", "jordan2345", "jessica123", "charlie123", "computer123", "internet123",
+        "trustno123", "trustno1234", "changeme123", "testtest12",
+        "test123456", "test1234567", "prueba1234", "prueba12345", "prueba123456",
+        "holamundo1", "holamundo123", "holahola12", "hola123456", "hola1234567", "123456789a",
+        "a123456789", "a1234567890", "aa123456789", "123123123123", "1111111111",
+        "0000000000", "1234123412", "123456abcd", "abcd1234abcd",
+        "mipassword", "mipassword1", "mipassword123", "micontrasena2026",
+        "supersecreto", "secreto123", "secreto1234", "tucontrasena", "tuclave12345", "contrasenasegura",
+        "contrasenasegura1", "passwordpassword", "pass123456", "pass1234567", "pa55w0rd123",
+        "p4ssw0rd123", "p@ssw0rd123", "p@ssword123", "p@ssw0rd1234", "q1w2e3r4t5", "q1w2e3r4t5y6",
+        "zaq1zaq1zaq1", "1qazxsw23edc", "mnbvcxz123", "poiuytrewq",
+    ],
+    // Base que se rechaza aunque lleve números o símbolos al inicio o al final
+    "bases" => [
+        "password", "passw0rd", "p4ssw0rd", "pass", "contrasena", "clave", "miclave", "micontrasena",
+        "qwerty", "qwertyuiop", "asdfgh", "zxcvbn", "admin", "administrador",
+        "administrator", "root", "usuario", "user", "login", "bienvenido", "welcome", "letmein",
+        "iloveyou", "teamo", "tequiero", "panama", "rastro", "rastrodelistmo", "rastroinventario",
+        "inventario", "football", "futbol", "baseball", "dragon", "monkey", "master", "sunshine",
+        "princess", "superman", "batman", "shadow", "michael", "jordan", "jessica", "charlie",
+        "computer", "internet", "trustno", "changeme", "test", "prueba", "hola",
+        "secreto", "supersecreto", "mipassword",
+    ],
+];

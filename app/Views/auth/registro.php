@@ -1,4 +1,3 @@
-<?php $err=$_SESSION["registro_error"]??""; unset($_SESSION["registro_error"]); ?>
 <!DOCTYPE html><html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -42,10 +41,10 @@
       </div>
     </div>
     <div class="mb-4">
-      <label class="form-label-dark">Contraseña <span class="text-secondary fw-normal">(8-12 caracteres)</span></label>
+      <label class="form-label-dark">Contraseña <span class="text-secondary fw-normal">(mínimo <?=Validator::PASS_MIN?> caracteres, máximo <?=Validator::PASS_MAX?> bytes; una frase larga funciona bien)</span></label>
       <div class="input-group">
         <span class="input-group-text"><i class="bi bi-lock text-warning"></i></span>
-        <input type="password" name="password" id="pf" class="form-control dark-input" required minlength="8" maxlength="12" autocomplete="new-password">
+        <input type="password" name="password" id="pf" class="form-control dark-input" required minlength="<?=Validator::PASS_MIN?>" maxlength="<?=Validator::PASS_MAX?>" autocomplete="new-password">
         <button class="btn btn-outline-secondary" type="button" onclick="var f=document.getElementById('pf');f.type=f.type==='password'?'text':'password'"><i class="bi bi-eye"></i></button>
       </div>
     </div>

@@ -81,7 +81,7 @@ composer install
 ## 4. Directrices Técnicas y Reglas del Backend
 
 ### 4.1. Control de Acceso Seguro
-- Contraseñas de 8 a 12 caracteres → `app/Utils/Validator.php` (`password()`)
+- Contraseñas de 8 caracteres como mínimo y 72 bytes como máximo, sin contraseñas comunes ni iguales al correo o al nombre → `app/Utils/Validator.php` (`password()`) y `app/Utils/contrasenas_comunes.php`
 - Bloqueo automático al 3er intento fallido → `app/Models/UserModel.php` (`incrementIntentos`, `bloquear`)
 - Auditoría de accesos (IP, fecha, éxito/fallo) → tabla `login_logs`, registrada desde `app/Controllers/AuthController.php` (`doLogin`)
 

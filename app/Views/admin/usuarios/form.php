@@ -19,8 +19,8 @@
       <input type="email" name="email" class="form-control dark-input" required value="<?=htmlspecialchars($user["email"]??"")?>">
     </div>
     <div class="col-md-6">
-      <label class="form-label-dark">Contraseña <?=$edit?"<span class=\"text-secondary\">(vacío = sin cambio)</span>":"*"?> <span class="text-secondary small">(8-12 chars)</span></label>
-      <input type="password" name="password" class="form-control dark-input" minlength="8" maxlength="12" <?=$edit?"":"required"?> autocomplete="new-password">
+      <label class="form-label-dark">Contraseña <?=$edit?"<span class=\"text-secondary\">(vacío = sin cambio)</span>":"*"?> <span class="text-secondary small">(mínimo <?=Validator::PASS_MIN?> caracteres, máximo <?=Validator::PASS_MAX?> bytes)</span></label>
+      <input type="password" name="password" class="form-control dark-input" minlength="<?=Validator::PASS_MIN?>" maxlength="<?=Validator::PASS_MAX?>" <?=$edit?"":"required"?> autocomplete="new-password">
     </div>
     <div class="col-md-6">
       <label class="form-label-dark">Roles del Usuario</label>

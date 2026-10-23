@@ -22,12 +22,12 @@
           <input type="password" name="actual" class="form-control dark-input" required autocomplete="current-password">
         </div>
         <div class="mb-3">
-          <label class="form-label text-secondary small">NUEVA CONTRASEÑA <span class="text-muted">(8-12 caracteres)</span></label>
-          <input type="password" name="nueva" class="form-control dark-input" required minlength="8" maxlength="12" autocomplete="new-password">
+          <label class="form-label text-secondary small">NUEVA CONTRASEÑA <span class="text-muted">(mínimo <?=Validator::PASS_MIN?> caracteres, máximo <?=Validator::PASS_MAX?> bytes; una frase larga funciona bien)</span></label>
+          <input type="password" name="nueva" class="form-control dark-input" required minlength="<?=Validator::PASS_MIN?>" maxlength="<?=Validator::PASS_MAX?>" autocomplete="new-password">
         </div>
         <div class="mb-4">
           <label class="form-label text-secondary small">CONFIRMAR NUEVA CONTRASEÑA</label>
-          <input type="password" name="confirmar" class="form-control dark-input" required minlength="8" maxlength="12" autocomplete="new-password">
+          <input type="password" name="confirmar" class="form-control dark-input" required minlength="<?=Validator::PASS_MIN?>" maxlength="<?=Validator::PASS_MAX?>" autocomplete="new-password">
         </div>
         <button type="submit" class="btn btn-gold w-100 fw-bold py-2"><i class="bi bi-save me-2"></i>Actualizar Contraseña</button>
       </form>

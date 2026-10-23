@@ -17,7 +17,7 @@ class AuthController extends BaseController {
     public function doLogin(): void {
         CsrfToken::verify();
         $email = Sanitizer::email(Sanitizer::post("email"));
-        $pass  = $_POST["password"] ?? "";
+        $pass  = is_string($_POST["password"] ?? null) ? $_POST["password"] : ""; // un arreglo cuenta como clave vacía
         $log   = new LogModel();
         $um    = new UserModel();
         $ip    = $this->ip();
@@ -68,7 +68,7 @@ class AuthController extends BaseController {
 
         $v = (new Validator())->required("nombre", $nombre, "Nombre")
               ->required("email", $email, "Correo")->email("email", $email)
-              ->password("pass", $pass);
+              ->password("pass", $pass, $email, $nombre);
         if (!$v->isValid()) {
             $_SESSION["registro_error"] = $v->first();
             $this->redirect(APP_URL . "/registro.php");

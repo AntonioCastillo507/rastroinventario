@@ -74,7 +74,7 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
           <div class="mb-2"><label class="form-label-dark">Nombre *</label><input type="text" name="cliente_nombre" class="form-control dark-input form-control-sm" required></div>
           <div class="mb-2"><label class="form-label-dark">Teléfono *</label><input type="tel" name="cliente_telefono" class="form-control dark-input form-control-sm" required></div>
           <div class="mb-2"><label class="form-label-dark">Correo *</label><input type="email" name="cliente_email" class="form-control dark-input form-control-sm" required></div>
-          <div class="mb-2"><label class="form-label-dark">Contraseña * (8-12 chars)</label><input type="password" name="nueva_pass" class="form-control dark-input form-control-sm" minlength="8" maxlength="12" required></div>
+          <div class="mb-2"><label class="form-label-dark">Contraseña * (mínimo <?=Validator::PASS_MIN?> caracteres, máximo <?=Validator::PASS_MAX?> bytes)</label><input type="password" name="nueva_pass" class="form-control dark-input form-control-sm" minlength="<?=Validator::PASS_MIN?>" maxlength="<?=Validator::PASS_MAX?>" required autocomplete="new-password"></div>
           <div class="mb-2"><label class="form-label-dark">Dirección entrega *</label><textarea name="cliente_direccion" class="form-control dark-input form-control-sm" required rows="2"></textarea></div>
           <div class="mb-3"><label class="form-label-dark">Mensaje (opcional)</label><textarea name="cliente_notas" class="form-control dark-input form-control-sm" rows="1"></textarea></div>
           <button type="submit" class="btn btn-gold fw-bold w-100 py-2"><i class="bi bi-person-check me-2"></i>Crear cuenta y pedir</button>

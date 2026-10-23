@@ -35,8 +35,8 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
         <form action="<?=APP_URL?>/?action=mi_perfil" method="POST">
           <?=CsrfToken::field()?>
           <div class="mb-3"><label class="form-label-dark">Contraseña actual</label><input type="password" name="actual" class="form-control dark-input" required autocomplete="current-password"></div>
-          <div class="mb-3"><label class="form-label-dark">Nueva contraseña (8-12 caracteres)</label><input type="password" name="nueva" class="form-control dark-input" required minlength="8" maxlength="12" autocomplete="new-password"></div>
-          <div class="mb-4"><label class="form-label-dark">Confirmar nueva contraseña</label><input type="password" name="confirmar" class="form-control dark-input" required minlength="8" maxlength="12" autocomplete="new-password"></div>
+          <div class="mb-3"><label class="form-label-dark">Nueva contraseña (mínimo <?=Validator::PASS_MIN?> caracteres, máximo <?=Validator::PASS_MAX?> bytes; una frase larga funciona bien)</label><input type="password" name="nueva" class="form-control dark-input" required minlength="<?=Validator::PASS_MIN?>" maxlength="<?=Validator::PASS_MAX?>" autocomplete="new-password"></div>
+          <div class="mb-4"><label class="form-label-dark">Confirmar nueva contraseña</label><input type="password" name="confirmar" class="form-control dark-input" required minlength="<?=Validator::PASS_MIN?>" maxlength="<?=Validator::PASS_MAX?>" autocomplete="new-password"></div>
           <button type="submit" class="btn btn-outline-warning fw-bold w-100"><i class="bi bi-shield-lock me-2"></i>Actualizar Contraseña</button>
         </form>
       </div>

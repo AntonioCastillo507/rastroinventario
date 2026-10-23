@@ -27,10 +27,10 @@
       </div>
     </div>
     <div class="mb-4">
-      <label class="form-label-dark">Contraseña <span class="text-secondary fw-normal">(8-12 caracteres)</span></label>
+      <label class="form-label-dark">Contraseña</label>
       <div class="input-group">
         <span class="input-group-text"><i class="bi bi-lock text-warning"></i></span>
-        <input type="password" name="password" id="pf" class="form-control dark-input" required minlength="8" maxlength="12" autocomplete="current-password">
+        <input type="password" name="password" id="pf" class="form-control dark-input" required autocomplete="current-password">
         <button class="btn btn-outline-secondary" type="button" onclick="var f=document.getElementById('pf');f.type=f.type==='password'?'text':'password'"><i class="bi bi-eye"></i></button>
       </div>
     </div>

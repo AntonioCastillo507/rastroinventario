@@ -33,7 +33,7 @@ class PedidoController extends BaseController {
         $pass     = $_POST["nueva_pass"]??"";
         $notas    = Sanitizer::post("cliente_notas");
 
-        $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass)->numeric("cantidad",$cantidad,1);
+        $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass,$email,$nombre)->numeric("cantidad",$cantidad,1);
         if (!$v->isValid()){ $_SESSION["compra_error"]=$v->first(); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
 
         $parte=$this->pam->findById($parteId);
@@ -171,7 +171,7 @@ class PedidoController extends BaseController {
             // ── Invitado — cuenta obligatoria ─────────────────────
             $nombre=Sanitizer::post("cliente_nombre"); $tel=Sanitizer::post("cliente_telefono");
             $email=Sanitizer::email(Sanitizer::post("cliente_email")); $pass=$_POST["nueva_pass"]??"";
-            $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass);
+            $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass,$email,$nombre);
             if (!$v->isValid()){ $_SESSION["carrito_error"]=$v->first(); $this->redirect(APP_URL."/?action=carrito"); }
             $um=new UserModel(); $existe=$um->findByEmail($email);
             if ($existe){
@@ -239,7 +239,7 @@ class PedidoController extends BaseController {
                 if (!password_verify($actual,$user["password"])) { $error="La contraseña actual no es correcta."; }
                 elseif ($nueva!==$conf) { $error="La nueva contraseña y su confirmación no coinciden."; }
                 else {
-                    $vp=(new Validator())->password("nueva",$nueva);
+                    $vp=(new Validator())->password("nueva",$nueva,$user["email"],$user["nombre"]);
                     if ($vp->isValid()) { $um->updatePassword($_SESSION["user"]["id"],password_hash($nueva,PASSWORD_BCRYPT)); $success="Contraseña actualizada correctamente."; }
                     else { $error=$vp->first(); }
                 }

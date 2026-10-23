@@ -14,7 +14,7 @@ class UserController extends BaseController {
             } elseif ($nueva !== $conf) {
                 $error = "La nueva contraseña y su confirmación no coinciden.";
             } else {
-                $v = (new Validator())->password("nueva", $nueva);
+                $v = (new Validator())->password("nueva", $nueva, $user["email"], $user["nombre"]);
                 if ($v->isValid()) {
                     $this->um->updatePassword($_SESSION["user"]["id"], password_hash($nueva, PASSWORD_BCRYPT));
                     $success = "Contraseña actualizada correctamente.";
@@ -59,7 +59,7 @@ class UserController extends BaseController {
                 ->required("nombre", $nombre, "Nombre")
                 ->required("email",  $email,  "Email")
                 ->email("email", $email)
-                ->password("password", $pass);
+                ->password("password", $pass, $email, $nombre);
             if ($v->isValid()) {
                 $id = $this->um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT)]);
                 if ($id) { $this->um->setRoles($id, $rols); $this->redirect(APP_URL."/admin/?mod=usuarios","Usuario creado."); }
@@ -82,7 +82,7 @@ class UserController extends BaseController {
             $update = ["nombre"=>Sanitizer::post("nombre"), "email"=>Sanitizer::email(Sanitizer::post("email"))];
             $pass   = $_POST["password"] ?? "";
             if ($pass !== "") {
-                $v = (new Validator())->password("password", $pass);
+                $v = (new Validator())->password("password", $pass, $update["email"], $update["nombre"]);
                 if ($v->isValid()) {
                     $update["password"] = password_hash($pass, PASSWORD_BCRYPT);
                 } else {
