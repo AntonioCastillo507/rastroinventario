@@ -33,6 +33,7 @@ abstract class BaseController implements ErrorHandlerInterface {
     }
     protected function isPost(): bool { return $_SERVER["REQUEST_METHOD"] === "POST"; }
     protected function ip(): string {
-        return $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "0.0.0.0";
+        // Solo REMOTE_ADDR: X-Forwarded-For lo escribe el cliente y permitiría esquivar el bloqueo de login
+        return $_SERVER["REMOTE_ADDR"] ?? "0.0.0.0";
     }
 }

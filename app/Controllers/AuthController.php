@@ -1,10 +1,15 @@
 <?php
 /**
  * AuthController — Login / Logout
- * RNF-04: Bitácora de accesos + bloqueo al 3er intento fallido.
+ * RNF-04: Bitácora de accesos + bloqueo temporal tras 3 intentos fallidos.
  * OWASP: Bcrypt + CSRF en formularios.
  */
 class AuthController extends BaseController {
+    private const MAX_INTENTOS = 3;   // fallos permitidos...
+    private const VENTANA_MIN  = 15;  // ...en estos minutos, por correo + IP
+    // Hash bcrypt de relleno: se compara cuando el correo no existe para que tarde igual
+    private const HASH_RELLENO = '$2y$10$k6FjGhsouwIYf5OYupl1U.N7/DI7eFOzdhwCFRMTsyEVwg58CLeM.';
+
     public function showLogin(): void {
         if (!empty($_SESSION["user"])) $this->redirect(APP_URL . "/admin/");
         $this->view("auth/login");
@@ -16,33 +21,20 @@ class AuthController extends BaseController {
         $log   = new LogModel();
         $um    = new UserModel();
         $ip    = $this->ip();
-        $user  = $um->findByEmail($email);
 
-        if (!$user) {
-            $log->registrar(["usuario_id" => null, "email" => $email, "ip" => $ip, "exitoso" => false]);
-            $_SESSION["login_error"] = "Credenciales incorrectas.";
+        // Bloqueo temporal por correo + IP; igual exista o no el correo. El intento
+        // bloqueado no se registra, así la espera no se alarga sola.
+        if ($log->fallosRecientes($email, $ip, self::VENTANA_MIN) >= self::MAX_INTENTOS) {
+            $_SESSION["login_error"] = "Demasiados intentos fallidos. Intenta de nuevo en unos minutos.";
             $this->redirect(APP_URL . "/login.php");
         }
-        if ($user["bloqueado"]) {
-            $log->registrar(["usuario_id" => $user["id"], "email" => $email, "ip" => $ip, "exitoso" => false]);
-            $_SESSION["login_error"] = "Cuenta bloqueada por múltiples intentos fallidos. Contacta al administrador.";
-            $this->redirect(APP_URL . "/login.php");
-        }
-        if (!$user["activo"]) {
-            $log->registrar(["usuario_id" => $user["id"], "email" => $email, "ip" => $ip, "exitoso" => false]);
-            $_SESSION["login_error"] = "Esta cuenta está desactivada.";
-            $this->redirect(APP_URL . "/login.php");
-        }
-        if (!password_verify($pass, $user["password"])) {
-            $um->incrementIntentos($user["id"]);
-            $intentos = (int)$user["intentos_fallidos"] + 1;
-            if ($intentos >= 3) {
-                $um->bloquear($user["id"]);
-                $_SESSION["login_error"] = "Cuenta bloqueada después de 3 intentos fallidos.";
-            } else {
-                $_SESSION["login_error"] = "Contraseña incorrecta. Intentos restantes: " . (3 - $intentos) . ".";
-            }
-            $log->registrar(["usuario_id" => $user["id"], "email" => $email, "ip" => $ip, "exitoso" => false]);
+
+        $user = $um->findByEmail($email);
+        $passOk = password_verify($pass, $user ? $user["password"] : self::HASH_RELLENO);
+        // Un solo mensaje para: correo inexistente, clave mala, cuenta desactivada o bloqueada
+        if (!$user || !$passOk || !$user["activo"] || $user["bloqueado"]) {
+            $log->registrar(["usuario_id" => $user["id"] ?? null, "email" => $email, "ip" => $ip, "exitoso" => false]);
+            $_SESSION["login_error"] = "Correo o contraseña incorrectos.";
             $this->redirect(APP_URL . "/login.php");
         }
         // Éxito
