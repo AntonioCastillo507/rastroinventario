@@ -18,7 +18,11 @@ class RsaCrypto implements CryptoInterface {
     }
 
     private function passphrase(): string {
-        return defined("RSA_KEY_PASSPHRASE") ? RSA_KEY_PASSPHRASE : "";
+        if (!defined("RSA_KEY_PASSPHRASE")) {
+            error_log("[RASTRO] RSA_KEY_PASSPHRASE no está definida en app/Config/rsa_secret.php; no se podrá abrir la llave privada.");
+            return "";
+        }
+        return RSA_KEY_PASSPHRASE;
     }
 
     public function firmar(string $datos, string $clave = ""): string {
