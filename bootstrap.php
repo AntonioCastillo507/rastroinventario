@@ -42,7 +42,6 @@ require_once BASE_PATH."/app/Controllers/PedidoController.php";
 require_once BASE_PATH."/app/Controllers/PedidoAdminController.php";
 require_once BASE_PATH."/app/Controllers/ReporteController.php";
 require_once BASE_PATH."/app/Controllers/FacturaController.php";
-require_once BASE_PATH."/app/Controllers/HerramientasController.php";
 require_once BASE_PATH."/app/Controllers/PublicController.php";
 
 // Cierra la sesión y borra la cookie en el navegador

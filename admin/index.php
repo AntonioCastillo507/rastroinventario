@@ -34,7 +34,6 @@ $map = [
     "pedidos"     => PedidoAdminController::class,
     "reportes"    => ReporteController::class,
     "factura"     => FacturaController::class,
-    "herramientas"=> HerramientasController::class,
 ];
 
 if (!isset($map[$mod])) { header("Location: ".APP_URL."/admin/"); exit; }
