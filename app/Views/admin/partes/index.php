@@ -49,7 +49,10 @@
     <td><?=$p["firma_digital"]?"<i class=\"bi bi-shield-check text-success fs-5\"></i>":"<i class=\"bi bi-shield-x text-secondary\"></i>"?></td>
     <td>
       <a href="<?=APP_URL?>/admin/?mod=partes&action=editar&id=<?=$p["id"]?>" class="icon-btn" title="Editar"><i class="bi bi-pencil-square text-warning"></i></a>
-      <a href="<?=APP_URL?>/admin/?mod=partes&action=eliminar&id=<?=$p["id"]?>" class="icon-btn" title="Desactivar" onclick="return confirm('¿Desactivar?')"><i class="bi bi-trash text-danger"></i></a>
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=partes&action=eliminar&id=<?=$p["id"]?>" class="d-inline" onsubmit="return confirm('¿Desactivar?')">
+        <?=CsrfToken::field()?>
+        <button type="submit" class="icon-btn" title="Desactivar"><i class="bi bi-trash text-danger"></i></button>
+      </form>
       <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="icon-btn" title="Ver público" target="_blank"><i class="bi bi-eye text-info"></i></a>
     </td>
   </tr>

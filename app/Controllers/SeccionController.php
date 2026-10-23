@@ -23,5 +23,9 @@ class SeccionController extends BaseController {
         if ($this->isPost()) { CsrfToken::verify(); $this->sm->update($id,["nombre"=>Sanitizer::post("nombre"),"descripcion"=>Sanitizer::post("descripcion")]); $this->redirect(APP_URL."/admin/?mod=secciones","Sección actualizada."); }
         $this->view("admin/secciones/form",compact("sec","error","id"));
     }
-    public function eliminar(): void { $this->requirePermission("secciones","puede_borrar"); $this->sm->softDelete(Sanitizer::get("id","int")); $this->redirect(APP_URL."/admin/?mod=secciones","Sección desactivada."); }
+    public function eliminar(): void {
+        $this->requirePermission("secciones","puede_borrar");
+        if (!$this->isPost()) $this->redirect(APP_URL."/admin/?mod=secciones"); // cambia datos: solo POST
+        CsrfToken::verify();
+        $this->sm->softDelete(Sanitizer::get("id","int")); $this->redirect(APP_URL."/admin/?mod=secciones","Sección desactivada."); }
 }

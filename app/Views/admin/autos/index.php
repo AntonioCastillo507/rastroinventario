@@ -16,7 +16,10 @@
     <td><?=$a["activo"]?"<span class=\"chip-success\">Activo</span>":"<span class=\"chip-neutral\">Inactivo</span>"?></td>
     <td>
       <a href="<?=APP_URL?>/admin/?mod=autos&action=editar&id=<?=$a["id"]?>" class="icon-btn"><i class="bi bi-pencil-square text-warning"></i></a>
-      <a href="<?=APP_URL?>/admin/?mod=autos&action=eliminar&id=<?=$a["id"]?>" class="icon-btn" onclick="return confirm('¿Desactivar este auto?')"><i class="bi bi-trash text-danger"></i></a>
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=autos&action=eliminar&id=<?=$a["id"]?>" class="d-inline" onsubmit="return confirm('¿Desactivar este auto?')">
+        <?=CsrfToken::field()?>
+        <button type="submit" class="icon-btn" title="Desactivar"><i class="bi bi-trash text-danger"></i></button>
+      </form>
     </td>
   </tr>
   <?php endforeach; ?>

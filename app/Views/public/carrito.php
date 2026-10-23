@@ -26,6 +26,8 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
   <div class="row g-4">
     <div class="col-lg-8">
       <form method="POST" action="<?=APP_URL?>/?action=actualizar_carrito" id="frmCarrito">
+      <?=CsrfToken::field()?>
+      <button type="submit" class="visually-hidden" tabindex="-1" aria-hidden="true"></button><!-- Enter en una cantidad actualiza, no quita -->
       <?php foreach($cart as $id=>$item): ?>
       <div class="cart-item d-flex align-items-center gap-3">
         <?php if($item["thumbnail"]): ?><img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($item["thumbnail"])?>" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--border)" alt=""><?php else: ?><div style="width:70px;height:70px;background:var(--bg-3);border-radius:8px;display:flex;align-items:center;justify-content:center"><i class="bi bi-gear text-secondary fs-4"></i></div><?php endif; ?>
@@ -37,7 +39,7 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
         <div class="d-flex align-items-center gap-2">
           <input type="number" name="cantidad[<?=$id?>]" value="<?=$item["cantidad"]?>" min="1" max="<?=$item["max"]?>" class="form-control dark-input text-center" style="width:70px">
           <span class="text-success fw-bold" style="min-width:70px;text-align:right">$<?=number_format($item["precio"]*$item["cantidad"],2)?></span>
-          <a href="<?=APP_URL?>/?action=quitar_carrito&id=<?=$id?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Quitar esta pieza?')"><i class="bi bi-trash"></i></a>
+          <button type="submit" formmethod="post" formaction="<?=APP_URL?>/?action=quitar_carrito&id=<?=$id?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Quitar esta pieza?')"><i class="bi bi-trash"></i></button>
         </div>
       </div>
       <?php endforeach; ?>

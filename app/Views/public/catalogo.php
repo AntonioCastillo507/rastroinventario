@@ -87,7 +87,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
           <span class="pub-price">$<?=number_format($p["precio"],2)?></span>
           <div class="d-flex gap-1">
             <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="btn btn-outline-secondary btn-sm" title="Ver detalle"><i class="bi bi-eye"></i></a>
-            <?php if($p["cantidad"]>0): ?><a href="<?=APP_URL?>/?action=agregar_carrito&id=<?=$p["id"]?>" class="btn btn-gold btn-sm" title="Añadir al carrito"><i class="bi bi-cart-plus"></i></a><?php endif; ?>
+            <?php if($p["cantidad"]>0): ?><form method="POST" action="<?=APP_URL?>/?action=agregar_carrito&id=<?=$p["id"]?>" class="d-inline"><?=CsrfToken::field()?><button type="submit" class="btn btn-gold btn-sm" title="Añadir al carrito"><i class="bi bi-cart-plus"></i></button></form><?php endif; ?>
           </div>
         </div>
       </div>

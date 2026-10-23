@@ -23,9 +23,12 @@
     <td class="small text-secondary"><?=date("d/m/Y", strtotime($u["creado_en"]))?></td>
     <td>
       <a href="<?=APP_URL?>/admin/?mod=usuarios&action=editar&id=<?=$u["id"]?>" class="icon-btn" title="Editar"><i class="bi bi-pencil-square text-warning"></i></a>
-      <a href="<?=APP_URL?>/admin/?mod=usuarios&action=toggle&id=<?=$u["id"]?>" class="icon-btn" title="<?=$u["activo"]?"Desactivar":"Activar"?>">
-        <i class="bi bi-power <?=$u["activo"]?"text-danger":"text-success"?>"></i>
-      </a>
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=usuarios&action=toggle&id=<?=$u["id"]?>" class="d-inline">
+        <?=CsrfToken::field()?>
+        <button type="submit" class="icon-btn" title="<?=$u["activo"]?"Desactivar":"Activar"?>">
+          <i class="bi bi-power <?=$u["activo"]?"text-danger":"text-success"?>"></i>
+        </button>
+      </form>
     </td>
   </tr>
   <?php endforeach; ?>

@@ -22,5 +22,9 @@ class AutoController extends BaseController {
         if ($this->isPost()) { CsrfToken::verify(); $this->am->update($id,["marca"=>Sanitizer::post("marca"),"modelo"=>Sanitizer::post("modelo"),"anio"=>Sanitizer::post("anio","int")]); $this->redirect(APP_URL."/admin/?mod=autos","Auto actualizado."); }
         $this->view("admin/autos/form",compact("auto","error","id"));
     }
-    public function eliminar(): void { $this->requirePermission("autos","puede_borrar"); $this->am->softDelete(Sanitizer::get("id","int")); $this->redirect(APP_URL."/admin/?mod=autos","Auto desactivado."); }
+    public function eliminar(): void {
+        $this->requirePermission("autos","puede_borrar");
+        if (!$this->isPost()) $this->redirect(APP_URL."/admin/?mod=autos"); // cambia datos: solo POST
+        CsrfToken::verify();
+        $this->am->softDelete(Sanitizer::get("id","int")); $this->redirect(APP_URL."/admin/?mod=autos","Auto desactivado."); }
 }

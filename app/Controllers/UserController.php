@@ -99,6 +99,8 @@ class UserController extends BaseController {
     }
     public function toggle(): void {
         $this->requirePermission("usuarios", "puede_editar");
+        if (!$this->isPost()) $this->redirect(APP_URL."/admin/?mod=usuarios"); // cambia datos: solo POST
+        CsrfToken::verify();
         $this->um->toggleActivo(Sanitizer::get("id","int"));
         $this->redirect(APP_URL."/admin/?mod=usuarios","Estado actualizado.");
     }

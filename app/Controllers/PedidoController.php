@@ -97,6 +97,8 @@ class PedidoController extends BaseController {
     // ── Carrito ───────────────────────────────────────────────────
     public function agregarCarrito(): void {
         $id=$pId=Sanitizer::get("id","int");
+        if (!$this->isPost()) $this->redirect(APP_URL."/?action=detalle&id=".$id); // cambia el carrito: solo POST
+        CsrfToken::verify();
         $parte=$this->pam->findById($id);
         if (!$parte||!$parte["activo"]||$parte["cantidad"]<=0){ $this->flash("Parte no disponible.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$id); }
         if (!isset($_SESSION["cart"])) $_SESSION["cart"]=[];
@@ -111,12 +113,15 @@ class PedidoController extends BaseController {
     }
 
     public function quitarCarrito(): void {
+        if (!$this->isPost()) $this->redirect(APP_URL."/?action=carrito"); // cambia el carrito: solo POST
+        CsrfToken::verify();
         $id=Sanitizer::get("id","int"); unset($_SESSION["cart"][$id]);
         $this->redirect(APP_URL."/?action=carrito");
     }
 
     public function actualizarCarrito(): void {
         if ($this->isPost()) {
+            CsrfToken::verify();
             $cantidades=$_POST["cantidad"]??[];
             foreach ($cantidades as $id=>$q) {
                 $id=(int)$id; $q=max(1,(int)$q);

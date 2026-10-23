@@ -14,7 +14,8 @@ class CsrfToken {
     }
     public static function verify(): void {
         $token = $_POST["csrf_token"] ?? "";
-        if (!hash_equals($_SESSION["csrf_token"] ?? "", $token)) {
+        // Token vacío nunca vale (sin token en sesión, "" == "" pasaba la comparación)
+        if ($token === "" || !hash_equals($_SESSION["csrf_token"] ?? "", (string)$token)) {
             http_response_code(403);
             die("Token CSRF inválido. <a href=\"javascript:history.back()\">Volver</a>");
         }

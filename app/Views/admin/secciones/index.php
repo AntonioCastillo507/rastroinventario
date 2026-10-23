@@ -28,9 +28,10 @@
       <a href="<?=APP_URL?>/admin/?mod=secciones&action=editar&id=<?=$s["id"]?>" class="btn btn-outline-warning btn-sm flex-fill">
         <i class="bi bi-pencil me-1"></i>Editar
       </a>
-      <a href="<?=APP_URL?>/admin/?mod=secciones&action=eliminar&id=<?=$s["id"]?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Desactivar?')">
-        <i class="bi bi-trash"></i>
-      </a>
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=secciones&action=eliminar&id=<?=$s["id"]?>" class="d-inline" onsubmit="return confirm('¿Desactivar?')">
+        <?=CsrfToken::field()?>
+        <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+      </form>
     </div>
   </div>
 </div>

@@ -17,12 +17,16 @@
       : "<span class=\"chip-warning\"><i class=\"bi bi-hourglass me-1\"></i>Pendiente</span>"?></td>
     <td class="small text-secondary"><?=date("d/m/Y H:i",strtotime($c["creado_en"]))?></td>
     <td>
-      <a href="<?=APP_URL?>/admin/?mod=comentarios&action=toggle&id=<?=$c["id"]?>" class="icon-btn" title="<?=$c["publicado"]?"Ocultar":"Publicar"?>">
-        <i class="bi bi-<?=$c["publicado"]?"eye-slash text-warning":"check-circle text-success"?>"></i>
-      </a>
-      <a href="<?=APP_URL?>/admin/?mod=comentarios&action=eliminar&id=<?=$c["id"]?>" class="icon-btn" title="Eliminar" onclick="return confirm('¿Eliminar este comentario?')">
-        <i class="bi bi-trash text-danger"></i>
-      </a>
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=toggle&id=<?=$c["id"]?>" class="d-inline">
+        <?=CsrfToken::field()?>
+        <button type="submit" class="icon-btn" title="<?=$c["publicado"]?"Ocultar":"Publicar"?>">
+          <i class="bi bi-<?=$c["publicado"]?"eye-slash text-warning":"check-circle text-success"?>"></i>
+        </button>
+      </form>
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=eliminar&id=<?=$c["id"]?>" class="d-inline" onsubmit="return confirm('¿Eliminar este comentario?')">
+        <?=CsrfToken::field()?>
+        <button type="submit" class="icon-btn" title="Eliminar"><i class="bi bi-trash text-danger"></i></button>
+      </form>
     </td>
   </tr>
   <?php endforeach; ?>

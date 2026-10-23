@@ -44,7 +44,10 @@ function starsHtml(float $n,int $sz=16): string {
       <?php if($parte["cantidad"]>0): ?>
       <div class="d-flex gap-3 flex-wrap mt-3">
         <a href="<?=APP_URL?>/?action=comprar&id=<?=$parte["id"]?>" class="btn btn-gold fw-bold px-5 py-2" style="font-size:1.05rem"><i class="bi bi-bag-plus me-2"></i>Comprar Ahora</a>
-        <a href="<?=APP_URL?>/?action=agregar_carrito&id=<?=$parte["id"]?>" class="btn btn-outline-warning py-2 px-4"><i class="bi bi-cart-plus me-1"></i>Añadir al carrito</a>
+        <form method="POST" action="<?=APP_URL?>/?action=agregar_carrito&id=<?=$parte["id"]?>" class="d-inline">
+          <?=CsrfToken::field()?>
+          <button type="submit" class="btn btn-outline-warning py-2 px-4"><i class="bi bi-cart-plus me-1"></i>Añadir al carrito</button>
+        </form>
         <a href="<?=APP_URL?>/?ver=catalogo" class="btn btn-outline-secondary py-2"><i class="bi bi-grid me-1"></i>Catálogo</a>
       </div>
       <?php else: ?>

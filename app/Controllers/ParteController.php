@@ -57,6 +57,8 @@ class ParteController extends BaseController {
     }
     public function eliminar(): void {
         $this->requirePermission("partes","puede_borrar");
+        if (!$this->isPost()) $this->redirect(APP_URL."/admin/?mod=partes"); // cambia datos: solo POST
+        CsrfToken::verify();
         $id=Sanitizer::get("id","int"); $p=$this->pm->findById($id);
         if ($p) ImageHelper::delete($p["imagen_grande"],$p["thumbnail"]);
         $this->pm->softDelete($id);
