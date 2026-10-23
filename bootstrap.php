@@ -13,6 +13,7 @@ require_once BASE_PATH."/app/Utils/Sanitizer.php";
 require_once BASE_PATH."/app/Utils/Validator.php";
 require_once BASE_PATH."/app/Utils/CsrfToken.php";
 require_once BASE_PATH."/app/Utils/DigitalSignature.php";
+require_once BASE_PATH."/app/Utils/Itbms.php";
 require_once BASE_PATH."/app/Utils/HmacCrypto.php";
 require_once BASE_PATH."/app/Utils/RsaCrypto.php";
 require_once BASE_PATH."/app/Utils/ImageHelper.php";

@@ -22,8 +22,9 @@ class PedidoModel extends BaseModel {
 
     public function registrar(array $data, array $items): int|false {
         $subtotal = array_sum(array_map(fn($i) => $i["precio_unitario"]*$i["cantidad"], $items));
-        $data["subtotal"] = $subtotal;
-        $data["total"]    = $subtotal;
+        $monto = Itbms::calcular($subtotal);
+        $data["subtotal"] = $monto["subtotal"];
+        $data["total"]    = $monto["total"]; // subtotal + ITBMS 7 %
         $data["firma_digital"] = hash_hmac("sha256",
             $data["cliente_email"]."|".$subtotal."|".date("Y-m-d H:i:s"), HMAC_KEY);
         $id = $this->create($data);
@@ -137,6 +138,6 @@ class PedidoModel extends BaseModel {
         return (int)$this->db->query("SELECT COUNT(*) FROM pedidos WHERE estado=\"pendiente\"")->fetchColumn();
     }
     public function totalVendido(): float {
-        return (float)$this->db->query("SELECT COALESCE(SUM(total),0) FROM pedidos WHERE estado!=\"cancelado\"")->fetchColumn();
+        return (float)$this->db->query("SELECT COALESCE(SUM(subtotal),0) FROM pedidos WHERE estado!=\"cancelado\"")->fetchColumn();
     }
 }

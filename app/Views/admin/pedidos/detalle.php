@@ -32,10 +32,10 @@
         </tbody>
       </table></div>
       <div class="p-3 border-top" style="border-color:var(--border)!important">
-        <?php $itbms=round($pedido["total"]*0.07,2); $total=round($pedido["total"]+$itbms,2); ?>
-        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>Subtotal:</span><span>$<?=number_format($pedido["total"],2)?></span></div>
-        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>ITBMS (7%):</span><span>$<?=number_format($itbms,2)?></span></div>
-        <div class="d-flex justify-content-end gap-4 fw-bold text-white"><span>TOTAL:</span><span class="text-success">$<?=number_format($total,2)?></span></div>
+        <?php $monto=Itbms::dePedido($pedido); ?>
+        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>Subtotal:</span><span>$<?=number_format($monto["subtotal"],2)?></span></div>
+        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>ITBMS (7%):</span><span>$<?=number_format($monto["itbms"],2)?></span></div>
+        <div class="d-flex justify-content-end gap-4 fw-bold text-white"><span>TOTAL:</span><span class="text-success">$<?=number_format($monto["total"],2)?></span></div>
       </div>
     </div>
     <div class="dark-card">

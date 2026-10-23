@@ -59,7 +59,7 @@ class PedidoController extends BaseController {
 
         $pedidoId=$this->pm->registrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]]);
         if (!$pedidoId){ $_SESSION["compra_error"]="Error al registrar pedido."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
-        EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$parte["precio"]*$cantidad);
+        EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$this->totalPedido($pedidoId));
 
         // Auto-login y mantener sesión
         $u2=$um->findById($usuarioId);
@@ -91,7 +91,7 @@ class PedidoController extends BaseController {
 
         $pedidoId=$this->pm->registrar(["cliente_nombre"=>$u["nombre"],"cliente_telefono"=>$u["telefono"]??"","cliente_email"=>$u["email"],"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$_SESSION["user"]["id"]],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]]);
         if (!$pedidoId){ $this->flash("Error al registrar.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
-        EmailJsService::get()->enviarConfirmacionCompra($u["email"],$u["nombre"],$pedidoId,$parte["precio"]*$cantidad);
+        EmailJsService::get()->enviarConfirmacionCompra($u["email"],$u["nombre"],$pedidoId,$this->totalPedido($pedidoId));
 
         $_SESSION["pedido_exitoso"]=$pedidoId;
         $this->redirect(APP_URL."/?action=compra_exitosa");
@@ -142,8 +142,15 @@ class PedidoController extends BaseController {
             else $item["max"]=$p["cantidad"];
         }
         $cart=$_SESSION["cart"]??[];
-        $total=array_sum(array_map(fn($i)=>$i["precio"]*$i["cantidad"],$cart));
-        $this->view("public/carrito",compact("cart","total"));
+        $monto=Itbms::calcular(array_sum(array_map(fn($i)=>$i["precio"]*$i["cantidad"],$cart)));
+        $subtotal=$monto["subtotal"]; $itbms=$monto["itbms"]; $total=$monto["total"];
+        $this->view("public/carrito",compact("cart","subtotal","itbms","total"));
+    }
+
+    /** Total con ITBMS tal como quedó guardado en el pedido (el que ve el cliente en todas partes) */
+    private function totalPedido(int $pedidoId): float {
+        $p=$this->pm->findById($pedidoId);
+        return (float)($p["total"]??0);
     }
 
     public function procesarCarrito(): void {
@@ -202,8 +209,7 @@ class PedidoController extends BaseController {
         $pedidoId=$this->pm->registrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],$items);
         if (!$pedidoId){ $db->rollBack(); $_SESSION["carrito_error"]="Error al registrar el pedido."; $this->redirect(APP_URL."/?action=carrito"); }
         $db->commit();
-        $totalCarrito=array_sum(array_map(fn($it)=>$it["precio_unitario"]*$it["cantidad"],$items));
-        EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$totalCarrito);
+        EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$this->totalPedido($pedidoId));
         unset($_SESSION["cart"]);
         $_SESSION["pedido_exitoso"]=$pedidoId;
         $this->redirect(APP_URL."/?action=compra_exitosa");

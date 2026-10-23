@@ -53,6 +53,8 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
         <div class="d-flex justify-content-between mb-1 small"><span class="text-secondary"><?=htmlspecialchars(mb_substr($item["nombre"],0,28)).(mb_strlen($item["nombre"])>28?"…":"")?>  ×<?=$item["cantidad"]?></span><span class="text-white">$<?=number_format($item["precio"]*$item["cantidad"],2)?></span></div>
         <?php endforeach; ?>
         <hr style="border-color:var(--border)">
+        <div class="d-flex justify-content-between mb-1 small"><span class="text-secondary">Subtotal</span><span class="text-white">$<?=number_format($subtotal,2)?></span></div>
+        <div class="d-flex justify-content-between mb-2 small"><span class="text-secondary">ITBMS (7%)</span><span class="text-white">$<?=number_format($itbms,2)?></span></div>
         <div class="d-flex justify-content-between mb-3"><span class="text-white fw-bold">Total</span><span class="text-success fw-bold fs-5">$<?=number_format($total,2)?></span></div>
 
         <?php if($isCliente): ?>

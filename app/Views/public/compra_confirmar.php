@@ -45,6 +45,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       <div class="text-white fw-semibold mb-1"><?=htmlspecialchars($parte["nombre"])?></div>
       <?php if($parte["marca"]??""): ?><div class="text-secondary small mb-2"><?=htmlspecialchars($parte["marca"]." ".$parte["modelo"])?></div><?php endif; ?>
       <div class="text-success fw-bold fs-4">$<?=number_format($parte["precio"],2)?></div>
+      <div class="text-secondary" style="font-size:.75rem">Precio sin ITBMS. Se suma el 7% al confirmar.</div>
       <div class="text-secondary small mt-1"><?=$parte["cantidad"]?> unidades disponibles</div>
     </div>
   </div>

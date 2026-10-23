@@ -47,9 +47,8 @@ class FacturaController extends BaseController {
         $this->loadTcpdf();
 
         // ── Cálculos de ITBMS ───────────────────────────────────
-        $subtotal  = (float)$pedido["subtotal"];
-        $itbms     = round($subtotal * 0.07, 2); // 7% ITBMS Panama
-        $total     = round($subtotal + $itbms, 2);
+        // Lo que se cobró está guardado en el pedido: itbms = total - subtotal
+        ["subtotal" => $subtotal, "itbms" => $itbms, "total" => $total] = Itbms::dePedido($pedido);
         $numFactura = str_pad($pedido["id"], 6, "0", STR_PAD_LEFT);
         $fecha      = date("d/m/Y H:i");
 
