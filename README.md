@@ -71,9 +71,9 @@ composer install
 
 | Rol de Usuario | Usuario de Acceso | Contraseña de Prueba | Permisos / Qué puede hacer |
 |---|---|---|---|
-| Administrador | `admin@rastroinventario.com` | `root2514` | Control total: usuarios, roles, inventario, ventas, secciones, reportes, auditoría de firmas |
-| Vendedor | `vendedor1@rastroinventario.com` | `vend2025` | Ver inventario y registrar ventas |
-| Consultor | `consultor1@rastroinventario.com` | `cons2025` | Solo consulta de inventario, sin editar ni vender |
+| Administrador | `admin@rastroinventario.com` | se define al instalar; pídela al administrador | Control total: usuarios, roles, inventario, ventas, secciones, reportes, auditoría de firmas |
+| Vendedor | `vendedor1@rastroinventario.com` | se define al instalar; pídela al administrador | Ver inventario y registrar ventas |
+| Consultor | `consultor1@rastroinventario.com` | se define al instalar; pídela al administrador | Solo consulta de inventario, sin editar ni vender |
 | Cliente (tienda pública) | *(crear una cuenta nueva desde el registro público)* | — | Comprar, comentar y ver su historial de pedidos — **sin acceso al panel `/admin/`** (bloqueado a nivel de rol) |
 
 ---

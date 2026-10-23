@@ -39,6 +39,6 @@ TCPDF los usa para firmar digitalmente las facturas (PDF/A con OpenSSL).
 
 El setupfix4 ya limpió pedidos/ventas/comentarios de prueba y borró
 las cuentas basura. Solo quedan los usuarios del sistema:
-- admin@rastroinventario.com / root2514
-- vendedor1,2,3@rastroinventario.com / vend2025
-- consultor1,2,3@rastroinventario.com / cons2025
+- admin@rastroinventario.com (contraseña: se define al instalar; pídela al administrador)
+- vendedor1,2,3@rastroinventario.com (contraseña: se define al instalar; pídela al administrador)
+- consultor1,2,3@rastroinventario.com (contraseña: se define al instalar; pídela al administrador)
