@@ -44,6 +44,16 @@ class ReporteController extends BaseController {
         ]);
     }
 
+    // Texto de la base o de un usuario: siempre como cadena, nunca como fórmula
+    private function texto(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, string $celda, mixed $valor): void {
+        $t = (string)($valor ?? "");
+        $sheet->setCellValueExplicit($celda, $t, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        // Comilla de texto en los que Excel podría tomar por fórmula si alguien edita la celda
+        if ($t !== "" && strpbrk($t[0], "=+-@\t\r") !== false) {
+            $sheet->getStyle($celda)->setQuotePrefix(true);
+        }
+    }
+
     private function descargar(\PhpOffice\PhpSpreadsheet\Spreadsheet $spreadsheet, string $filename): void {
         header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         header("Content-Disposition: attachment; filename=\"{$filename}\"");
@@ -91,7 +101,8 @@ class ReporteController extends BaseController {
         $this->estiloHeader($sh,"A3:I3");
         $r=4; $vtotal=0;
         foreach($data as $i=>$p){
-            $sh->setCellValue("A$r",$i+1)->setCellValue("B$r",$p["seccion"]??"")->setCellValue("C$r",$p["nombre"])->setCellValue("D$r",$p["descripcion"]??"")->setCellValue("E$r",trim($p["marca"]." ".$p["modelo"]))->setCellValue("F$r",$p["anio"])->setCellValue("G$r",(float)$p["precio"])->setCellValue("H$r",(int)$p["cantidad"])->setCellValue("I$r",(float)$p["valor_total"]);
+            $sh->setCellValue("A$r",$i+1)->setCellValue("F$r",$p["anio"])->setCellValue("G$r",(float)$p["precio"])->setCellValue("H$r",(int)$p["cantidad"])->setCellValue("I$r",(float)$p["valor_total"]);
+            $this->texto($sh,"B$r",$p["seccion"]); $this->texto($sh,"C$r",$p["nombre"]); $this->texto($sh,"D$r",$p["descripcion"]); $this->texto($sh,"E$r",trim($p["marca"]." ".$p["modelo"]));
             $sh->getStyle("G$r:I$r")->getNumberFormat()->setFormatCode("0.00");
             $vtotal+=(float)$p["valor_total"]; $r++;
         }
@@ -125,7 +136,8 @@ class ReporteController extends BaseController {
         $this->estiloHeader($sh,"A3:F3");
         $r=4; foreach($data as $i=>$row){
             $prom=$row["total_ventas"]>0?round($row["total_monto"]/$row["total_ventas"],2):0;
-            $sh->setCellValue("A$r",$i+1)->setCellValue("B$r",$row["mes_nombre"])->setCellValue("C$r",(int)$row["total_ventas"])->setCellValue("D$r",(int)$row["total_unidades"])->setCellValue("E$r",(float)$row["total_monto"])->setCellValue("F$r",$prom);
+            $this->texto($sh,"B$r",$row["mes_nombre"]);
+            $sh->setCellValue("A$r",$i+1)->setCellValue("C$r",(int)$row["total_ventas"])->setCellValue("D$r",(int)$row["total_unidades"])->setCellValue("E$r",(float)$row["total_monto"])->setCellValue("F$r",$prom);
             $sh->getStyle("E$r:F$r")->getNumberFormat()->setFormatCode("0.00"); $r++;
         }
         $this->descargar($sp,"ventas_por_mes_".date("Y-m-d").".xlsx");
@@ -156,7 +168,8 @@ class ReporteController extends BaseController {
         $r=3; foreach($cols as $col=>$h){ $sh->setCellValue($col.$r,$h); $sh->getColumnDimension($col)->setAutoSize(true); }
         $this->estiloHeader($sh,"A3:F3");
         $r=4; foreach($data as $row){
-            $sh->setCellValue("A$r",$row["seccion"])->setCellValue("B$r",(int)$row["total_partes"])->setCellValue("C$r",(int)$row["total_unidades"])->setCellValue("D$r",(float)$row["valor_inventario"])->setCellValue("E$r",(int)$row["unidades_vendidas"])->setCellValue("F$r",(float)$row["monto_vendido"]);
+            $this->texto($sh,"A$r",$row["seccion"]);
+            $sh->setCellValue("B$r",(int)$row["total_partes"])->setCellValue("C$r",(int)$row["total_unidades"])->setCellValue("D$r",(float)$row["valor_inventario"])->setCellValue("E$r",(int)$row["unidades_vendidas"])->setCellValue("F$r",(float)$row["monto_vendido"]);
             $sh->getStyle("D$r:F$r")->getNumberFormat()->setFormatCode("0.00"); $r++;
         }
         $this->descargar($sp,"categorias_".date("Y-m-d").".xlsx");
@@ -188,7 +201,8 @@ class ReporteController extends BaseController {
         $r=3; foreach($cols as $col=>$h){ $sh->setCellValue($col.$r,$h); $sh->getColumnDimension($col)->setAutoSize(true); }
         $this->estiloHeader($sh,"A3:H3");
         $r=4; foreach($data as $i=>$row){
-            $sh->setCellValue("A$r",$i+1)->setCellValue("B$r",$row["nombre"]??"")->setCellValue("C$r",trim($row["marca"]." ".$row["modelo"]." ".$row["anio"]))->setCellValue("D$r",$row["seccion"]??"")->setCellValue("E$r",(int)$row["total_vendido"])->setCellValue("F$r",(float)$row["ingreso_total"])->setCellValue("G$r",round((float)$row["precio_prom"],2))->setCellValue("H$r",(int)$row["num_transacciones"]);
+            $this->texto($sh,"B$r",$row["nombre"]); $this->texto($sh,"C$r",trim($row["marca"]." ".$row["modelo"]." ".$row["anio"])); $this->texto($sh,"D$r",$row["seccion"]);
+            $sh->setCellValue("A$r",$i+1)->setCellValue("E$r",(int)$row["total_vendido"])->setCellValue("F$r",(float)$row["ingreso_total"])->setCellValue("G$r",round((float)$row["precio_prom"],2))->setCellValue("H$r",(int)$row["num_transacciones"]);
             $sh->getStyle("F$r:G$r")->getNumberFormat()->setFormatCode("0.00"); $r++;
         }
         $this->descargar($sp,"mas_vendidas_".date("Y-m-d").".xlsx");
