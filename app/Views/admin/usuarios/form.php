@@ -27,7 +27,7 @@
       <div class="roles-grid mt-1">
         <?php foreach($roles as $r): ?>
         <label class="role-check">
-          <input type="checkbox" name="roles[]" value="<?=$r["id"]?>" <?=in_array($r["id"],$userRoles??[])?"checked":""?>>
+          <input type="checkbox" name="roles[]" value="<?=$r["id"]?>" <?=in_array($r["id"],$userRoles??[])?"checked":""?> <?=($puedeRoles??false)?"":"disabled"?>>
           <span><?=htmlspecialchars($r["nombre"])?></span>
         </label>
         <?php endforeach; ?>

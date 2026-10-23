@@ -45,4 +45,51 @@ require_once BASE_PATH."/app/Controllers/FacturaController.php";
 require_once BASE_PATH."/app/Controllers/HerramientasController.php";
 require_once BASE_PATH."/app/Controllers/PublicController.php";
 
-if (session_status() === PHP_SESSION_NONE) session_start();
+// Cierra la sesión y borra la cookie en el navegador
+function destruirSesion(): void {
+    $_SESSION = [];
+    $p = session_get_cookie_params();
+    setcookie(session_name(), "", [
+        "expires" => time() - 42000, "path" => $p["path"], "domain" => $p["domain"],
+        "secure" => $p["secure"], "httponly" => $p["httponly"], "samesite" => $p["samesite"],
+    ]);
+    session_destroy();
+}
+
+// En cada petición con usuario: expira por inactividad, revisa que la cuenta siga
+// activa y refresca los roles. Si falla, la página sigue como visitante.
+function validarSesion(): void {
+    if (empty($_SESSION["user"])) return;
+    $um = new UserModel();
+    $uid = (int)$_SESSION["user"]["id"];
+    $motivo = "";
+    if (time() - ($_SESSION["last_activity"] ?? time()) > SESSION_IDLE_TIMEOUT) {
+        $motivo = "Tu sesión expiró por inactividad.";
+    } else {
+        $u = $um->findById($uid);
+        if (!$u || !$u["activo"] || $u["bloqueado"]) $motivo = "Tu cuenta fue desactivada o bloqueada.";
+    }
+    if ($motivo !== "") {
+        destruirSesion();
+        session_id(session_create_id());
+        session_start();
+        $_SESSION["login_error"] = $motivo;
+        return;
+    }
+    $_SESSION["last_activity"] = time();
+    $_SESSION["user_roles"] = array_column($um->getRoles($uid), "nombre");
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set("session.use_strict_mode", "1");
+    ini_set("session.use_only_cookies", "1");
+    session_set_cookie_params([
+        "lifetime" => 0,
+        "path"     => parse_url(APP_URL, PHP_URL_PATH) ?: "/",
+        "secure"   => !empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off",
+        "httponly" => true,
+        "samesite" => "Lax",
+    ]);
+    session_start();
+    validarSesion();
+}

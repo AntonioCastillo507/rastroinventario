@@ -48,7 +48,9 @@ class AuthController extends BaseController {
         // Éxito
         $um->resetIntentos($user["id"]);
         $log->registrar(["usuario_id" => $user["id"], "email" => $email, "ip" => $ip, "exitoso" => true]);
+        session_regenerate_id(true); // nuevo ID al autenticar (anti fijación de sesión)
         $_SESSION["user"] = ["id" => $user["id"], "nombre" => $user["nombre"], "email" => $user["email"]];
+        $_SESSION["last_activity"] = time();
         $roles = array_column($um->getRoles($user["id"]), "nombre");
         $_SESSION["user_roles"] = $roles;
         // Solo el personal (Administrador/Vendedor/Consultor) entra al panel admin.
@@ -56,7 +58,7 @@ class AuthController extends BaseController {
         $esStaff = array_intersect(["Administrador", "Vendedor", "Consultor"], $roles);
         $this->redirect($esStaff ? APP_URL . "/admin/" : APP_URL . "/");
     }
-    public function doLogout(): void { session_destroy(); header("Location: " . APP_URL . "/login.php"); exit; }
+    public function doLogout(): void { destruirSesion(); header("Location: " . APP_URL . "/login.php"); exit; }
 
     // ── Registro público de clientes (separado del checkout) ─────────
     public function registro(): void {

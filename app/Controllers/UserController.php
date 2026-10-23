@@ -29,6 +29,16 @@ class UserController extends BaseController {
     private RolModel  $rm;
     public function __construct() { $this->um = new UserModel(); $this->rm = new RolModel(); }
 
+    /** Asignar roles exige permiso de editar roles, no solo de gestionar usuarios */
+    private function puedeAsignarRoles(): bool {
+        return $this->um->hasPermission($_SESSION["user"]["id"], "roles", "puede_editar");
+    }
+    /** Ids de rol del POST, solo los que existen */
+    private function rolesDelPost(): array {
+        $validos = array_map("intval", array_column($this->rm->findAll(), "id"));
+        return array_values(array_intersect(array_map("intval", (array)($_POST["roles"] ?? [])), $validos));
+    }
+
     public function index(): void {
         $this->requirePermission("usuarios");
         $usuarios = $this->um->findAllWithRoles();
@@ -38,12 +48,13 @@ class UserController extends BaseController {
         $this->requirePermission("usuarios", "puede_crear");
         $roles = $this->rm->findAll();
         $error = "";
+        $puedeRoles = $this->puedeAsignarRoles();
         if ($this->isPost()) {
             CsrfToken::verify();
             $nombre = Sanitizer::post("nombre");
             $email  = Sanitizer::email(Sanitizer::post("email"));
             $pass   = $_POST["password"] ?? "";
-            $rols   = $_POST["roles"] ?? [];
+            $rols   = $puedeRoles ? $this->rolesDelPost() : []; // sin permiso: usuario sin roles
             $v = (new Validator())
                 ->required("nombre", $nombre, "Nombre")
                 ->required("email",  $email,  "Email")
@@ -55,7 +66,7 @@ class UserController extends BaseController {
                 $error = "El correo ya está registrado.";
             } else $error = $v->first();
         }
-        $this->view("admin/usuarios/form", compact("roles","error"));
+        $this->view("admin/usuarios/form", compact("roles","error","puedeRoles"));
     }
     public function editar(): void {
         $this->requirePermission("usuarios", "puede_editar");
@@ -65,6 +76,7 @@ class UserController extends BaseController {
         $roles     = $this->rm->findAll();
         $userRoles = array_column($this->um->getRoles($id), "id");
         $error     = "";
+        $puedeRoles = $this->puedeAsignarRoles();
         if ($this->isPost()) {
             CsrfToken::verify();
             $update = ["nombre"=>Sanitizer::post("nombre"), "email"=>Sanitizer::email(Sanitizer::post("email"))];
@@ -79,11 +91,11 @@ class UserController extends BaseController {
             }
             if ($error === "") {
                 $this->um->update($id, $update);
-                $this->um->setRoles($id, $_POST["roles"] ?? []);
+                if ($puedeRoles) $this->um->setRoles($id, $this->rolesDelPost()); // si no, se conservan los actuales
                 $this->redirect(APP_URL."/admin/?mod=usuarios","Usuario actualizado.");
             }
         }
-        $this->view("admin/usuarios/form", compact("roles","userRoles","user","error","id"));
+        $this->view("admin/usuarios/form", compact("roles","userRoles","user","error","id","puedeRoles"));
     }
     public function toggle(): void {
         $this->requirePermission("usuarios", "puede_editar");

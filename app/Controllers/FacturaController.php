@@ -19,7 +19,7 @@ class FacturaController extends BaseController {
 
     /** Genera factura para admin (desde panel de pedidos) */
     public function generar(): void {
-        $this->requireAuth();
+        $this->requirePermission("pedidos");
         $id = Sanitizer::get("id","int");
         $pedido = (new PedidoModel())->findWithItems($id);
         if (!$pedido) { http_response_code(404); die("Pedido no encontrado."); }
@@ -28,14 +28,19 @@ class FacturaController extends BaseController {
 
     /** Genera factura para cliente (desde compra exitosa — valida que sea su pedido) */
     public function generarPublico(): void {
+        $this->requireAuth();
         $id = Sanitizer::get("pedido","int");
         $pedido = (new PedidoModel())->findWithItems($id);
-        if (!$pedido) { http_response_code(404); die("Pedido no encontrado."); }
-        // Solo el dueño del pedido o cualquiera con el ID (link directo post-compra)
-        if (!empty($_SESSION["user"]) && $pedido["usuario_id"] && $pedido["usuario_id"] != $_SESSION["user"]["id"]) {
-            http_response_code(403); die("Acceso denegado.");
-        }
+        // Mismo mensaje si no existe o no es suyo, para no revelar qué pedidos hay
+        if (!$pedido || !$this->puedeVerPedido($pedido)) { http_response_code(404); die("Pedido no encontrado."); }
         $this->generarPDF($pedido);
+    }
+
+    /** Dueño del pedido, o personal con permiso de ver pedidos */
+    private function puedeVerPedido(array $pedido): bool {
+        $uid = (int)$_SESSION["user"]["id"];
+        if (!empty($pedido["usuario_id"]) && (int)$pedido["usuario_id"] === $uid) return true;
+        return (new UserModel())->hasPermission($uid, "pedidos", "puede_ver");
     }
 
     private function generarPDF(array $pedido): void {
