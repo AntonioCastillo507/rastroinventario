@@ -8,3 +8,4 @@
 - Trabajar en la rama mejoras, nunca directo en main
 - Código completo y listo para usar, comentarios cortos y naturales
 - Responder en español
+Al empezar, lee ESTADO.md. Al terminar cada tarea, actualízalo y avísame.
