@@ -37,7 +37,8 @@ class PedidoController extends BaseController {
         if (!$v->isValid()){ $_SESSION["compra_error"]=$v->first(); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
 
         $parte=$this->pam->findById($parteId);
-        if (!$parte||$parte["cantidad"]<$cantidad){ $_SESSION["compra_error"]="Stock insuficiente."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        if (!$parte||!$parte["activo"]){ $_SESSION["compra_error"]="Esta pieza ya no está disponible."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        if ($parte["cantidad"]<$cantidad){ $_SESSION["compra_error"]="Stock insuficiente."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
         if ((float)$parte["precio"]<0.01){ $_SESSION["compra_error"]="Esta pieza no tiene un precio válido."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
 
         // Crear cuenta (obligatoria)
@@ -52,13 +53,12 @@ class PedidoController extends BaseController {
             if (!$uid){ $_SESSION["compra_error"]="Error al crear la cuenta."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
             $um->assignClienteRole($uid);
             $usuarioId=$uid;
-            EmailJsService::get()->enviarBienvenida($email,$nombre);
         }
 
-        if (!$this->pam->decrementarStock($parteId,$cantidad)){ $_SESSION["compra_error"]="Error de inventario."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
-
-        $pedidoId=$this->pm->registrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]]);
-        if (!$pedidoId){ $_SESSION["compra_error"]="Error al registrar pedido."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        // Stock y pedido en una sola transacción: si algo falla, el stock vuelve y la cuenta recién creada se retira
+        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]],$errCompra);
+        if (!$pedidoId){ $um->hardDelete($usuarioId); $_SESSION["compra_error"]=$errCompra; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        EmailJsService::get()->enviarBienvenida($email,$nombre);
         EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$this->totalPedido($pedidoId));
 
         // Auto-login y mantener sesión
@@ -82,15 +82,15 @@ class PedidoController extends BaseController {
 
         $parte=$this->pam->findById($parteId);
         if (!(new Validator())->numeric("cantidad",$cantidad,1)->isValid()){ $this->flash("La cantidad debe ser al menos 1.","danger"); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
-        if (!$parte||$parte["cantidad"]<$cantidad){ $this->flash("Stock insuficiente.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
+        if (!$parte||!$parte["activo"]){ $this->flash("Esta pieza ya no está disponible.","danger"); $this->redirect(APP_URL."/"); }
+        if ($parte["cantidad"]<$cantidad){ $this->flash("Stock insuficiente.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
         if ((float)$parte["precio"]<0.01){ $this->flash("Esta pieza no tiene un precio válido.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
         if (!$dir){ $this->flash("Escribe una dirección de entrega.","danger"); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
 
         $um=new UserModel(); $u=$um->findById($_SESSION["user"]["id"]);
-        if (!$this->pam->decrementarStock($parteId,$cantidad)){ $this->flash("Error de inventario.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
-
-        $pedidoId=$this->pm->registrar(["cliente_nombre"=>$u["nombre"],"cliente_telefono"=>$u["telefono"]??"","cliente_email"=>$u["email"],"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$_SESSION["user"]["id"]],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]]);
-        if (!$pedidoId){ $this->flash("Error al registrar.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
+        // Stock y pedido en una sola transacción: si registrar() falla, el stock vuelve
+        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$u["nombre"],"cliente_telefono"=>$u["telefono"]??"","cliente_email"=>$u["email"],"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$_SESSION["user"]["id"]],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]],$errCompra);
+        if (!$pedidoId){ $this->flash($errCompra,"danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
         EmailJsService::get()->enviarConfirmacionCompra($u["email"],$u["nombre"],$pedidoId,$this->totalPedido($pedidoId));
 
         $_SESSION["pedido_exitoso"]=$pedidoId;
@@ -153,6 +153,32 @@ class PedidoController extends BaseController {
         return (float)($p["total"]??0);
     }
 
+    /**
+     * Todo o nada: bloquea cada pieza, descuenta su stock y registra el pedido en UNA transacción.
+     * Si una pieza se desactivó o ya no alcanza, o registrar() falla (devuelve false o lanza), se deshace
+     * todo y $error trae el motivo para mostrarlo. Devuelve el id del pedido o false.
+     */
+    private function apartarYRegistrar(array $cabecera, array $items, ?string &$error = null): int|false {
+        $db=Database::get();
+        $db->beginTransaction();
+        try {
+            foreach ($items as $it){
+                $p=$this->pam->bloquear((int)$it["parte_id"]);
+                if (!$p||!$p["activo"]){ $db->rollBack(); $error="La pieza ".$it["parte_nombre"]." ya no está disponible."; return false; }
+                if (!$this->pam->decrementarStock((int)$it["parte_id"],(int)$it["cantidad"])){ $db->rollBack(); $error="Stock insuficiente: ".$it["parte_nombre"]; return false; }
+            }
+            $id=$this->pm->registrar($cabecera,$items);
+            if (!$id){ $db->rollBack(); $error="Error al registrar el pedido."; return false; }
+            $db->commit();
+            return (int)$id;
+        } catch (\Throwable $e) {
+            if ($db->inTransaction()) $db->rollBack();
+            $ref=registrarError($e,"Compra: ");
+            $error="No se pudo registrar el pedido. Intenta de nuevo; si sigue, indica el código de referencia $ref.";
+            return false;
+        }
+    }
+
     public function procesarCarrito(): void {
         CsrfToken::verify();
         $cart=$_SESSION["cart"]??[];
@@ -161,7 +187,19 @@ class PedidoController extends BaseController {
         $notas=Sanitizer::post("cliente_notas");
         $dir  =Sanitizer::post("cliente_direccion");
 
+        // Verificar las piezas ANTES de tocar cuentas: nada se crea ni se descuenta si el carrito no vale
+        // El precio sale de la BD, no de la sesión
+        $items=[];
+        foreach ($cart as $id=>$item){
+            $p=$this->pam->findById((int)$id);
+            if (!$p||!$p["activo"]){ $_SESSION["carrito_error"]="La pieza ".$item["nombre"]." ya no está disponible. Quítala del carrito."; $this->redirect(APP_URL."/?action=carrito"); }
+            if ($p["cantidad"]<$item["cantidad"]){ $_SESSION["carrito_error"]="Stock insuficiente: ".$item["nombre"]; $this->redirect(APP_URL."/?action=carrito"); }
+            if ((int)$item["cantidad"]<1||(float)$p["precio"]<0.01){ $_SESSION["carrito_error"]="Cantidad o precio no válido: ".$item["nombre"]; $this->redirect(APP_URL."/?action=carrito"); }
+            $items[]=["parte_id"=>$id,"parte_nombre"=>$item["nombre"],"precio_unitario"=>(float)$p["precio"],"cantidad"=>(int)$item["cantidad"]];
+        }
+
         // ── Cliente ya logueado ───────────────────────────────────
+        $cuentaNueva=false;
         if (!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]??[])) {
             $um=new UserModel(); $u=$um->findById($_SESSION["user"]["id"]);
             $nombre=$u["nombre"]; $tel=$u["telefono"]??""; $email=$u["email"]; $usuarioId=$u["id"];
@@ -181,34 +219,21 @@ class PedidoController extends BaseController {
             }
             else {
                 $uid=$um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT),"telefono"=>$tel,"direccion"=>$dir]);
-                $um->assignClienteRole($uid); $usuarioId=$uid;
-                $_SESSION["user"]=["id"=>$uid,"nombre"=>$nombre,"email"=>$email];
-                $_SESSION["user_roles"]=["Cliente"]; session_regenerate_id(true);
-                EmailJsService::get()->enviarBienvenida($email,$nombre);
+                $um->assignClienteRole($uid); $usuarioId=$uid; $cuentaNueva=true;
             }
         }
 
-        // Verificar stock y construir items
-        // El precio sale de la BD, no de la sesión
-        $items=[];
-        foreach ($cart as $id=>$item){
-            $p=$this->pam->findById((int)$id);
-            if (!$p||$p["cantidad"]<$item["cantidad"]){ $_SESSION["carrito_error"]="Stock insuficiente: ".$item["nombre"]; $this->redirect(APP_URL."/?action=carrito"); }
-            if ((int)$item["cantidad"]<1||(float)$p["precio"]<0.01){ $_SESSION["carrito_error"]="Cantidad o precio no válido: ".$item["nombre"]; $this->redirect(APP_URL."/?action=carrito"); }
-            $items[]=["parte_id"=>$id,"parte_nombre"=>$item["nombre"],"precio_unitario"=>(float)$p["precio"],"cantidad"=>(int)$item["cantidad"]];
+        // Todo o nada: si una pieza ya no alcanza o registrar() falla, se deshace todo (y la cuenta recién creada se retira)
+        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],$items,$errCompra);
+        if (!$pedidoId){
+            if ($cuentaNueva) $um->hardDelete($usuarioId);
+            $_SESSION["carrito_error"]=$errCompra; $this->redirect(APP_URL."/?action=carrito");
         }
-        // Todo o nada: si una pieza ya no alcanza (compra simultánea), se deshacen los descuentos
-        $db=Database::get(); $db->beginTransaction();
-        foreach ($items as $it){
-            if (!$this->pam->decrementarStock((int)$it["parte_id"],$it["cantidad"])){
-                $db->rollBack();
-                $_SESSION["carrito_error"]="Stock insuficiente: ".$it["parte_nombre"];
-                $this->redirect(APP_URL."/?action=carrito");
-            }
+        if ($cuentaNueva){
+            $_SESSION["user"]=["id"=>$usuarioId,"nombre"=>$nombre,"email"=>$email];
+            $_SESSION["user_roles"]=["Cliente"]; session_regenerate_id(true);
+            EmailJsService::get()->enviarBienvenida($email,$nombre);
         }
-        $pedidoId=$this->pm->registrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],$items);
-        if (!$pedidoId){ $db->rollBack(); $_SESSION["carrito_error"]="Error al registrar el pedido."; $this->redirect(APP_URL."/?action=carrito"); }
-        $db->commit();
         EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$this->totalPedido($pedidoId));
         unset($_SESSION["cart"]);
         $_SESSION["pedido_exitoso"]=$pedidoId;

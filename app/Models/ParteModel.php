@@ -59,6 +59,11 @@ class ParteModel extends BaseModel {
     }
     public function findFeatured(int $limit=8): array { return $this->findPublic("",0,$limit,"",0,0,"stock"); }
     public function search(string $q): array { return $this->findPublic($q); }
+    /** Lee la pieza con bloqueo de fila (dentro de una transacción): activo y stock no cambian hasta el commit */
+    public function bloquear(int $id): array|false {
+        $s=$this->db->prepare("SELECT id,nombre,activo,cantidad FROM partes WHERE id=? FOR UPDATE");
+        $s->execute([$id]); return $s->fetch();
+    }
     /** Descuenta stock de forma atómica; false si qty < 1 o no alcanzó el stock (ninguna fila afectada) */
     public function decrementarStock(int $id,int $qty): bool {
         if ($qty<1) return false;
