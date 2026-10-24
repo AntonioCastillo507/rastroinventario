@@ -1,6 +1,6 @@
 <?php
 if (!defined("BASE_PATH")) define("BASE_PATH", __DIR__);
-define("UPLOAD_PATH", BASE_PATH . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR);
+if (!defined("UPLOAD_PATH")) define("UPLOAD_PATH", BASE_PATH . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR);
 
 date_default_timezone_set("America/Panama");
 

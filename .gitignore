@@ -3,3 +3,5 @@ app/Config/rsa_secret.php
 ssl/*.key
 backup.sql
 logs/*.log
+.phpunit.cache/
+.phpunit.result.cache
