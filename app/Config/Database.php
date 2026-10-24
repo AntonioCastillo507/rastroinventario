@@ -4,9 +4,13 @@ class Database {
     private function __construct() {}
     public static function get(): PDO {
         if (self::$conn === null) {
+            // Pruebas: solo por consola o php -S y solo estas dos bases; Apache nunca lo lee
+            $bd = (in_array(PHP_SAPI, ["cli", "cli-server"], true)
+                && preg_match('/^rastroinventario_(test|check)$/', (string)getenv("RASTRO_DB_NAME")))
+                ? getenv("RASTRO_DB_NAME") : DB_NAME;
             try {
                 self::$conn = new PDO(
-                    "mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=utf8mb4",
+                    "mysql:host=".DB_HOST.";dbname=$bd;charset=utf8mb4",
                     DB_USER, DB_PASS,
                     [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
                      PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,
