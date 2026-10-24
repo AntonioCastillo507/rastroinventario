@@ -1,6 +1,6 @@
 # ESTADO DEL PROYECTO: Rastroinventario (Rastro del Istmo)
 
-Última actualización: 2026-10-24 (cierre de negocio)
+Última actualización: 2026-10-24 (auditoría de diseño y UX)
 
 ## Para Claude: cómo usar este archivo
 - Lee este archivo al empezar cualquier sesión. Es la memoria del proyecto.
@@ -160,6 +160,18 @@
 - [ ] Recuperación de contraseña (14b): código listo, probado y migración aplicada a la real (2026-10-24). Falta, en orden: (1) `EMAILJS_TEMPLATE_RESET` en `config.php` y plantilla en EmailJS con las variables `to_email`, `to_name`, `reset_url`, `expira_minutos`, `app_nombre` (hasta entonces, en localhost el enlace queda en `logs/reset_dev.log`); (2) certificado de cURL (`curl.cainfo`); (3) HTTPS y `APP_URL` con `https://`. Tras `git pull`: `composer dump-autoload`.
 - [ ] Revisar `REMOTE_ADDR` si hay proxy.
 - [ ] Mejorar el diseño visual (colores, tipografía, formularios, móvil). Se decidió hacerlo después de la seguridad.
+
+## Auditoría de diseño y UX (2026-10-24, solo lectura)
+- Informe completo: `docs/auditoria-diseno.md` (hallazgos Alta/Media/Baja, estándares, qué se resuelve con variables CSS y 12 decisiones). No se cambió código.
+- Problema 1: el botón dorado `.btn-gold` no muestra foco con teclado y los demás focos son un azul/gris casi invisible (WCAG 2.4.7 y 1.4.11).
+- Problema 2: desplazamiento horizontal de ~12 px en móvil y tableta en portada y detalle (`row g-5`: `home.php:117`, `detalle.php:23`; igual en `compra.php:7` y `compra_confirmar.php:7`, sin medir en móvil).
+- Problema 3: casi ningún campo tiene nombre accesible (76 `<label>`, 5 `for=`) y no hay `<main>`, enlace de salto ni `h1` fuera de la portada.
+- Problema 4: el menú de la portada marca "Contacto" al ir a "Quiénes somos" (ScrollSpy de Bootstrap 5.3 con margen por defecto), no cambia la URL, tapa el título con la barra fija y en móvil no se cierra.
+- Problema 5: contraste insuficiente en muchos textos (`#848E9C` sobre `#2B2F36` 4,05:1; insignia de stock 2,77:1; `.text-success` 3,59:1; pie del panel 1,91:1) y la compra obliga a crear cuenta.
+- Otros hallazgos importantes: dorado y verde de Bootstrap fuera de paleta, tablas del panel sin columnas prioritarias en móvil, `logo.png` y `hero-bg.jpg` de 2 MB, 404 de Apache sin tema, datos fijos de plantilla y datos personales reales en la demo.
+- Sin emojis pictográficos en el código; los símbolos ✔ (5 mensajes), ★, ↑↓ y ≤ se reemplazarían por iconos o texto.
+- Decisión tomada (1 de 12): la plantilla llevará tema oscuro y claro con interruptor. Las otras 11 decisiones (sección 6 del informe) siguen abiertas.
+- Siguiente: terminar las decisiones y después corregir primero los hallazgos Alta con pruebas nuevas.
 
 ## Registro de sesiones
 - 2026-10-22 y 2026-10-23: auditoría de seguridad, etapas 1, 2A y 2B completas (ver tabla de commits).
