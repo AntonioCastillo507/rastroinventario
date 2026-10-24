@@ -37,13 +37,25 @@ if (Database::get()->query("SELECT DATABASE()")->fetchColumn() !== "rastroinvent
 $_POST = $in["post"] ?? [];
 $_GET  = $in["get"] ?? [];
 if (!empty($in["csrf"])) $_POST["csrf_token"] = CsrfToken::generate();
+foreach (($in["servidor"] ?? []) as $k => $v) $_SERVER[$k] = $v; // p. ej. un Host hostil
 
-register_shutdown_function(function () use ($tmp): void {
+// Correo: "ok" o "falla" sustituyen el envío real y anotan cada intento; "dir_logs" mueve emailjs.log y reset_dev.log
+$correos = [];
+if (isset($in["dir_logs"])) EmailJsService::$dirLogs = $in["dir_logs"];
+if (isset($in["correo"])) {
+    EmailJsService::$transporte = function (string $plantilla, array $params) use (&$correos, $in): bool {
+        $correos[] = ["plantilla" => $plantilla, "params" => $params, "sesion_activa" => session_status() === PHP_SESSION_ACTIVE];
+        return $in["correo"] === "ok";
+    };
+}
+
+register_shutdown_function(function () use ($tmp, &$correos): void {
     $sesion = $_SESSION;
     echo "\n@@RESULTADO@@" . json_encode([
         "cabeceras" => function_exists("xdebug_get_headers") ? xdebug_get_headers() : headers_list(), // en consola solo Xdebug guarda las cabeceras
         "codigo"    => http_response_code() ?: 200,
         "sesion"    => $sesion,
+        "correos"   => $correos,
     ], JSON_UNESCAPED_UNICODE) . "\n";
     if (session_status() === PHP_SESSION_ACTIVE) session_destroy();
     foreach (glob("$tmp/{uploads,sessions}/*", GLOB_BRACE) ?: [] as $f) @unlink($f);

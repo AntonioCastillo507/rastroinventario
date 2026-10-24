@@ -1,4 +1,4 @@
-<?php $err=$_SESSION["login_error"]??""; unset($_SESSION["login_error"]); ?>
+<?php $err=$_SESSION["login_error"]??""; unset($_SESSION["login_error"]); $okMsg=$_SESSION["login_ok"]??""; unset($_SESSION["login_ok"]); ?>
 <!DOCTYPE html><html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -17,6 +17,9 @@
   <?php if($err): ?>
   <div class="alert-dark-danger d-flex align-items-center gap-2 mb-3 small"><i class="bi bi-shield-exclamation text-danger fs-5"></i><?=htmlspecialchars($err)?></div>
   <?php endif; ?>
+  <?php if($okMsg): ?>
+  <div class="alert-dark-info d-flex align-items-center gap-2 mb-3 small"><i class="bi bi-check-circle text-info fs-5"></i><?=htmlspecialchars($okMsg)?></div>
+  <?php endif; ?>
   <form action="<?=APP_URL?>/login.php" method="POST">
     <?=CsrfToken::field()?>
     <div class="mb-3">
@@ -27,7 +30,7 @@
       </div>
     </div>
     <div class="mb-4">
-      <label class="form-label-dark">Contraseña</label>
+      <label class="form-label-dark d-flex justify-content-between">Contraseña <a href="<?=APP_URL?>/olvide.php" class="text-warning fw-normal">¿Olvidaste tu contraseña?</a></label>
       <div class="input-group">
         <span class="input-group-text"><i class="bi bi-lock text-warning"></i></span>
         <input type="password" name="password" id="pf" class="form-control dark-input" required autocomplete="current-password">
