@@ -84,6 +84,10 @@ final class PasswordResetModelTest extends BaseDatos {
         $this->assertFalse($this->m->buscarValido($h));
 
         $this->assertFalse($this->m->completar($h, password_hash("segunda-clave-nueva-9", PASSWORD_BCRYPT)), "el segundo canje falla");
+
+        // Y también si pasó tiempo: con el mismo segundo MySQL no ve cambio y el UPDATE daría 0 filas aunque la guarda faltara
+        $this->db->exec("UPDATE password_resets SET usado_en = NOW() - INTERVAL 5 MINUTE WHERE id = $id");
+        $this->assertFalse($this->m->completar($h, password_hash("tercera-clave-nueva-9", PASSWORD_BCRYPT)), "un canje tardío tampoco");
         $this->assertSame($nueva1, $this->hashDeClave((int)$u["id"]), "la clave sigue siendo la del primer canje");
         $this->assertTrue(password_verify("primera-clave-nueva-9", $this->hashDeClave((int)$u["id"])));
     }

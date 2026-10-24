@@ -27,6 +27,7 @@ session_cache_limiter("");
 session_save_path("$tmp/sessions");
 session_start();
 $_SESSION = $in["sesion"] ?? [];
+$sidInicial = session_id();
 
 require_once BASE_PATH . "/vendor/autoload.php";
 require_once BASE_PATH . "/bootstrap.php";
@@ -49,13 +50,14 @@ if (isset($in["correo"])) {
     };
 }
 
-register_shutdown_function(function () use ($tmp, &$correos): void {
+register_shutdown_function(function () use ($tmp, &$correos, $sidInicial): void {
     $sesion = $_SESSION;
     echo "\n@@RESULTADO@@" . json_encode([
         "cabeceras" => function_exists("xdebug_get_headers") ? xdebug_get_headers() : headers_list(), // en consola solo Xdebug guarda las cabeceras
         "codigo"    => http_response_code() ?: 200,
         "sesion"    => $sesion,
         "correos"   => $correos,
+        "sid"       => ["inicial" => $sidInicial, "final" => session_id()], // para saber si se regeneró la sesión
     ], JSON_UNESCAPED_UNICODE) . "\n";
     if (session_status() === PHP_SESSION_ACTIVE) session_destroy();
     foreach (glob("$tmp/{uploads,sessions}/*", GLOB_BRACE) ?: [] as $f) @unlink($f);

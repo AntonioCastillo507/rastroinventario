@@ -30,7 +30,7 @@
       </div>
     </div>
     <div class="mb-4">
-      <label class="form-label-dark d-flex justify-content-between">Contraseña <a href="<?=APP_URL?>/olvide.php" class="text-warning fw-normal">¿Olvidaste tu contraseña?</a></label>
+      <label class="form-label-dark d-flex justify-content-between">Contraseña <a href="<?=APP_URL?>/olvide.php" class="text-warning fw-normal" style="text-transform:none">¿Olvidaste tu contraseña?</a></label>
       <div class="input-group">
         <span class="input-group-text"><i class="bi bi-lock text-warning"></i></span>
         <input type="password" name="password" id="pf" class="form-control dark-input" required autocomplete="current-password">

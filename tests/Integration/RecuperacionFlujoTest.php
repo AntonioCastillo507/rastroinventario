@@ -296,6 +296,7 @@ final class RecuperacionFlujoTest extends TestCase {
         $r = $this->abrir($t);
         $this->assertSame(hash("sha256", $t), $r["sesion"]["reset_hash"]);
         $this->assertStringNotContainsString($t, json_encode($r["sesion"]), "el token en claro no queda en la sesión");
+        $this->assertNotSame($r["sid"]["inicial"], $r["sid"]["final"], "el identificador de sesión se renueva al abrir el enlace");
         $this->assertArrayNotHasKey("reset_error", $r["sesion"]);
         if (Proceso::veCabeceras()) {
             $this->assertSame(APP_URL . "/restablecer.php", Proceso::ubicacion($r), "sin token en la URL");
@@ -372,6 +373,7 @@ final class RecuperacionFlujoTest extends TestCase {
         $this->assertSame("Contraseña actualizada. Ya puedes iniciar sesión.", $r["sesion"]["login_ok"]);
         $this->assertArrayNotHasKey("reset_hash", $r["sesion"]);
         $this->assertArrayNotHasKey("user", $r["sesion"], "no inicia sesión sola");
+        $this->assertNotSame($r["sid"]["inicial"], $r["sid"]["final"], "el identificador de sesión se renueva al cambiar la clave");
         if (Proceso::veCabeceras()) $this->assertStringEndsWith("/login.php", (string)Proceso::ubicacion($r));
         $this->assertNotNull($this->filasDe($this->email)[0]["usado_en"]);
 
