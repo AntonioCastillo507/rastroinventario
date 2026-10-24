@@ -101,6 +101,44 @@ $env:RASTRO_DB_NAME = "rastroinventario_test"
 
 Los secretos de producción (`config.php`, llave RSA, `HMAC_KEY`, credenciales de MySQL) no se crean aquí; ver `ESTADO.md`.
 
+### 2.4. Cómo correr las pruebas (Windows / WampServer)
+
+Las pruebas son PHPUnit y viven en `tests/` (`Unit` no escribe datos; `Integration` usa la base `rastroinventario_test`). Necesitan PHP 8.2 o más (el de Wamp, 8.3), MySQL encendido en el puerto 3306 y que exista la base de pruebas. Abre PowerShell en `C:\wamp64\www\rastroinventario`.
+
+**Una sola vez:** instala las dependencias (incluye PHPUnit) y crea la base de pruebas.
+```powershell
+composer install
+```
+```powershell
+.\database\instalar.ps1 -Base rastroinventario_test
+```
+
+**Correr todo:**
+```powershell
+composer test
+```
+
+Solo una parte:
+```powershell
+composer test:unit
+```
+```powershell
+composer test:integration
+```
+Una sola prueba o clase (todo lo que va después de `--` se le pasa a PHPUnit):
+```powershell
+composer test -- --filter ItbmsTest
+```
+
+**Dejar la base de pruebas como nueva** (la borra y la recrea; solo funciona con `rastroinventario_test`):
+```powershell
+composer test:reset
+```
+
+Cómo se protege la base real: `tests/bootstrap.php` aborta, antes de conectarse, si `RASTRO_DB_NAME` no vale exactamente `rastroinventario_test` (por eso conviene usar siempre `composer test`, que la define), y vuelve a comprobar con `SELECT DATABASE()` que la conexión es esa. También se niega si la base tiene usuarios que no sean `@example.invalid` o si no está instalada. Cada prueba de integración corre dentro de una transacción que se deshace al terminar; las imágenes se generan al vuelo en una carpeta temporal y no se guarda nada en `uploads/`.
+
+Notas: si cambia el esquema, regenera `database/schema.sql` y corre `composer test:reset`. Las pruebas de `LoginFlujoTest` ejecutan el controlador real en un proceso aparte y leen la cabecera `Location` solo si Xdebug está instalado (el `php.ini` de Wamp lo trae).
+
 ---
 
 ## 3. Matriz de Roles y Credenciales de Prueba
