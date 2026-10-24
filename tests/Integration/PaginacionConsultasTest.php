@@ -188,8 +188,9 @@ final class PaginacionConsultasTest extends BaseDatos {
         preg_match_all('/ORDER BY (?:p\.|\()[^"]*"/', $fuente, $m);
         $this->assertGreaterThanOrEqual(12, count($m[0]), "se esperan los 7 órdenes del panel y los 5 del catálogo");
         foreach ($m[0] as $orden) $this->assertStringContainsString("p.id DESC", $orden, $orden);
+        // Solo cuenta la cláusula ORDER BY de la consulta, no un comentario que mencione el desempate
         foreach (["VentaModel" => "v.id DESC", "PedidoModel" => "p.id DESC", "ComentarioModel" => "c.id DESC", "UserModel" => "u.id DESC"] as $clase => $desempate) {
-            $this->assertStringContainsString($desempate, file_get_contents(BASE_PATH . "/app/Models/$clase.php"), $clase);
+            $this->assertMatchesRegularExpression('/ORDER BY [^"]*' . preg_quote($desempate, "/") . '"/', file_get_contents(BASE_PATH . "/app/Models/$clase.php"), $clase);
         }
     }
 }
