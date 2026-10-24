@@ -164,3 +164,23 @@ CREATE TABLE `vendido_parte` (
   CONSTRAINT `vendido_parte_ibfk_1` FOREIGN KEY (`parte_id`) REFERENCES `partes` (`id`),
   CONSTRAINT `vendido_parte_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Recuperacion de contrasena (hallazgo 14b). Una fila por solicitud con un correo valido: con cuenta
+-- activa lleva usuario_id y token_hash (SHA-256 del token; el token nunca se guarda); sin cuenta, ambos
+-- NULL, asi los limites cuentan igual los correos que no existen. usado_en = consumido o reemplazado.
+CREATE TABLE `password_resets` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int DEFAULT NULL,
+  `email` varchar(150) NOT NULL,
+  `token_hash` char(64) DEFAULT NULL,
+  `ip` varchar(45) NOT NULL,
+  `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `expira_en` timestamp NULL DEFAULT NULL,
+  `usado_en` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `token_hash` (`token_hash`),
+  KEY `usuario_id` (`usuario_id`),
+  KEY `email_creado` (`email`,`creado_en`),
+  KEY `ip_creado` (`ip`,`creado_en`),
+  CONSTRAINT `password_resets_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

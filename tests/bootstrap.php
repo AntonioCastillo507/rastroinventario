@@ -61,7 +61,7 @@ if ($activa !== "rastroinventario_test") {
 // Cuarta guarda: la base tiene que estar instalada y sin datos reales
 $tablas = (int)$pdo->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='rastroinventario_test'")->fetchColumn();
 $roles  = (int)$pdo->query("SELECT COUNT(*) FROM roles WHERE nombre IN ('Administrador','Vendedor','Consultor','Cliente')")->fetchColumn();
-if ($tablas !== 12 || $roles !== 4) {
+if ($tablas !== 13 || $roles !== 4) {
     abortar("rastroinventario_test no está instalada (tablas: $tablas, roles: $roles). Créala con:  composer test:reset");
 }
 $ajenos = (int)$pdo->query("SELECT COUNT(*) FROM usuarios WHERE email NOT LIKE '%@example.invalid'")->fetchColumn();
