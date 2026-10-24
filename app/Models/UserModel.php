@@ -31,6 +31,17 @@ class UserModel extends BaseModel {
         $upd=array_intersect_key($data,array_flip($allowed));
         if (!empty($upd)) $this->update($id,$upd);
     }
+    /** Nombre del rol que manda en el sistema (el código lo busca por nombre, como el de Cliente) */
+    public const ROL_ADMIN = "Administrador";
+    public function esAdministrador(int $uid): bool {
+        $s=$this->db->prepare("SELECT 1 FROM usuario_roles ur INNER JOIN roles r ON r.id=ur.rol_id WHERE ur.usuario_id=? AND r.nombre=? LIMIT 1");
+        $s->execute([$uid,self::ROL_ADMIN]); return (bool)$s->fetchColumn();
+    }
+    /** Administradores que hoy pueden entrar: activos y sin bloqueo */
+    public function contarAdministradoresActivos(): int {
+        $s=$this->db->prepare("SELECT COUNT(DISTINCT u.id) FROM usuarios u INNER JOIN usuario_roles ur ON ur.usuario_id=u.id INNER JOIN roles r ON r.id=ur.rol_id WHERE r.nombre=? AND u.activo=1 AND u.bloqueado=0");
+        $s->execute([self::ROL_ADMIN]); return (int)$s->fetchColumn();
+    }
     public function assignClienteRole(int $uid): void {
         $rid=$this->db->query("SELECT id FROM roles WHERE nombre='Cliente'")->fetchColumn();
         if ($rid) $this->db->exec("INSERT IGNORE INTO usuario_roles VALUES ($uid,$rid)");
