@@ -152,3 +152,11 @@ select:-webkit-autofill {
   padding: .32rem .6rem;
   white-space: nowrap;
 }
+/* Paginación (app/Views/layouts/paginacion.php), en el tema oscuro */
+.paginacion .pagination { --bs-pagination-bg: var(--bg-1); --bs-pagination-color: var(--text-1);
+  --bs-pagination-border-color: var(--border); --bs-pagination-hover-bg: var(--bg-2);
+  --bs-pagination-hover-color: var(--accent); --bs-pagination-hover-border-color: var(--border);
+  --bs-pagination-active-bg: var(--accent); --bs-pagination-active-color: #0B0E11;
+  --bs-pagination-active-border-color: var(--accent); --bs-pagination-disabled-bg: var(--bg-1);
+  --bs-pagination-disabled-color: var(--text-3); --bs-pagination-disabled-border-color: var(--border);
+  --bs-pagination-focus-bg: var(--bg-2); --bs-pagination-focus-color: var(--accent); }
