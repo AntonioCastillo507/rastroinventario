@@ -170,8 +170,23 @@
 - Problema 5: contraste insuficiente en muchos textos (`#848E9C` sobre `#2B2F36` 4,05:1; insignia de stock 2,77:1; `.text-success` 3,59:1; pie del panel 1,91:1) y la compra obliga a crear cuenta.
 - Otros hallazgos importantes: dorado y verde de Bootstrap fuera de paleta, tablas del panel sin columnas prioritarias en móvil, `logo.png` y `hero-bg.jpg` de 2 MB, 404 de Apache sin tema, datos fijos de plantilla y datos personales reales en la demo.
 - Sin emojis pictográficos en el código; los símbolos ✔ (5 mensajes), ★, ↑↓ y ≤ se reemplazarían por iconos o texto.
-- Decisión tomada (1 de 12): la plantilla llevará tema oscuro y claro con interruptor. Las otras 11 decisiones (sección 6 del informe) siguen abiertas.
-- Siguiente: terminar las decisiones y después corregir primero los hallazgos Alta con pruebas nuevas.
+- Las 12 decisiones de la sección 6 del informe ya están tomadas: ver "Decisiones de diseño" más abajo.
+- Siguiente: partir en tareas, con `composer test` verde antes y después de cada una y pruebas nuevas. Ninguna está empezada.
+
+## Decisiones de diseño (2026-10-24, de Tony, sección 6 de `docs/auditoria-diseno.md`)
+1. Tema: oscuro y claro, con interruptor.
+2. Bootstrap 5.3.3 y Bootstrap Icons autoalojados en `assets/vendor/` (sin CDN; cierra la parte de SRI del hallazgo 16).
+3. Tipografía: una fuente web con licencia abierta, autoalojada en `assets/fonts/` (2 o 3 pesos).
+4. Iconos: Bootstrap Icons con un conjunto corto (~30), solo de acción y navegación; todos con `aria-hidden` o `aria-label`.
+5. Compra como invitado primero y cuenta opcional después. Tarea propia, DESPUÉS del rediseño, en modo Plan y con pruebas; enlace de seguimiento firmado y sin dar acceso a cuentas existentes (no reabre el hallazgo 1).
+6. Tablas del panel en móvil: tarjetas apiladas hechas solo con CSS y `data-label` por celda, sin duplicar el HTML de cada lista.
+7. Confirmaciones: modal propio solo en lo grave (eliminar, entregar pedido, desactivar usuario), con el nombre del objeto y el verbo en el botón; las acciones reversibles van sin confirmación.
+8. Accesibilidad: WCAG 2.2 AA con zonas táctiles de 44 px en pantallas táctiles (24 px es el mínimo del estándar).
+9. Portada: Quiénes somos y Contacto en páginas propias; se quita el ScrollSpy y el menú activo lo decide PHP.
+10. Marca y contenido (nombre, lema, contacto, horario, textos de portada, Quiénes somos y pie) en `app/Config/marca.php`, versionado, con los valores de Rastro del Istmo como demo. `config.local.php` queda reservado a secretos y sigue ignorado por git. Se quita el crédito "Desarrollo de Software VII | … UTP" del pie público y del panel.
+11. Datos de demostración: `demo.sql` ficticio (@example.invalid, teléfonos de ejemplo) y los datos reales no entran en la plantilla (tampoco `backup.sql` ni el historial).
+12. Personalización del tema: un archivo de variables `assets/css/tema.css` (oscuro y claro), editado a mano; sin selector en el panel.
+- Orden propuesto de trabajo: variables y tema, foco y contraste, estructura y etiquetas, gutter y menú, autoalojado, iconos y símbolos, tablas en tarjetas, modal de confirmación, páginas propias, marca y demo; al final la compra como invitado (punto 5).
 
 ## Registro de sesiones
 - 2026-10-22 y 2026-10-23: auditoría de seguridad, etapas 1, 2A y 2B completas (ver tabla de commits).
