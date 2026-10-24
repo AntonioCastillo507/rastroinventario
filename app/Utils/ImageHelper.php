@@ -189,6 +189,17 @@ class ImageHelper {
             && preg_match('/^[A-Za-z0-9][A-Za-z0-9_.-]*\.(jpe?g|png|gif|webp)$/i', $n) === 1;
     }
 
+    /**
+     * ¿Hay en disco una imagen con ese nombre? $sub es "parts" (original) o "thumbnails" (miniatura).
+     * Las vistas la usan antes de imprimir un <img>: si el archivo falta (borrado a mano, pieza editada,
+     * carrito viejo) se muestra el marcador de "sin imagen" en vez de una imagen rota.
+     */
+    public static function existe(?string $nombre, string $sub): bool {
+        return in_array($sub, ["parts", "thumbnails"], true)
+            && self::nombreSeguro($nombre)
+            && is_file(self::dir($sub) . $nombre);
+    }
+
     public static function delete(?string $orig, ?string $thumb): void {
         if (self::nombreSeguro($orig))  @unlink(self::dir("parts") . $orig);
         if (self::nombreSeguro($thumb)) @unlink(self::dir("thumbnails") . $thumb);

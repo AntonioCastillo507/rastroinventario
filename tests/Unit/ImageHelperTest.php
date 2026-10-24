@@ -180,4 +180,29 @@ final class ImageHelperTest extends TestCase {
         \ImageHelper::delete("x.php", null);
         $this->assertFileExists(UPLOAD_PATH . "parts/x.php");
     }
+
+    // ── existe: la red de seguridad de las vistas ───────────────────────────
+
+    public function testExisteConLosArchivosQueGuardoProcesar(): void {
+        $r = \ImageHelper::procesar(Imagenes::jpeg());
+        $this->assertTrue(\ImageHelper::existe($r["original"], "parts"));
+        $this->assertTrue(\ImageHelper::existe($r["thumbnail"], "thumbnails"));
+        $this->assertFalse(\ImageHelper::existe($r["original"], "thumbnails"), "el original no está en la carpeta de miniaturas");
+        $this->assertFalse(\ImageHelper::existe($r["thumbnail"], "parts"));
+    }
+
+    public function testExisteEsFalsoSiElArchivoYaNoEstaONoEsUnNombreSeguro(): void {
+        $r = \ImageHelper::procesar(Imagenes::png());
+        \ImageHelper::delete($r["original"], $r["thumbnail"]);
+        $this->assertFalse(\ImageHelper::existe($r["original"], "parts"), "borrado");
+        $this->assertFalse(\ImageHelper::existe($r["thumbnail"], "thumbnails"), "borrado");
+
+        file_put_contents(RASTRO_TEST_TMP . "/canario.jpg", "x");
+        foreach ([null, "", ".", "..", "../canario.jpg", "../../canario.jpg", RASTRO_TEST_TMP . "/canario.jpg", "x.php", "parte.txt", "a/b.jpg", "nombre inexistente.jpg"] as $malo) {
+            $this->assertFalse(\ImageHelper::existe($malo, "parts"), json_encode($malo));
+            $this->assertFalse(\ImageHelper::existe($malo, "thumbnails"), json_encode($malo));
+        }
+        $this->assertFalse(\ImageHelper::existe("cualquiera.jpg", "otra"), "carpeta desconocida");
+        $this->assertFalse(\ImageHelper::existe("cualquiera.jpg", "../"), "carpeta con recorrido");
+    }
 }

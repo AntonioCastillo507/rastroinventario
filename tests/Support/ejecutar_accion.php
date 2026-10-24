@@ -16,7 +16,7 @@ $tmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "rastro_test_hijo_" . getmypid
 @mkdir("$tmp/sessions", 0777, true);
 
 define("BASE_PATH", dirname(__DIR__, 2));
-define("UPLOAD_PATH", "$tmp/uploads/");
+define("UPLOAD_PATH", rtrim($in["upload_path"] ?? "$tmp/uploads", "/\\") . "/");
 
 $_SERVER["REQUEST_METHOD"] = $in["metodo_http"] ?? "POST";
 $_SERVER["REMOTE_ADDR"]    = $in["ip"] ?? "127.0.0.1";
@@ -35,6 +35,7 @@ ini_set("error_log", "$tmp/error.log");
 if (Database::get()->query("SELECT DATABASE()")->fetchColumn() !== "rastroinventario_test") abortar("conexión a otra base");
 
 $_POST = $in["post"] ?? [];
+$_GET  = $in["get"] ?? [];
 if (!empty($in["csrf"])) $_POST["csrf_token"] = CsrfToken::generate();
 
 register_shutdown_function(function () use ($tmp): void {

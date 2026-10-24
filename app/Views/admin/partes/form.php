@@ -49,7 +49,7 @@
       <label class="form-label-dark">Imagen de la Parte</label>
       <input type="file" name="imagen" class="form-control dark-input" accept="image/*">
       <div class="text-secondary small mt-1">JPG / PNG / GIF / WebP — máximo 5 MB. Se vuelve a codificar y se genera la miniatura (420×315 px).</div>
-      <?php if(!empty($parte["thumbnail"])): ?>
+      <?php if(ImageHelper::existe($parte["thumbnail"]??null,"thumbnails")): ?>
       <div class="mt-3 d-flex align-items-center gap-3">
         <img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($parte["thumbnail"])?>" class="thumb-preview" alt="Imagen actual">
         <span class="text-secondary small">Imagen actual. Sube una nueva para reemplazarla.</span>

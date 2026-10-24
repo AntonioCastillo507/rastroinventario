@@ -30,7 +30,7 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
       <button type="submit" class="visually-hidden" tabindex="-1" aria-hidden="true"></button><!-- Enter en una cantidad actualiza, no quita -->
       <?php foreach($cart as $id=>$item): ?>
       <div class="cart-item d-flex align-items-center gap-3">
-        <?php if($item["thumbnail"]): ?><img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($item["thumbnail"])?>" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--border)" alt=""><?php else: ?><div style="width:70px;height:70px;background:var(--bg-3);border-radius:8px;display:flex;align-items:center;justify-content:center"><i class="bi bi-gear text-secondary fs-4"></i></div><?php endif; ?>
+        <?php if(ImageHelper::existe($item["thumbnail"]??null,"thumbnails")): ?><img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($item["thumbnail"])?>" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--border)" alt=""><?php else: ?><div style="width:70px;height:70px;background:var(--bg-3);border-radius:8px;display:flex;align-items:center;justify-content:center"><i class="bi bi-gear text-secondary fs-4"></i></div><?php endif; ?>
         <div class="flex-fill">
           <div class="text-white fw-semibold"><?=htmlspecialchars($item["nombre"])?></div>
           <?php if($item["marca"]??""): ?><div class="text-secondary small"><?=htmlspecialchars($item["marca"])?></div><?php endif; ?>

@@ -70,8 +70,8 @@ class ParteController extends BaseController {
         $this->requirePermission("partes","puede_borrar");
         if (!$this->isPost()) $this->redirect(APP_URL."/admin/?mod=partes"); // cambia datos: solo POST
         CsrfToken::verify();
-        $id=Sanitizer::get("id","int"); $p=$this->pm->findById($id);
-        if ($p) ImageHelper::delete($p["imagen_grande"],$p["thumbnail"]);
+        $id=Sanitizer::get("id","int");
+        // Solo se desactiva: las fotos se quedan en disco porque los pedidos y las ventas viejas siguen refiriéndose a la pieza
         $this->pm->softDelete($id);
         $this->redirect(APP_URL."/admin/?mod=partes","Parte desactivada.");
     }

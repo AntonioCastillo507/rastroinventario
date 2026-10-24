@@ -83,7 +83,7 @@
       <?php foreach($partesDestacadas as $p): ?>
       <div class="pub-card">
         <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="pub-card-img-wrap">
-          <?php if($p["thumbnail"]): ?>
+          <?php if(ImageHelper::existe($p["thumbnail"],"thumbnails")): ?>
           <img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($p["thumbnail"])?>" class="pub-card-img" alt="<?=htmlspecialchars($p["nombre"])?>">
           <?php endif; ?>
           <span class="pub-card-badge <?=$p["cantidad"]>5?"badge-stock-ok":($p["cantidad"]>0?"badge-stock-low":"badge-stock-out")?>">

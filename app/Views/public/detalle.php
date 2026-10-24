@@ -1,10 +1,12 @@
 <?php
 $title=$parte["nombre"]." — Rastro del Istmo"; // el encabezado ya escapa el título
 include BASE_PATH."/app/Views/layouts/public_header.php";
+if (!function_exists("starsHtml")) { // la vista puede incluirse más de una vez en un proceso (pruebas)
 function starsHtml(float $n,int $sz=16): string {
     $out="<span>";
     for($i=1;$i<=5;$i++) $out.="<i class=\"bi bi-star".($i<=$n?"-fill":($i-0.5<=$n?"-half":" text-secondary")).($i<=$n?" filled":" empty")."\" style=\"font-size:{$sz}px\"></i>";
     return $out."</span>";
+}
 }
 ?>
 <a href="javascript:history.back()" class="btn-float-back" title="Volver"><i class="bi bi-arrow-left"></i></a>
@@ -21,8 +23,9 @@ function starsHtml(float $n,int $sz=16): string {
   <div class="row g-5 mb-5">
     <div class="col-md-5">
       <div style="aspect-ratio:4/3;background:var(--bg-2) url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' fill=\'%23363C45\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0\'/%3E%3C/svg%3E') center/64px no-repeat;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)">
-        <?php if($parte["imagen_grande"]||$parte["thumbnail"]): ?>
-        <img src="<?=APP_URL?>/uploads/<?=$parte["imagen_grande"]?"parts/".htmlspecialchars($parte["imagen_grande"]):"thumbnails/".htmlspecialchars($parte["thumbnail"])?>" style="width:100%;height:100%;object-fit:contain" alt="<?=htmlspecialchars($parte["nombre"])?>">
+        <?php $imgRuta = ImageHelper::existe($parte["imagen_grande"],"parts") ? "parts/".$parte["imagen_grande"] : (ImageHelper::existe($parte["thumbnail"],"thumbnails") ? "thumbnails/".$parte["thumbnail"] : ""); ?>
+        <?php if($imgRuta): ?>
+        <img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($imgRuta)?>" style="width:100%;height:100%;object-fit:contain" alt="<?=htmlspecialchars($parte["nombre"])?>">
         <?php endif; ?>
       </div>
     </div>

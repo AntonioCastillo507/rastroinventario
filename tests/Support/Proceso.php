@@ -4,7 +4,7 @@ namespace Tests\Support;
 /** Ejecuta una acción de un controlador en un proceso PHP aparte (para las que terminan en exit o redirect). */
 final class Proceso {
     /**
-     * @param array{clase:string,accion:string,post?:array,sesion?:array,ip?:string,csrf?:bool,metodo_http?:string} $entrada
+     * @param array{clase:string,accion:string,post?:array,get?:array,upload_path?:string,sesion?:array,ip?:string,csrf?:bool,metodo_http?:string} $entrada
      * @return array{cabeceras:list<string>,codigo:int,sesion:array,salida:string}
      */
     public static function accion(array $entrada): array {
