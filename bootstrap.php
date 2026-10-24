@@ -70,7 +70,6 @@ require_once BASE_PATH."/app/Utils/Itbms.php";
 require_once BASE_PATH."/app/Utils/HmacCrypto.php";
 require_once BASE_PATH."/app/Utils/RsaCrypto.php";
 require_once BASE_PATH."/app/Utils/ImageHelper.php";
-require_once BASE_PATH."/app/Utils/objImagenes.php";
 require_once BASE_PATH."/app/Utils/EmailJsService.php";
 require_once BASE_PATH."/app/Models/BaseModel.php";
 require_once BASE_PATH."/app/Models/LogModel.php";
