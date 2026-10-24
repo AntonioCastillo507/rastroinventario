@@ -76,7 +76,7 @@
 
 - [x] Proyecto reproducible (2026-10-23): `database/` (schema, seed, demo, `crear_usuario.php`, `instalar.ps1`) y base `rastroinventario_test` creada. Falta: crear tu administrador en una base nueva con `php database\crear_usuario.php` cuando la necesites (la contraseña la tecleas tú) y decidir si se borra `backup.sql`, que sigue en disco con hashes reales.
 
-- [x] Pruebas automáticas permanentes (2026-10-23): PHPUnit 11.5 en `tests/`, `composer test` (ver README 2.4 y "Registro de sesiones"). Los 3 avisos altos de `composer audit` se cerraron después (ver el registro de la limpieza de código).xlsx`, no usa esos caminos; revisar si hay versión corregida).
+- [x] Pruebas automáticas permanentes (2026-10-23): PHPUnit 11.5 en `tests/`, `composer test` (ver README 2.4 y "Registro de sesiones"). Los 3 avisos altos de `composer audit` se cerraron después (ver el registro de la limpieza de código).
 
 ## Conteos actuales de la base (2026-10-23, después de la limpieza, con `SELECT COUNT(*)` sobre `rastroinventario`)
 | Tabla | Conteo |
