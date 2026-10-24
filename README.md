@@ -48,22 +48,58 @@ git clone https://github.com/AntonioCastillo507/rastroinventario.git
 Copia la carpeta dentro de `C:\wamp64\www\` e inicia WampServer.
 
 **3. Configurar la base de datos:**
-`app/Config/Database.php` ya trae la configuración por defecto de WampServer:
-```
-Host: localhost
-Usuario: root
-Contraseña: (vacía)
-Base de datos: rastroinventario
-```
-Si tu MySQL usa otro usuario o contraseña, edita esas constantes en ese archivo.
+La conexión (host, usuario, contraseña y nombre de la base) está en `app/Config/config.php`; por defecto trae la de WampServer (`root` sin contraseña, base `rastroinventario`). Si tu MySQL usa otros datos, cámbialos ahí.
 
-**4. Instalar dependencias:**
+**4. Instalar dependencias y crear la base:**
 ```bash
 composer install
 ```
+Sigue la sección "Instalación desde cero" de abajo para crear la base y el administrador.
 
-**5. Backup de la base de datos:**
-📎 Estructura y datos semilla: [`backup.sql`](./backup.sql)
+### 2.3. Instalación desde cero (Windows / WampServer)
+
+Todo está en la carpeta [`database/`](./database): `schema.sql` (solo estructura), `seed_basico.sql` (roles y permisos, lo mínimo para arrancar), `demo.sql` (datos inventados, opcional), `crear_usuario.php` y `instalar.ps1`. Ninguno lleva usuarios, contraseñas ni datos reales.
+
+El MySQL 8.4 de Wamp escucha en el puerto 3306 (MariaDB, en el 3307, no sirve para esto). Abre PowerShell en la carpeta del proyecto (`C:\wamp64\www\rastroinventario`).
+
+**1. Crear la base con el script** (crea la base, carga `schema.sql` y `seed_basico.sql`):
+```powershell
+.\database\instalar.ps1 -Base rastroinventario
+```
+Si PowerShell bloquea el script: `powershell -ExecutionPolicy Bypass -File .\database\instalar.ps1 -Base rastroinventario`.
+
+**1 (alternativa a mano), sin el script:**
+```powershell
+C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe -u root -h 127.0.0.1 -P 3306 -e "CREATE DATABASE rastroinventario CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+```
+```powershell
+C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe -u root -h 127.0.0.1 -P 3306 --default-character-set=utf8mb4 rastroinventario -e "source database/schema.sql"
+```
+```powershell
+C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe -u root -h 127.0.0.1 -P 3306 --default-character-set=utf8mb4 rastroinventario -e "source database/seed_basico.sql"
+```
+
+**2. Crear el administrador** (pide correo, nombre y la contraseña dos veces; la contraseña no se muestra ni se guarda en ningún archivo, y debe cumplir la política: mínimo 8 caracteres, máximo 72 bytes, no común, distinta del correo y del nombre):
+```powershell
+C:\wamp64\bin\php\php8.3.28\php.exe database\crear_usuario.php
+```
+Para otro rol: `--rol=Vendedor` (o `Consultor`). Para cambiar la clave de un usuario que ya existe: `--actualizar`.
+
+**3. Datos de demostración (opcional, solo en una base recién creada):** cargan autos, secciones, 12 partes sin imagen, 3 usuarios `@example.invalid` (sin contraseña utilizable) y 3 pedidos falsos. Con el script, añade `-Demo` al paso 1; a mano:
+```powershell
+C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe -u root -h 127.0.0.1 -P 3306 --default-character-set=utf8mb4 rastroinventario -e "source database/demo.sql"
+```
+
+**4. Base de pruebas para tests automáticos** (`rastroinventario_test`, sin datos de demostración; el script puede borrarla y recrearla con `-Recrear`, y solo con ese nombre o `rastroinventario_check`):
+```powershell
+.\database\instalar.ps1 -Base rastroinventario_test -Recrear
+```
+Para que el código use esa base, define la variable de entorno antes de lanzar PHP por consola o con `php -S` (Apache la ignora, y solo se aceptan esos dos nombres):
+```powershell
+$env:RASTRO_DB_NAME = "rastroinventario_test"
+```
+
+Los secretos de producción (`config.php`, llave RSA, `HMAC_KEY`, credenciales de MySQL) no se crean aquí; ver `ESTADO.md`.
 
 ---
 
