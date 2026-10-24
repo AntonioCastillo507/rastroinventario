@@ -1,7 +1,7 @@
 <?php
 /**
  * CsrfToken — Protección CSRF en todos los formularios POST.
- * OWASP RNF-01: Toda petición POST valida un token CSRF de sesión.
+ * Toda petición POST valida un token CSRF de sesión (OWASP).
  */
 class CsrfToken {
     public static function generate(): string {

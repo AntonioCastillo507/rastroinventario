@@ -1,8 +1,7 @@
 <?php
 /**
  * CryptoInterface — Contrato unificado para servicios criptográficos.
- * Requisito: Implementar un patrón de diseño basado en contratos (Interfaces)
- * para unificar los servicios criptográficos de la aplicación.
+ * Unifica los servicios criptográficos de la aplicación detrás de un contrato.
  */
 interface CryptoInterface {
     /** Genera un hash/firma de los datos usando la clave proporcionada. */

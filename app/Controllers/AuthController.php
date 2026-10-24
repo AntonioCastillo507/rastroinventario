@@ -1,7 +1,7 @@
 <?php
 /**
  * AuthController — Login / Logout
- * RNF-04: Bitácora de accesos + bloqueo temporal tras 3 intentos fallidos.
+ * Bitácora de accesos + bloqueo temporal tras 3 intentos fallidos.
  * OWASP: Bcrypt + CSRF en formularios.
  */
 class AuthController extends BaseController {

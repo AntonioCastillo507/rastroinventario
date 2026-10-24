@@ -21,7 +21,6 @@
     <hr style="border-color:var(--border);margin-top:2rem">
     <div class="d-flex justify-content-between flex-wrap gap-2">
       <p class="text-secondary small mb-0">&copy; <?=date("Y")?> Rastro del Istmo — Panamá</p>
-      <p class="text-secondary small mb-0">Desarrollo de Software VII | Antonio Castillo, Jamir Montenegro, Ian Torres y Samuel El-Zaghir | UTP</p>
     </div>
   </div>
 </footer>

@@ -1,8 +1,8 @@
 <?php
 /**
  * Validator — Validación de reglas de negocio.
- * RNF-05 (actualizado en el hallazgo 14): contraseña de 8 caracteres como mínimo y 72 bytes como
- * máximo, sin reglas de mayúsculas o símbolos, que no sea común ni igual al correo o al nombre.
+ * Política de contraseñas: 8 caracteres como mínimo y 72 bytes como máximo, sin reglas de
+ * mayúsculas o símbolos, que no sea común ni igual al correo o al nombre.
  */
 class Validator {
     private array $errors = [];

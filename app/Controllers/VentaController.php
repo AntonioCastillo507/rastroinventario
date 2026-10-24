@@ -1,7 +1,7 @@
 <?php
 /**
  * VentaController — Registro de ventas con firma HMAC-SHA256.
- * RNF-06: Cada venta es firmada digitalmente al registrarla.
+ * Cada venta se firma digitalmente al registrarla.
  */
 class VentaController extends BaseController {
     private VentaModel $vm;

@@ -1,7 +1,6 @@
 <?php
 /**
  * CrudInterface — Contrato estándar para operaciones CRUD.
- * Requisito: Utilizar Interfaces como contratos de clases.
  */
 interface CrudInterface {
     public function findAll(): array;

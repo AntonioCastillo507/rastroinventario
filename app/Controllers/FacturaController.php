@@ -62,7 +62,7 @@ class FacturaController extends BaseController {
         // ── Crear PDF ────────────────────────────────────────────
         $pdf = new TCPDF("P", "mm", "A4", true, "UTF-8", false);
         $pdf->SetCreator("Rastro del Istmo");
-        $pdf->SetAuthor("Rastro del Istmo - Sistema de Inventario");
+        $pdf->SetAuthor("Antonio Castillo");
         $pdf->SetTitle("Factura #{$numFactura}");
         $pdf->SetSubject("Factura Electrónica de Venta");
         $pdf->SetKeywords("factura, ITBMS, rastro, Panama");
