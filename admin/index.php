@@ -11,12 +11,8 @@ if (empty($_SESSION["user"])) {
     header("Location: " . APP_URL . "/login.php");
     exit;
 }
-// Guardia de rol: una cuenta Cliente no es staff, no entra al panel.
-$chkStaff = Database::get()->prepare(
-    "SELECT 1 FROM permisos p INNER JOIN usuario_roles ur ON ur.rol_id = p.rol_id WHERE ur.usuario_id = ? LIMIT 1"
-);
-$chkStaff->execute([$_SESSION["user"]["id"]]);
-if (!$chkStaff->fetchColumn()) {
+// Guardia de rol: una cuenta sin ningún permiso (como un Cliente) no es staff, no entra al panel.
+if (!(new UserModel())->tieneAccesoPanel((int)$_SESSION["user"]["id"])) {
     $_SESSION["flash"] = ["msg" => "Tu cuenta no tiene acceso al panel administrativo.", "type" => "danger"];
     header("Location: " . APP_URL . "/");
     exit;

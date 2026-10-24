@@ -31,6 +31,11 @@ class UserModel extends BaseModel {
         $upd=array_intersect_key($data,array_flip($allowed));
         if (!empty($upd)) $this->update($id,$upd);
     }
+    /** Entra al panel quien tenga al menos un permiso en alguno de sus roles (la regla de admin/index.php y del login) */
+    public function tieneAccesoPanel(int $uid): bool {
+        $s=$this->db->prepare("SELECT 1 FROM permisos p INNER JOIN usuario_roles ur ON ur.rol_id = p.rol_id WHERE ur.usuario_id = ? LIMIT 1");
+        $s->execute([$uid]); return (bool)$s->fetchColumn();
+    }
     /** Nombre del rol que manda en el sistema (el código lo busca por nombre, como el de Cliente) */
     public const ROL_ADMIN = "Administrador";
     public function esAdministrador(int $uid): bool {

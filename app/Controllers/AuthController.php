@@ -45,10 +45,14 @@ class AuthController extends BaseController {
         $_SESSION["last_activity"] = time();
         $roles = array_column($um->getRoles($user["id"]), "nombre");
         $_SESSION["user_roles"] = $roles;
-        // Solo el personal (Administrador/Vendedor/Consultor) entra al panel admin.
-        // Un Cliente que use este mismo login regresa a la tienda pública.
-        $esStaff = array_intersect(["Administrador", "Vendedor", "Consultor"], $roles);
-        $this->redirect($esStaff ? APP_URL . "/admin/" : APP_URL . "/");
+        $this->redirect($this->destinoTrasLogin((int)$user["id"]));
+    }
+    /**
+     * Al panel va quien tenga al menos un permiso en alguno de sus roles (la misma regla que admin/index.php),
+     * también con un rol personalizado. Un Cliente que use este mismo login regresa a la tienda pública.
+     */
+    public function destinoTrasLogin(int $uid): string {
+        return (new UserModel())->tieneAccesoPanel($uid) ? APP_URL . "/admin/" : APP_URL . "/";
     }
     public function doLogout(): void { destruirSesion(); header("Location: " . APP_URL . "/login.php"); exit; }
 

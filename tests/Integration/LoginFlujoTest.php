@@ -18,6 +18,7 @@ final class LoginFlujoTest extends TestCase {
     private string $ip;
     private ?int $uid = null;
     private array $correos = [];
+    private array $roles = [];
 
     protected function setUp(): void {
         parent::setUp();
@@ -36,6 +37,7 @@ final class LoginFlujoTest extends TestCase {
         $in = implode(",", array_fill(0, count($this->correos), "?"));
         $this->db->prepare("DELETE FROM login_logs WHERE email_intento IN ($in)")->execute($this->correos);
         if ($this->uid) $this->db->prepare("DELETE FROM usuarios WHERE id = ?")->execute([$this->uid]);
+        foreach ($this->roles as $id) $this->db->prepare("DELETE FROM roles WHERE id = ?")->execute([$id]); // sus permisos y asignaciones caen en cascada
         parent::tearDown();
     }
 
@@ -101,6 +103,47 @@ final class LoginFlujoTest extends TestCase {
             "post" => ["email" => $this->email, "password" => self::CLAVE]]);
         $this->assertSame($this->uid, (int)$r["sesion"]["user"]["id"], "desde otra IP el mismo correo entra");
         $this->correos[] = $this->email;
+    }
+
+    /** Rol propio con tantos permisos como módulos se pasen, asignado a la cuenta de prueba */
+    private function rolPropio(array $modulos): int {
+        $this->db->prepare("INSERT INTO roles (nombre, descripcion) VALUES (?, 'rol de prueba')")->execute(["Rol prueba " . bin2hex(random_bytes(4))]);
+        $id = (int)$this->db->lastInsertId();
+        $this->roles[] = $id;
+        foreach ($modulos as $m) $this->db->prepare("INSERT INTO permisos (rol_id, modulo, puede_ver) VALUES (?, ?, 1)")->execute([$id, $m]);
+        $this->db->prepare("INSERT INTO usuario_roles (usuario_id, rol_id) VALUES (?, ?)")->execute([$this->uid, $id]);
+        return $id;
+    }
+
+    public function testUnRolPersonalizadoConUnSoloPermisoEntraAlPanel(): void {
+        $this->rolPropio(["comentarios"]);
+        $r = $this->login($this->email, self::CLAVE);
+        $this->assertSame($this->uid, (int)$r["sesion"]["user"]["id"]);
+        $this->assertNotContains("Administrador", $r["sesion"]["user_roles"], "no es uno de los tres roles de siempre");
+        $this->assertSame(APP_URL . "/admin/", (new \AuthController())->destinoTrasLogin($this->uid));
+        if (Proceso::veCabeceras()) $this->assertSame(APP_URL . "/admin/", Proceso::ubicacion($r), "el login lo manda al panel");
+    }
+
+    public function testUnRolPersonalizadoSinPermisosVaALaTienda(): void {
+        $this->rolPropio([]);
+        $r = $this->login($this->email, self::CLAVE);
+        $this->assertSame(APP_URL . "/", (new \AuthController())->destinoTrasLogin($this->uid));
+        if (Proceso::veCabeceras()) $this->assertSame(APP_URL . "/", Proceso::ubicacion($r));
+    }
+
+    public function testUnClienteVaALaTiendaYLosRolesDelPersonalAlPanel(): void {
+        $auth = new \AuthController();
+        foreach (["Cliente" => APP_URL . "/", "Administrador" => APP_URL . "/admin/", "Vendedor" => APP_URL . "/admin/", "Consultor" => APP_URL . "/admin/"] as $rol => $destino) {
+            $this->db->prepare("DELETE FROM usuario_roles WHERE usuario_id = ?")->execute([$this->uid]);
+            $this->db->prepare("INSERT INTO usuario_roles (usuario_id, rol_id) SELECT ?, id FROM roles WHERE nombre = ?")->execute([$this->uid, $rol]);
+            $this->assertSame($destino, $auth->destinoTrasLogin($this->uid), $rol);
+        }
+    }
+
+    public function testElLoginYElPanelUsanLaMismaReglaDeAcceso(): void {
+        $this->assertStringContainsString("tieneAccesoPanel", file_get_contents(BASE_PATH . "/app/Controllers/AuthController.php"));
+        $this->assertStringContainsString("tieneAccesoPanel", file_get_contents(BASE_PATH . "/admin/index.php"));
+        $this->assertStringNotContainsString("[\"Administrador\", \"Vendedor\", \"Consultor\"]", file_get_contents(BASE_PATH . "/app/Controllers/AuthController.php"), "sin lista fija de roles");
     }
 
     public function testSinTokenCsrfNoSeProcesaNada(): void {
