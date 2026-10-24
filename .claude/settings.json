@@ -1,5 +1,14 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(php -l *)",
+      "Bash(/c/wamp64/bin/php/php8.3.28/php.exe -l *)",
+      "mcp__Claude_Browser__find",
+      "mcp__Claude_Browser__get_page_text",
+      "mcp__Claude_Browser__read_page",
+      "mcp__Claude_Browser__read_console_messages",
+      "mcp__Claude_Browser__tabs_context"
+    ],
     "deny": [
       "Read(./app/Config/rsa_secret.php)",
       "Read(./.env)"
