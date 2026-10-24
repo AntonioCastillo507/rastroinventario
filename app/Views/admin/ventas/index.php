@@ -28,4 +28,5 @@
 </table>
 </div>
 </div>
+<?php $pagBase=APP_URL."/admin/"; include BASE_PATH."/app/Views/layouts/paginacion.php"; ?>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>

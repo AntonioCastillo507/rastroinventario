@@ -39,6 +39,11 @@
             "@putenv RASTRO_DB_NAME=rastroinventario_test",
             "phpunit --testsuite Integration"
         ],
+        "test:volumen": [
+            "@putenv XDEBUG_MODE=off",
+            "@putenv RASTRO_DB_NAME=rastroinventario_test",
+            "php tests/Support/cargar_volumen.php"
+        ],
         "test:reset": "powershell -NoProfile -ExecutionPolicy Bypass -File database/instalar.ps1 -Base rastroinventario_test -Recrear"
     }
 }

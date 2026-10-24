@@ -41,8 +41,10 @@ class UserController extends BaseController {
 
     public function index(): void {
         $this->requirePermission("usuarios");
-        $usuarios = $this->um->findAllWithRoles();
-        $this->view("admin/usuarios/index", compact("usuarios"));
+        $pag      = Paginador::crear(Sanitizer::get("page"), $this->um->contar(), Paginador::PANEL);
+        $usuarios = $this->um->findAllWithRoles($pag);
+        $pagParams = ["mod"=>"usuarios"];
+        $this->view("admin/usuarios/index", compact("usuarios","pag","pagParams"));
     }
     public function crear(): void {
         $this->requirePermission("usuarios", "puede_crear");

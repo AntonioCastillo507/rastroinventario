@@ -11,9 +11,11 @@ class ParteController extends BaseController {
         $filtro  = Sanitizer::get("filtro") ?: "all";
         $orden   = Sanitizer::get("orden")  ?: "recientes";
         $seccion = Sanitizer::get("seccion","int"); // <-- NUEVO: filtro por sección
-        $partes  = $this->pm->findAllWithDetails($q, $filtro, $orden, $seccion);
+        $pag     = Paginador::crear(Sanitizer::get("page"), $this->pm->contarAdmin($q, $filtro, $seccion), Paginador::PANEL);
+        $partes  = $this->pm->findAllWithDetails($q, $filtro, $orden, $seccion, $pag);
         $secciones = $this->sm->findActive(); // para el select de filtro
-        $this->view("admin/partes/index", compact("partes","q","filtro","orden","seccion","secciones"));
+        $pagParams = ["mod"=>"partes", "q"=>$q, "filtro"=>$filtro==="all"?"":$filtro, "orden"=>$orden==="recientes"?"":$orden, "seccion"=>$seccion?:""];
+        $this->view("admin/partes/index", compact("partes","q","filtro","orden","seccion","secciones","pag","pagParams"));
     }
 
     public function crear(): void {

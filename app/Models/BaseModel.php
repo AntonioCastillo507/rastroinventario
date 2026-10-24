@@ -12,6 +12,10 @@ abstract class BaseModel implements CrudInterface {
     public function findAll(): array {
         return $this->db->query("SELECT * FROM `{$this->table}` ORDER BY {$this->pk} DESC")->fetchAll();
     }
+    /** Total de filas de la tabla (para paginar sin cargar nada) */
+    public function contar(): int {
+        return (int)$this->db->query("SELECT COUNT(*) FROM `{$this->table}`")->fetchColumn();
+    }
     public function findById(int $id): array|false {
         $s = $this->db->prepare("SELECT * FROM `{$this->table}` WHERE {$this->pk}=?");
         $s->execute([$id]); return $s->fetch();

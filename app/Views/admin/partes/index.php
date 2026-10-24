@@ -60,4 +60,5 @@
   <?php if(empty($partes)): ?><tr><td colspan="9" class="text-center text-secondary py-4">Sin resultados con esos filtros.</td></tr><?php endif; ?>
   </tbody>
 </table></div></div>
+<?php $pagBase=APP_URL."/admin/"; include BASE_PATH."/app/Views/layouts/paginacion.php"; ?>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>

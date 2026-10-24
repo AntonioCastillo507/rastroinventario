@@ -2,12 +2,12 @@
 class PedidoModel extends BaseModel {
     protected string $table = "pedidos";
 
-    public function findAllWithItems(): array {
-        return $this->query(
-            "SELECT p.*, COUNT(pi.id) as total_items
-             FROM pedidos p LEFT JOIN pedido_items pi ON pi.pedido_id=p.id
-             GROUP BY p.id ORDER BY p.creado_en DESC"
-        );
+    /** Con $pag trae esa página; sin $pag, todo. p.id DESC desempata los pedidos de un mismo segundo */
+    public function findAllWithItems(?Paginador $pag=null): array {
+        $sql = "SELECT p.*, COUNT(pi.id) as total_items
+                FROM pedidos p LEFT JOIN pedido_items pi ON pi.pedido_id=p.id
+                GROUP BY p.id ORDER BY p.creado_en DESC, p.id DESC";
+        return $this->query($pag ? $sql.$pag->sql() : $sql);
     }
 
     public function findWithItems(int $id): array|false {

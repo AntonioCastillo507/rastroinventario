@@ -2,31 +2,60 @@
 class ParteModel extends BaseModel {
     protected string $table = "partes";
 
-    public function findAllWithDetails(string $q="", string $filtro="", string $orden="recientes", int $seccionId=0): array {
-        $sql="SELECT p.*,a.marca,a.modelo,a.anio,s.nombre AS seccion,u.nombre AS creador
-              FROM partes p LEFT JOIN autos a ON a.id=p.auto_id LEFT JOIN secciones s ON s.id=p.seccion_id LEFT JOIN usuarios u ON u.id=p.creado_por WHERE p.activo=1";
-        $params=[];
-        if ($q){$sql.=" AND (p.nombre LIKE ? OR a.marca LIKE ? OR a.modelo LIKE ?)";$params=["%$q%","%$q%","%$q%"];}
-        if ($seccionId){$sql.=" AND p.seccion_id=?";$params[]=$seccionId;}
-        $sql.=match($filtro){"stock_bajo"=>" AND p.cantidad<=5 AND p.cantidad>0","agotado"=>" AND p.cantidad=0","con_stock"=>" AND p.cantidad>0",default=>""};
-        $sql.=match($orden){"precio_asc"=>" ORDER BY p.precio ASC","precio_desc"=>" ORDER BY p.precio DESC","stock_asc"=>" ORDER BY p.cantidad ASC","stock_desc"=>" ORDER BY p.cantidad DESC","nombre"=>" ORDER BY p.nombre ASC","mas_vendidas"=>" ORDER BY (SELECT COALESCE(SUM(vp.cantidad),0) FROM vendido_parte vp WHERE vp.parte_id=p.id) DESC",default=>" ORDER BY p.id DESC"};
-        return $this->query($sql,$params);
+    private const FROM_ADMIN = "FROM partes p LEFT JOIN autos a ON a.id=p.auto_id LEFT JOIN secciones s ON s.id=p.seccion_id LEFT JOIN usuarios u ON u.id=p.creado_por";
+    private const FROM_PUBLIC = "FROM partes p LEFT JOIN autos a ON a.id=p.auto_id LEFT JOIN secciones s ON s.id=p.seccion_id";
+
+    /** WHERE y parámetros del listado del panel: el mismo para contar y para traer la página */
+    private function whereAdmin(string $q, string $filtro, int $seccionId): array {
+        $w = " WHERE p.activo=1"; $params = [];
+        if ($q) { $w .= " AND (p.nombre LIKE ? OR a.marca LIKE ? OR a.modelo LIKE ?)"; $params = ["%$q%","%$q%","%$q%"]; }
+        if ($seccionId) { $w .= " AND p.seccion_id=?"; $params[] = $seccionId; }
+        $w .= match($filtro){"stock_bajo"=>" AND p.cantidad<=5 AND p.cantidad>0","agotado"=>" AND p.cantidad=0","con_stock"=>" AND p.cantidad>0",default=>""};
+        return [$w, $params];
+    }
+    /** Cada orden termina en p.id DESC: con empates (mismo precio, mismo stock) las páginas no repiten ni saltan filas */
+    private function ordenAdmin(string $orden): string {
+        return match($orden){"precio_asc"=>" ORDER BY p.precio ASC, p.id DESC","precio_desc"=>" ORDER BY p.precio DESC, p.id DESC","stock_asc"=>" ORDER BY p.cantidad ASC, p.id DESC","stock_desc"=>" ORDER BY p.cantidad DESC, p.id DESC","nombre"=>" ORDER BY p.nombre ASC, p.id DESC","mas_vendidas"=>" ORDER BY (SELECT COALESCE(SUM(vp.cantidad),0) FROM vendido_parte vp WHERE vp.parte_id=p.id) DESC, p.id DESC",default=>" ORDER BY p.id DESC"};
+    }
+    public function contarAdmin(string $q="", string $filtro="", int $seccionId=0): int {
+        [$w, $params] = $this->whereAdmin($q, $filtro, $seccionId);
+        return (int)$this->query("SELECT COUNT(*) AS n ".self::FROM_ADMIN.$w, $params)[0]["n"];
+    }
+    public function findAllWithDetails(string $q="", string $filtro="", string $orden="recientes", int $seccionId=0, ?Paginador $pag=null): array {
+        [$w, $params] = $this->whereAdmin($q, $filtro, $seccionId);
+        $sql = "SELECT p.*,a.marca,a.modelo,a.anio,s.nombre AS seccion,u.nombre AS creador ".self::FROM_ADMIN.$w.$this->ordenAdmin($orden);
+        if ($pag) $sql .= $pag->sql();
+        return $this->query($sql, $params);
     }
     public function findById(int $id): array|false {
         $s=$this->db->prepare("SELECT p.*,a.marca,a.modelo,a.anio,s.nombre AS seccion FROM partes p LEFT JOIN autos a ON a.id=p.auto_id LEFT JOIN secciones s ON s.id=p.seccion_id WHERE p.id=?");
         $s->execute([$id]); return $s->fetch();
     }
-    public function findPublic(string $q="",int $secId=0,int $limit=0,string $marca="",float $pMin=0,float $pMax=0,string $orden="recientes"): array {
-        $sql="SELECT p.*,a.marca,a.modelo,a.anio,s.nombre AS seccion FROM partes p LEFT JOIN autos a ON a.id=p.auto_id LEFT JOIN secciones s ON s.id=p.seccion_id WHERE p.activo=1 AND p.cantidad>0";
-        $params=[];
-        if ($q){$sql.=" AND (p.nombre LIKE ? OR a.marca LIKE ? OR a.modelo LIKE ? OR p.descripcion LIKE ?)";$params=["%$q%","%$q%","%$q%","%$q%"];}
-        if ($secId){$sql.=" AND p.seccion_id=?";$params[]=$secId;}
-        if ($marca){$sql.=" AND a.marca=?";$params[]=$marca;}
-        if ($pMin>0){$sql.=" AND p.precio>=?";$params[]=$pMin;}
-        if ($pMax>0){$sql.=" AND p.precio<=?";$params[]=$pMax;}
-        $sql.=match($orden){"precio_asc"=>" ORDER BY p.precio ASC","precio_desc"=>" ORDER BY p.precio DESC","stock"=>" ORDER BY p.cantidad DESC","nombre"=>" ORDER BY p.nombre ASC",default=>" ORDER BY p.id DESC"};
-        if ($limit>0) $sql.=" LIMIT $limit";
-        return $this->query($sql,$params);
+
+    /** WHERE y parámetros del catálogo público: el mismo para contar y para traer la página */
+    private function wherePublic(string $q, int $secId, string $marca, float $pMin, float $pMax): array {
+        $w = " WHERE p.activo=1 AND p.cantidad>0"; $params = [];
+        if ($q) { $w .= " AND (p.nombre LIKE ? OR a.marca LIKE ? OR a.modelo LIKE ? OR p.descripcion LIKE ?)"; $params = ["%$q%","%$q%","%$q%","%$q%"]; }
+        if ($secId) { $w .= " AND p.seccion_id=?"; $params[] = $secId; }
+        if ($marca) { $w .= " AND a.marca=?"; $params[] = $marca; }
+        if ($pMin>0) { $w .= " AND p.precio>=?"; $params[] = $pMin; }
+        if ($pMax>0) { $w .= " AND p.precio<=?"; $params[] = $pMax; }
+        return [$w, $params];
+    }
+    private function ordenPublic(string $orden): string {
+        return match($orden){"precio_asc"=>" ORDER BY p.precio ASC, p.id DESC","precio_desc"=>" ORDER BY p.precio DESC, p.id DESC","stock"=>" ORDER BY p.cantidad DESC, p.id DESC","nombre"=>" ORDER BY p.nombre ASC, p.id DESC",default=>" ORDER BY p.id DESC"};
+    }
+    public function contarPublic(string $q="",int $secId=0,string $marca="",float $pMin=0,float $pMax=0): int {
+        [$w, $params] = $this->wherePublic($q, $secId, $marca, $pMin, $pMax);
+        return (int)$this->query("SELECT COUNT(*) AS n ".self::FROM_PUBLIC.$w, $params)[0]["n"];
+    }
+    /** Con $pag trae esa página; sin $pag, todo (o los primeros $limit, como la portada) */
+    public function findPublic(string $q="",int $secId=0,int $limit=0,string $marca="",float $pMin=0,float $pMax=0,string $orden="recientes",?Paginador $pag=null): array {
+        [$w, $params] = $this->wherePublic($q, $secId, $marca, $pMin, $pMax);
+        $sql = "SELECT p.*,a.marca,a.modelo,a.anio,s.nombre AS seccion ".self::FROM_PUBLIC.$w.$this->ordenPublic($orden);
+        if ($pag) $sql .= $pag->sql();
+        elseif ($limit>0) $sql .= " LIMIT ".(int)$limit;
+        return $this->query($sql, $params);
     }
     public function findFeatured(int $limit=8): array { return $this->findPublic("",0,$limit,"",0,0,"stock"); }
     public function search(string $q): array { return $this->findPublic($q); }

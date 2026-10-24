@@ -94,6 +94,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
     </div>
     <?php endforeach; ?>
   </div>
+  <?php $pagBase=APP_URL."/"; include BASE_PATH."/app/Views/layouts/paginacion.php"; ?>
   <?php endif; ?>
 </div>
 <?php include BASE_PATH."/app/Views/layouts/public_footer.php"; ?>

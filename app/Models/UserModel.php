@@ -11,7 +11,11 @@ class UserModel extends BaseModel {
     public function bloquear(int $id): void { $this->db->prepare("UPDATE usuarios SET bloqueado=1 WHERE id=?")->execute([$id]); }
     public function resetIntentos(int $id): void { $this->db->prepare("UPDATE usuarios SET intentos_fallidos=0,bloqueado=0 WHERE id=?")->execute([$id]); }
     public function toggleActivo(int $id): void { $this->db->prepare("UPDATE usuarios SET activo=IF(activo=1,0,1) WHERE id=?")->execute([$id]); }
-    public function findAllWithRoles(): array { return $this->query("SELECT u.*,GROUP_CONCAT(r.nombre SEPARATOR \", \") AS roles FROM usuarios u LEFT JOIN usuario_roles ur ON ur.usuario_id=u.id LEFT JOIN roles r ON r.id=ur.rol_id GROUP BY u.id ORDER BY u.id DESC"); }
+    /** Con $pag trae esa página; sin $pag, todo (u.id es único: el orden ya es estable) */
+    public function findAllWithRoles(?Paginador $pag=null): array {
+        $sql = "SELECT u.*,GROUP_CONCAT(r.nombre SEPARATOR \", \") AS roles FROM usuarios u LEFT JOIN usuario_roles ur ON ur.usuario_id=u.id LEFT JOIN roles r ON r.id=ur.rol_id GROUP BY u.id ORDER BY u.id DESC";
+        return $this->query($pag ? $sql.$pag->sql() : $sql);
+    }
     public function getRoles(int $uid): array { return $this->query("SELECT r.* FROM roles r INNER JOIN usuario_roles ur ON ur.rol_id=r.id WHERE ur.usuario_id=?",[$uid]); }
     public function setRoles(int $uid, array $rids): void {
         $this->db->prepare("DELETE FROM usuario_roles WHERE usuario_id=?")->execute([$uid]);

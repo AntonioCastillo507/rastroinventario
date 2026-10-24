@@ -17,9 +17,12 @@ class PublicController extends BaseController {
         $marca=Sanitizer::get("marca"); $pMin=(float)(Sanitizer::get("precio_min")?:0); $pMax=(float)(Sanitizer::get("precio_max")?:0); $orden=Sanitizer::get("orden")?:"recientes";
         $shared=$this->sharedData();
         if ($ver==="catalogo"||$q||$secId||$marca||$pMin||$pMax){
-            $partes=$this->pam->findPublic($q,$secId,0,$marca,$pMin,$pMax,$orden);
+            $pag=Paginador::crear(Sanitizer::get("page"),$this->pam->contarPublic($q,$secId,$marca,$pMin,$pMax),Paginador::CATALOGO);
+            $partes=$this->pam->findPublic($q,$secId,0,$marca,$pMin,$pMax,$orden,$pag);
             $marcas=$this->pam->getMarcas(); [$precioMin,$precioMax]=$this->pam->getPrecioRango();
-            $this->view("public/catalogo",array_merge($shared,compact("partes","q","secId","marca","pMin","pMax","orden","marcas","precioMin","precioMax")));
+            // Filtros que viajan en los enlaces de página (lo vacío o por defecto se omite)
+            $pagParams=["ver"=>"catalogo","q"=>$q,"seccion"=>$secId?:"","marca"=>$marca,"precio_min"=>$pMin>0?$pMin:"","precio_max"=>$pMax>0?$pMax:"","orden"=>$orden==="recientes"?"":$orden];
+            $this->view("public/catalogo",array_merge($shared,compact("partes","q","secId","marca","pMin","pMax","orden","marcas","precioMin","precioMax","pag","pagParams")));
         } else {
             $partesDestacadas=$this->pam->findFeatured(8);
             $this->view("public/home",array_merge($shared,compact("partesDestacadas","q")));

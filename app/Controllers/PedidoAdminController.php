@@ -5,8 +5,10 @@ class PedidoAdminController extends BaseController {
 
     public function index(): void {
         $this->requirePermission("pedidos");
-        $pedidos=$this->pm->findAllWithItems();
-        $this->view("admin/pedidos/index",compact("pedidos"));
+        $pag=Paginador::crear(Sanitizer::get("page"), $this->pm->contar(), Paginador::PANEL);
+        $pedidos=$this->pm->findAllWithItems($pag);
+        $pagParams=["mod"=>"pedidos"];
+        $this->view("admin/pedidos/index",compact("pedidos","pag","pagParams"));
     }
     public function detalle(): void {
         $this->requirePermission("pedidos");

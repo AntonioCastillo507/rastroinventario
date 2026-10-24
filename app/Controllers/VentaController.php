@@ -10,9 +10,12 @@ class VentaController extends BaseController {
 
     public function index(): void {
         $this->requirePermission("ventas");
-        $ventas = $this->vm->findAllWithDetails();
+        $pag    = Paginador::crear(Sanitizer::get("page"), $this->vm->contar(), Paginador::PANEL);
+        $ventas = $this->vm->findAllWithDetails($pag);
         foreach ($ventas as &$v) $v["firma_ok"] = DigitalSignature::verifyVenta($v);
-        $this->view("admin/ventas/index",compact("ventas"));
+        unset($v);
+        $pagParams = ["mod"=>"ventas"];
+        $this->view("admin/ventas/index",compact("ventas","pag","pagParams"));
     }
     public function crear(): void {
         $this->requirePermission("ventas","puede_crear");
