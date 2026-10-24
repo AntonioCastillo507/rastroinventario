@@ -54,6 +54,8 @@ La conexión (host, usuario, contraseña y nombre de la base) está en `app/Conf
 ```bash
 composer install
 ```
+**Tras clonar el proyecto hay que correr `composer install` siempre**: además de TCPDF y PhpSpreadsheet, genera el autoload (`vendor/autoload.php`) que carga todas las clases de `app/` (classmap definido en `composer.json`, porque esas clases no tienen namespace). Sin `vendor/` la aplicación muestra la página de error genérica y deja en `logs/error.log` el motivo ("Falta vendor/autoload.php"). Si agregas una clase nueva en `app/Controllers`, `app/Models`, `app/Utils` o `app/Interfaces`, corre `composer dump-autoload` para que se encuentre.
+
 Sigue la sección "Instalación desde cero" de abajo para crear la base y el administrador.
 
 ### 2.3. Instalación desde cero (Windows / WampServer)
