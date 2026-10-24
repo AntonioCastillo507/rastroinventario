@@ -56,7 +56,7 @@ Estándares: WCAG = https://www.w3.org/WAI/WCAG22/Understanding/ + criterio. Bay
 | M11 | Campos | Sin `autocomplete` en nombre, teléfono y correo (carrito, compra, perfil, registro, panel) | `noAutocomplete` en 7 pantallas | Baymard (autocompletar); WCAG 1.3.5 (no leído en esta sesión) | atributo `autocomplete` |
 | M12 | Confirmaciones | `confirm()` nativo en quitar/eliminar/entregar; desactivar usuarios sin ninguna (ya anotado en ESTADO.md) | `carrito.php`, `partes/index.php:52`, `autos`, `secciones`, `comentarios`, `pedidos/detalle.php:62` | NN/g: confirmaciones específicas, botones con el verbo | Modal propio con nombre del objeto |
 | M13 | Movimiento | Tarjetas suben 4–6 px al pasar el cursor, zoom de imagen; sin `prefers-reduced-motion` | `style.css:230,246,308,311`; 0 coincidencias de `prefers-reduced-motion` | WCAG 2.3.3 (AAA, buena práctica); web.dev | Media query para anular |
-| M14 | Plantilla | Datos fijos en el código: nombre, teléfono, correo, horario, texto de "Quiénes somos", crédito "Desarrollo de Software VII … UTP"; datos personales reales en la demo (correos y teléfonos de clientes en pedidos y usuarios) | `public_footer.php:6-24`, `admin_footer.php`, `home.php:124-130`; lista de pedidos | — | Pasar a configuración; datos de demo ficticios |
+| M14 | Plantilla | Datos fijos en el código: nombre, teléfono, correo, horario, texto de "Quiénes somos", créditos fijos en el pie; datos personales reales en la demo (correos y teléfonos de clientes en pedidos y usuarios) | `public_footer.php:6-24`, `admin_footer.php`, `home.php:124-130`; lista de pedidos | — | Pasar a configuración; datos de demo ficticios |
 | M15 | Botón flotante "Volver" | Creado por JavaScript con `history.back()`, fijo sobre el contenido, solo `title`, aparece solo si la URL tiene `action=`/`seccion=` | `main.js:26-36`, `extra.css:32-39` | WCAG 4.1.2; 2.5.8 ok (48 px) | Quitar o convertirlo en enlace real con nombre |
 
 ### Baja
@@ -245,6 +245,6 @@ Fuentes leídas (resumidas con mis palabras):
 7. Confirmaciones: ¿modal propio o `confirm()` nativo? Y si desactivar usuarios también pide confirmación.
 8. Nivel objetivo: AA de WCAG 2.2 con objetivos de 44 px (propuesto) o solo 24 px.
 9. Portada: ¿secciones por ancla (como hoy) o páginas propias (Quiénes somos, Contacto) con URL compartible?
-10. Plantilla: ¿qué texto pasa a configuración (nombre, contacto, horario, pie) y se quita el crédito "Desarrollo de Software VII | … UTP"?
+10. Plantilla: ¿qué texto pasa a configuración (nombre, contacto, horario, pie) y se quitan los créditos del pie?
 11. Datos de demostración: ¿sustituir los correos y teléfonos reales que hay en pedidos y usuarios por datos ficticios antes de venderla?
 12. Personalización: ¿el tema (colores y fuente) será un archivo de variables o se editará desde el panel?

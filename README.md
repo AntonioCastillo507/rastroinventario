@@ -1,31 +1,17 @@
 # Rastro del Istmo — Sistema de Inventario y Venta de Repuestos de Autos Usados
 
-> Universidad Tecnológica de Panamá — Facultad de Ingeniería en Sistemas Computacionales
-> Desarrollo de Software VII — Grupo 1GS131 — I Semestre 2026
-> Proyecto asignado: *Sistema de Inventario o Rastro*
+Autor: Antonio Castillo
 
 ---
 
-## 1. Información General y Evidencia Práctica
+## 1. Información General
 
 ### 1.1. Nombre del Proyecto
 **Rastro del Istmo** — Sistema de Inventario y Venta de Repuestos de Autos Usados.
 
-### 1.2. Integrantes del Equipo
-
-| Nombre | Cédula | Rol en el desarrollo |
-|---|---|---|
-| Antonio Castillo | 🔲 *8-1038-2499* | 🔲 *Líder de Proyecto — Arquitectura backend (MVC, modelos, controladores), seguridad (firmas digitales, CSRF, control de acceso) y base de datos. Frontend — Vistas, CSS y diseño de interfaz (panel admin + tienda pública)* |
-| Ian Torres | 🔲 *20-53-8265* | 🔲 *Carga de Datos de Prueba — ayudar a poblar el inventario semilla (las partes de autos, imágenes de prueba)* |
-| Jamir Montenegro | 🔲 *8-1017-1078* | 🔲 *Documentación — README, diagramas UML, manual de usuario* |
-| Samuel Elzaghir | 🔲 *20-70-8278* | 🔲 *Pruebas y QA — Casos de prueba, validación de formularios, revisión de bugs* |
-
-### 1.3. Fecha del Sistema y Versión
+### 1.2. Fecha del Sistema y Versión
 - **Versión actual:** v1.6.0
 - **Última actualización:** Julio 2026
-
-### 1.4. 🎥 Demostración en Video
-🎥 [Ver demostración en video](https://utpac-my.sharepoint.com/:v:/g/personal/antonio_castillo2_utp_ac_pa/IQB2OR8cAfv0QqIYSp6T83uPAXF06pk2A8d2YFLlOKJPgs8?e=f7uTyi)
 
 ---
 
@@ -174,8 +160,6 @@ Al registrar una venta (`vendido_parte`) o una parte de inventario, el backend c
 ---
 
 ## 5. Manual de Usuario Operativo (Flujo de Pantallas)
-
-🎥 [Ver video de uso del sistema](https://utpac-my.sharepoint.com/:v:/g/personal/antonio_castillo2_utp_ac_pa/IQB2OR8cAfv0QqIYSp6T83uPAXF06pk2A8d2YFLlOKJPgs8?e=f7uTyi)
 
 ### 5.1. Guía Visual (resumen del flujo)
 1. **Inicio** (`/rastroinventario/`) — la primera impresion del usuario al entrar
