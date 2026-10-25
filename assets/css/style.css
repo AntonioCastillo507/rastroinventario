@@ -4,7 +4,7 @@
    ══════════════════════════════════════════════════ */
 /* Los colores, radios y fuentes salen de tema.css (docs/DESIGN.md). Estos alias heredados solo apuntan
    a esos tokens, para que el CSS viejo cambie con el tema; el rediseño de cada pantalla los irá retirando. */
-:root {
+:root, [data-theme], .hero-section {
   --bg-0:      var(--canvas);
   --bg-1:      var(--surface);
   --bg-2:      var(--surface-elevated);
@@ -73,8 +73,8 @@ small,.small { color:var(--text-2); }
 .table {
   color: var(--text-1) !important;
   --bs-table-bg: transparent !important;
-  --bs-table-color: #EAECEF !important;
-  --bs-table-hover-color: #EAECEF !important;
+  --bs-table-color: var(--text) !important;
+  --bs-table-hover-color: var(--text) !important;
 }
 .table > :not(caption) > * > * {
   background-color: transparent !important;

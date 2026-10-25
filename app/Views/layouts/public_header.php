@@ -18,6 +18,7 @@ $cartCount = count($_SESSION["cart"]??[]);
 <?php require __DIR__ . "/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/style.css">
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/extra.css">
+<link rel="stylesheet" href="<?=APP_URL?>/assets/css/base.css">
 </head>
 <body class="public-body"<?php if($esHome): ?> data-bs-spy="scroll" data-bs-target="#navP" data-bs-offset="90" data-bs-smooth-scroll="true" tabindex="0"<?php endif; ?>>
 <nav class="navbar navbar-expand-lg public-nav sticky-top">
@@ -46,6 +47,7 @@ $cartCount = count($_SESSION["cart"]??[]);
             <button class="btn btn-gold" type="submit"><i class="bi bi-search"></i></button>
           </div>
         </form>
+        <button type="button" class="btn btn-sm btn-outline-secondary tema-toggle" data-tema-toggle aria-label="Cambiar a modo claro" title="Cambiar a modo claro"><i class="bi bi-sun" aria-hidden="true"></i></button>
         <!-- Carrito -->
         <a href="<?=APP_URL?>/?action=carrito" class="btn btn-sm btn-outline-secondary cart-btn">
           <i class="bi bi-cart3"></i>

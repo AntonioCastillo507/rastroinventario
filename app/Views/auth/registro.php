@@ -4,6 +4,7 @@
 <title>Crear Cuenta — Rastro del Istmo</title>
 <?php require __DIR__ . "/../layouts/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/style.css">
+<link rel="stylesheet" href="<?=APP_URL?>/assets/css/base.css">
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/extra.css">
 </head>
 <body class="login-body d-flex align-items-center justify-content-center min-vh-100 p-3">

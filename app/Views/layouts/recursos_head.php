@@ -3,3 +3,4 @@
 <link rel="stylesheet" href="<?=APP_URL?>/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
 <link rel="stylesheet" href="<?=APP_URL?>/assets/fonts/fuentes.css">
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/tema.css">
+<script src="<?=APP_URL?>/assets/js/tema.js"></script>

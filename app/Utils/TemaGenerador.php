@@ -388,8 +388,8 @@ CSS;
             $o .= "  --type-$k-family: var(--font-" . ($fam === "n" ? "numeric" : "text") . ");\n";
             $o .= "  --type-$k-size: $size;\n  --type-$k-weight: $peso;\n  --type-$k-line-height: $lh;\n  --type-$k-letter-spacing: $ls;\n";
         }
-        $o .= "}\n\n/* Modo oscuro (por defecto) */\n:root,\n:root[data-theme=\"dark\"] {\n" . self::bloqueModo("dark", $paleta) . "}\n\n";
-        $o .= "/* Modo claro */\n:root[data-theme=\"light\"] {\n" . self::bloqueModo("light", $paleta) . "}\n";
+        $o .= "}\n\n/* Modo oscuro (por defecto). Vale también para cualquier elemento con data-theme=\"dark\" y para la portada, que lleva una foto oscura en los dos modos */\n:root,\n[data-theme=\"dark\"],\n.hero-section {\n" . self::bloqueModo("dark", $paleta) . "}\n\n";
+        $o .= "/* Modo claro */\n[data-theme=\"light\"] {\n" . self::bloqueModo("light", $paleta) . "}\n";
         return $o;
     }
 
@@ -401,7 +401,7 @@ CSS;
      */
     public static function leerVariables(string $css, string $modo): array {
         $css = preg_replace('~/\*.*?\*/~s', "", $css);
-        $selector = $modo === "dark" ? ':root,\s*:root\[data-theme="dark"\]' : ':root\[data-theme="light"\]';
+        $selector = $modo === "dark" ? ':root,\s*\[data-theme="dark"\],\s*\.hero-section' : '\[data-theme="light"\]';
         $bloques = [];
         if (!preg_match('/(?:^|\})\s*:root\s*\{(.*?)\}/s', $css, $m)) throw new RuntimeException("tema.css no tiene el bloque :root");
         $bloques[] = $m[1];

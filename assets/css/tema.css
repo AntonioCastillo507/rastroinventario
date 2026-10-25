@@ -161,9 +161,10 @@
   --type-nav-link-letter-spacing: 0;
 }
 
-/* Modo oscuro (por defecto) */
+/* Modo oscuro (por defecto). Vale también para cualquier elemento con data-theme="dark" y para la portada, que lleva una foto oscura en los dos modos */
 :root,
-:root[data-theme="dark"] {
+[data-theme="dark"],
+.hero-section {
   color-scheme: dark;
   --canvas: var(--color-canvas-dark);
   --surface: var(--color-surface-card-dark);
@@ -273,7 +274,7 @@
 }
 
 /* Modo claro */
-:root[data-theme="light"] {
+[data-theme="light"] {
   color-scheme: light;
   --canvas: var(--color-surface-soft-light);
   --surface: var(--color-canvas-light);

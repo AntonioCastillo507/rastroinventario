@@ -72,8 +72,8 @@ final class TemaCssTest extends TestCase {
 
     public function testOscuroEsElModoPorDefectoYClaroSeActivaConDataTheme(): void {
         $css = self::css();
-        $this->assertMatchesRegularExpression('/:root,\s*:root\[data-theme="dark"\]\s*\{/', $css);
-        $this->assertMatchesRegularExpression('/:root\[data-theme="light"\]\s*\{/', $css);
+        $this->assertMatchesRegularExpression('/:root,\s*\[data-theme="dark"\],\s*\.hero-section\s*\{/', $css);
+        $this->assertMatchesRegularExpression('/\[data-theme="light"\]\s*\{/', $css);
         $this->assertStringNotContainsString("prefers-color-scheme", $css, "El modo no debe depender del sistema: oscuro por defecto");
     }
 

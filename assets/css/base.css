@@ -1,0 +1,227 @@
+/* ══════════════════════════════════════════════════
+   COMPORTAMIENTO GLOBAL (docs/DESIGN.md) — se carga después de style.css y extra.css.
+   Solo usa los tokens de tema.css. No rediseña pantallas: fija tipografía, foco, movimiento,
+   zonas táctiles y conecta el CSS heredado con el modo claro.
+   ══════════════════════════════════════════════════ */
+
+/* ── Tipografía ────────────────────────────────────
+   Tienda 16 px, panel 14 px, campos 16 px. Las cifras van en IBM Plex Sans con cifras tabulares. */
+body {
+  font-family: var(--font-text);
+  font-size: var(--type-body-lg-size);
+  line-height: var(--type-body-lg-line-height);
+}
+.admin-body {
+  font-size: var(--type-body-md-size);
+  line-height: var(--type-body-md-line-height);
+}
+.btn {
+  font-family: var(--font-text);
+  font-size: var(--type-button-size);
+  font-weight: var(--type-button-weight);
+  line-height: var(--type-button-line-height);
+}
+input, select, textarea, .form-control, .form-select,
+.form-control-sm, .form-select-sm, .input-group-sm > .form-control, .input-group-sm > .form-select {
+  font-family: var(--font-text);
+  font-size: var(--type-input-text-size) !important;
+  line-height: var(--type-input-text-line-height);
+}
+.num, .pub-price, .detail-price, .stat-val, .stat-pill-num, .cart-count, .total-preview, #totalEstimado,
+.fw-bold.text-success, .fs-4.text-success, .fs-5.text-success, input[type="number"], .chip-success,
+.pub-card-badge, .page-link, .chip-warning, .chip-danger, .chip-info, [style*="var(--success)"] {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Foco: anillo sólido de 2 px con 2 px de separación ───────────────── */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+body:focus-visible { outline: none; }
+.btn:focus-visible, .btn-check:focus-visible + .btn, .form-control:focus, .form-control:focus-visible,
+.form-select:focus, .form-select:focus-visible, .dark-input:focus, .dark-input:focus-visible,
+.form-check-input:focus, .form-check-input:focus-visible, .page-link:focus, .page-link:focus-visible,
+.nav-link:focus-visible, .dropdown-item:focus-visible, .navbar-toggler:focus, .navbar-toggler:focus-visible,
+.btn-close:focus, .btn-close:focus-visible, .navbar-brand:focus-visible, .accordion-button:focus {
+  outline: 2px solid var(--focus-ring) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+.form-control:focus, .form-select:focus, .dark-input:focus { border-color: var(--input-border) !important; }
+
+/* ── Movimiento reducido ───────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pub-card:hover, .sec-card:hover, .stat-card:hover, a.stat-card:hover, .btn-gold:hover, .btn-warning:hover,
+  .btn-float-back:hover, .pub-card:hover .pub-card-img { transform: none !important; }
+}
+
+/* ── Zonas táctiles: 44 px en pantallas táctiles y en móvil ───────────── */
+@media (pointer: coarse), (max-width: 767.98px) {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+  }
+  .btn-close { min-width: 44px; min-height: 44px; }
+  .form-control, .form-select, .form-control-sm, .form-select-sm, .input-group-text,
+  .dark-input, input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]), select {
+    min-height: 44px;
+  }
+  .page-link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+  .navbar-toggler, .btn-back, .icon-btn, .dropdown-item, .navbar .nav-link { min-height: 44px; display: inline-flex; align-items: center; }
+  .navbar-toggler, .btn-back, .icon-btn { min-width: 44px; justify-content: center; }
+  .dropdown-item { display: flex; }
+  .navbar-nav .nav-link { display: flex; }
+}
+
+/* ── Interruptor de tema ──────────────────────────── */
+.tema-toggle { white-space: nowrap; }
+
+/* ══════════════════════════════════════════════════
+   COMPATIBILIDAD DEL CSS HEREDADO CON EL MODO CLARO
+   (los colores fijos de style.css y extra.css pasan a los tokens)
+   ══════════════════════════════════════════════════ */
+body, .hero-section { color: var(--text); }
+.text-white, .admin-nav .navbar-brand { color: var(--text-strong) !important; }
+.hero-title { color: var(--text-strong); }
+.public-nav .nav-link.active, .public-nav .nav-link.nav-active { color: var(--text-strong) !important; }
+.text-info { color: var(--text) !important; }
+.text-primary { color: var(--link) !important; }
+::selection { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
+
+/* Botón principal: amarillo con texto oscuro, igual en los dos modos */
+.btn-gold, .btn-warning, .btn-primary {
+  background: var(--btn-primary-bg) !important;
+  border-color: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-fg) !important;
+}
+.btn-gold:hover, .btn-gold:active, .btn-warning:hover, .btn-warning:active, .btn-primary:hover, .btn-primary:active,
+.btn-check:checked + .btn-gold {
+  background: var(--btn-primary-bg-active) !important;
+  border-color: var(--btn-primary-bg-active) !important;
+  color: var(--btn-primary-fg) !important;
+}
+.btn-gold:disabled, .btn-gold.disabled, .btn-warning:disabled, .btn-primary:disabled {
+  background: var(--btn-primary-disabled-bg) !important;
+  border-color: var(--btn-primary-disabled-border) !important;
+  color: var(--btn-primary-disabled-fg) !important;
+  opacity: 1;
+}
+.btn-outline-warning { color: var(--link) !important; border-color: var(--link) !important; background: transparent; }
+.btn-outline-warning:hover, .btn-outline-warning:active {
+  background: var(--btn-primary-bg) !important;
+  border-color: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-fg) !important;
+}
+.btn-outline-secondary { color: var(--btn-secondary-fg) !important; border-color: var(--border-strong) !important; background: transparent; }
+.btn-outline-secondary:hover, .btn-outline-secondary:active {
+  background: var(--surface-elevated) !important;
+  color: var(--text-strong) !important;
+  border-color: var(--border-strong) !important;
+}
+.btn-danger, .btn-outline-danger:hover, .btn-outline-danger:active {
+  background: var(--btn-danger-bg) !important;
+  border-color: var(--btn-danger-bg) !important;
+  color: var(--btn-danger-fg) !important;
+}
+.btn-outline-danger { color: var(--danger-text) !important; border-color: var(--danger-text) !important; background: transparent; }
+.btn-success, .btn-outline-success:hover, .btn-outline-success:active {
+  background: var(--btn-success-bg) !important;
+  border-color: var(--btn-success-bg) !important;
+  color: var(--btn-success-fg) !important;
+}
+.btn-outline-success { color: var(--success-text) !important; border-color: var(--success-text) !important; background: transparent; }
+.btn-info, .btn-outline-info, .btn-outline-primary {
+  background: transparent !important;
+  color: var(--btn-secondary-fg) !important;
+  border-color: var(--border-strong) !important;
+}
+
+/* Rellenos que antes usaban el acento como fondo */
+.sec-pill:hover, .sec-pill.active {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+}
+.cart-count { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
+.btn-float-back { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
+.btn-float-back:hover { color: var(--btn-primary-fg); }
+input[type="file"].form-control::file-selector-button:hover { background: var(--btn-primary-bg) !important; color: var(--btn-primary-fg) !important; }
+.paginacion .pagination {
+  --bs-pagination-active-bg: var(--btn-primary-bg);
+  --bs-pagination-active-color: var(--btn-primary-fg);
+  --bs-pagination-active-border-color: var(--btn-primary-bg);
+}
+.form-check-input:checked {
+  background-color: var(--btn-primary-bg) !important;
+  border-color: var(--btn-primary-bg) !important;
+}
+.form-check-input:checked[type="checkbox"] {
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23181a20' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+.form-check-input:checked[type="radio"] {
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23181a20'/%3e%3c/svg%3e");
+}
+
+/* Campos: fondo de tarjeta y borde de 3:1 (DESIGN.md, text-input) */
+.form-control, .form-select, .dark-input, .pub-search .form-control, .pub-search-hero .form-control {
+  background-color: var(--surface) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text) !important;
+}
+.input-group-text { border-color: var(--input-border) !important; }
+.form-control::placeholder, .dark-input::placeholder { color: var(--text-muted) !important; opacity: 1; }
+.form-check-input { background-color: var(--surface) !important; border-color: var(--input-border) !important; }
+
+/* Avisos: fondo de tarjeta, texto normal y el estado en el borde y el icono */
+.alert-success, .alert-danger, .alert-warning, .alert-info, .alert-primary {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-width: 1px;
+}
+.alert-success { border-color: var(--alert-success-border) !important; }
+.alert-danger  { border-color: var(--alert-danger-border) !important; }
+.alert-warning { border-color: var(--alert-warning-border) !important; }
+.alert-info    { border-color: var(--alert-info-border) !important; }
+.alert-primary { border-color: var(--alert-primary-border) !important; }
+.alert-success > .bi { color: var(--success-text); }
+.alert-danger > .bi { color: var(--danger-text); }
+.alert-warning > .bi { color: var(--warning-text); }
+.alert-dark-danger { background: var(--surface); border-color: var(--danger-text); color: var(--text); }
+.alert-dark-info { background: var(--surface); border-color: var(--alert-info-border); color: var(--text); }
+.chip-success { background: transparent; color: var(--success-text); border-color: var(--success-text); }
+.chip-danger  { background: transparent; color: var(--danger-text);  border-color: var(--danger-text); }
+.chip-warning { background: transparent; color: var(--warning-text); border-color: var(--warning-text); }
+.chip-info    { background: transparent; color: var(--text);         border-color: var(--alert-info-border); }
+
+/* Insignias de stock sobre la foto: texto del estado sobre la tarjeta, nunca solo color */
+.badge-stock-ok, .badge-stock-low, .badge-stock-out { background: var(--surface); border: 1px solid currentColor; }
+.badge-stock-ok  { color: var(--success-text); }
+.badge-stock-low { color: var(--warning-text); }
+.badge-stock-out { color: var(--danger-text); }
+.exito-card { border-color: var(--success-text); }
+.firma-badge { background: var(--surface); border-color: var(--success-text); }
+
+/* Icono de cerrar y del menú plegable según el modo */
+[data-theme="light"] .btn-close { filter: none; }
+[data-theme="light"] .navbar-toggler-icon { filter: none; }
+
+/* Modo claro: superficies planas, sin sombras pesadas (DESIGN.md, Elevación) */
+[data-theme="light"] { --shadow: none; }
+[data-theme="light"] .pub-card:hover, [data-theme="light"] .stat-card:hover, [data-theme="light"] a.stat-card:hover,
+[data-theme="light"] .sec-card:hover, [data-theme="light"] .login-card { box-shadow: none !important; }
+
+/* Barra del panel: el interruptor de tema cabe en 1280 px sin desbordar (el menú se rediseñará con la estructura) */
+@media (min-width: 992px) {
+  .admin-nav .navbar-nav.ms-auto { gap: 0.25rem !important; }
+  .admin-nav .tema-toggle { padding-inline: 0.4rem; }
+}

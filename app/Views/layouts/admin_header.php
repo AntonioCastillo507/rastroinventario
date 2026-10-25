@@ -6,6 +6,7 @@
 <?php require __DIR__ . "/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/style.css">
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/extra.css">
+<link rel="stylesheet" href="<?=APP_URL?>/assets/css/base.css">
 </head>
 <body class="admin-body">
 <nav class="navbar navbar-expand-lg admin-nav px-3">
@@ -29,6 +30,7 @@
 
     </ul>
     <ul class="navbar-nav ms-auto align-items-center gap-2">
+      <li class="nav-item"><button type="button" class="btn btn-sm btn-outline-secondary tema-toggle" data-tema-toggle aria-label="Cambiar a modo claro" title="Cambiar a modo claro"><i class="bi bi-sun" aria-hidden="true"></i></button></li>
       <li class="nav-item"><span class="text-warning small fw-semibold"><i class="bi bi-person-circle me-1"></i><?=htmlspecialchars($_SESSION["user"]["nombre"]??"")?></span></li>
       <li class="nav-item"><a href="<?=APP_URL?>/admin/?mod=usuarios&action=mi_clave" class="btn btn-sm btn-outline-warning" title="Cambiar mi contraseña"><i class="bi bi-key"></i></a></li>
       <li class="nav-item"><a href="<?=APP_URL?>/" class="btn btn-sm btn-outline-secondary" target="_blank"><i class="bi bi-shop me-1"></i>Tienda</a></li>
