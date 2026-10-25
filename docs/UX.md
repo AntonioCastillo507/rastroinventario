@@ -402,7 +402,7 @@ Cuenta: "Iniciar sesión" como enlace de texto y "Crear cuenta" como botón secu
 
 **Encabezado B**: dos niveles (arriba: marca, búsqueda, cuenta, carrito; abajo: categorías como menú con las secciones y conteos). Útil para plantillas con muchas categorías (ropa); con 4 secciones es demasiado.
 
-**Pie A (recomendada)**: 4 columnas (marca y descripción · Comprar: Catálogo, Carrito, Mi cuenta · Empresa: Quiénes somos, Contacto · Contacto y horario), sin cuadritos de icono; los datos de contacto como enlaces `tel:` y `mailto:`. **Pie B**: A + banda de confianza previa y fila de redes/métodos de pago.
+**Pie A (recomendada)**: 4 columnas (marca y descripción · Comprar: Catálogo, Carrito, Mi cuenta · Empresa: Quiénes somos, Contacto · Contacto y horario), con los iconos con función permitidos en el pie (ubicación, teléfono, correo, reloj y botones de redes; decisión de Tony, 2026-10-25, que corrige la regla de «sin cuadritos»); los datos de contacto como enlaces `tel:` y `mailto:`. **Pie B**: A + banda de confianza previa y fila de redes/métodos de pago.
 
 ### 5.6 Dashboard
 
@@ -792,7 +792,7 @@ Cómo se hará en la sesión P2 (no se hace ahora):
 | Catálogo y tarjeta | **A** en escritorio y tableta; **filas horizontales (B)** en teléfono | Barra de filtros a la izquierda, chips, "Aplicar", 24 por página |
 | Detalle | **A + piezas relacionadas** | "Añadir al carrito" principal, "Comprar ahora" secundario; galería reservada |
 | Carrito | **A, dos pasos** | |
-| Encabezado y pie | **A** | Lema oculto bajo 768 px; pie de 4 columnas sin cuadritos |
+| Encabezado y pie | **A** | Lema oculto bajo 768 px; pie de 4 columnas compacto, con iconos de función y botones de redes (corrección de Tony, 2026-10-25) |
 | Dashboard | **A** | Con pantalla "Seguridad" |
 | Lista del panel | **A** | Partes como modelo; tarjetas en móvil |
 | Acceso, informativas, formularios del panel | Recomendadas de 5.8 | Acceso con marca; Contacto con "Llamar" (WhatsApp solo si Tony lo confirma, ver 10.4) |

@@ -535,7 +535,7 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 | `{rounded.pill}` | 9999 px | Una sola acción destacada por pantalla (por ejemplo "Ver catálogo") |
 
 ### Iconos y fotografía
-- Pocos iconos, **de un solo estilo y tamaño** (Bootstrap Icons, autoalojados), con nombre accesible cuando son botones. **Prohibido** el cuadrito redondeado de color con icono, un icono en cada título, la etiqueta en mayúsculas con icono y los emojis.
+- Pocos iconos, **de un solo estilo y tamaño** (Bootstrap Icons, autoalojados), con nombre accesible cuando son botones. **Prohibido** un icono en cada título, la etiqueta en mayúsculas con icono y los emojis. **Excepción aprobada por Tony (2026-10-25, corrige la regla anterior): solo en el pie** se permiten los iconos con función de ubicación, teléfono, correo y reloj del horario, en el color de acento del tema sobre una pastilla redondeada de fondo suave (`pie-icono`, 32 px, radio 6 px, acento al 14 %), y los botones de redes y mensajería (WhatsApp, Instagram, TikTok) con icono y nombre visible. Los iconos decorativos llevan `aria-hidden`; el texto accesible es el dato o el nombre. Fuera del pie, ni la pastilla ni el icono en títulos ni en botones del resto del sitio.
 - Los símbolos funcionales (calificación con estrellas, flechas de orden) se resuelven con iconos o con texto, no con caracteres decorativos.
 - Las fotos de producto se recortan a `{rounded.xl}` y llevan texto alternativo; si la imagen no existe, se muestra un marcador neutro, nunca una imagen rota.
 
@@ -572,7 +572,7 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 
 ### Paginación, pie de página
 - Paginación con números, "Anterior" y "Siguiente", elemento activo con `aria-current`, y el texto "Mostrando X–Y de N".
-- **`footer-dark` / `footer-light`**: el pie **sigue el tema** de la página. Sin créditos de terceros; el texto sale de la configuración de marca.
+- **`footer-dark` / `footer-light`**: el pie **sigue el tema** de la página. Sin créditos de terceros; el texto sale de la configuración de marca. Compacto: 24 px de relleno superior, 24 px entre las columnas y la barra inferior, 8 px entre enlaces (que miden 25 px de alto), 32 px de pastilla en "Contacto y horario" con 12 px de separación al texto y la misma separación vertical entre datos. Los enlaces pasan al acento (`--link`) al pasar el cursor. Barra inferior con el copyright a la izquierda y los botones de redes (44 px de alto, borde fino, solo los que tengan dirección en `marca.php`; abren otra pestaña con `rel="noopener noreferrer"` y aviso accesible) a la derecha.
 
 ## Qué hacer y qué no
 

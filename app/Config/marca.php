@@ -23,10 +23,12 @@ return [
         ["dia" => "Sábado",    "horas" => "8:00 AM – 12:00 PM", "abierto" => true],
         ["dia" => "Domingo",   "horas" => "Cerrado",            "abierto" => false],
     ],
-    // Cada red: nombre, url y el icono de Bootstrap Icons. Aquí van las cuentas reales del negocio.
+    // Botones de redes y mensajería del pie (y "Síguenos" de Contacto): nombre, url y el icono de Bootstrap Icons.
+    // Si una url queda vacía, ese botón no se muestra. Los enlaces de abajo son de ejemplo para la demo.
     "redes"       => [
-        ["nombre" => "Facebook",  "url" => "https://www.facebook.com/",  "icono" => "facebook"],
-        ["nombre" => "Instagram", "url" => "https://www.instagram.com/", "icono" => "instagram"],
+        ["nombre" => "WhatsApp",  "url" => "https://wa.me/",            "icono" => "whatsapp"],  // enlace de ejemplo: reemplazar por la cuenta real antes de publicar
+        ["nombre" => "Instagram", "url" => "https://instagram.com/",    "icono" => "instagram"], // enlace de ejemplo: reemplazar por la cuenta real antes de publicar
+        ["nombre" => "TikTok",    "url" => "https://tiktok.com/",       "icono" => "tiktok"],    // enlace de ejemplo: reemplazar por la cuenta real antes de publicar
     ],
 
     "portada" => [

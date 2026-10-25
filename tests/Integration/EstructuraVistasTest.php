@@ -236,11 +236,15 @@ final class EstructuraVistasTest extends BaseDatos {
         $this->assertGreaterThan(0, $calificacion->length, "Las estrellas mostradas llevan su texto");
     }
     #[DataProvider("pantallas")]
-    public function testElPieDeLaTiendaTieneEnlacesConNombreYNingunIcono(string $n): void {
+    public function testElPieDeLaTiendaTieneEnlacesConNombreYSoloIconosDecorativosConFuncion(string $n): void {
         if (str_starts_with($n, "admin_") || in_array($n, Pantallas::deAcceso(), true)) { $this->addToAssertionCount(1); return; }
         $x = Html::xpath(Pantallas::render($this->db, $n));
         $this->assertSame(1, $x->query("//footer")->length, $n);
-        $this->assertSame(0, $x->query("//footer//*[contains(@class,'bi-')]")->length, "$n: sin iconos decorativos en el pie");
+        // los únicos iconos del pie: ubicación, teléfono, correo y horario (en su pastilla) y los de los botones de redes, todos aria-hidden
+        foreach ($x->query("//footer//*[contains(@class,'bi-')]") as $i) {
+            $this->assertSame("true", $i->getAttribute("aria-hidden"), "$n: icono del pie sin aria-hidden");
+            $this->assertMatchesRegularExpression('/(^|\s)(pie-icono|pie-red)(\s|$)/', $i->parentNode->getAttribute("class"), "$n: icono del pie fuera de su pastilla o botón");
+        }
         foreach ($x->query("//footer//a") as $a) $this->assertNotSame("", trim($a->textContent), "$n: enlace del pie sin texto");
         $this->assertSame(["Comprar", "Empresa", "Contacto y horario"], array_map(fn($e) => trim($e->textContent), iterator_to_array($x->query("//footer//h2"))), $n);
     }

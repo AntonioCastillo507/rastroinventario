@@ -198,14 +198,14 @@ final class MarcaEncabezadoTest extends BaseDatos {
     // ── Pie ──
 
     #[DataProvider("deLaTienda")]
-    public function testElPieTieneCuatroColumnasSinCuadritosDeIcono(string $n): void {
+    public function testElPieTieneCuatroColumnasYSoloLosIconosConFuncion(string $n): void {
         $html = Pantallas::render($this->db, $n);
         $x = Html::xpath($html);
         $this->assertSame(4, $x->query("//footer//div[contains(@class,'row')]/div")->length, "$n: 4 columnas");
         $this->assertSame(0, $x->query("//footer//div[contains(@class,'row')]/div[contains(@class,'d-none')]")->length, "$n: ninguna columna oculta");
         $titulos = array_map(fn($e) => trim($e->textContent), iterator_to_array($x->query("//footer//h2")));
         $this->assertSame(["Comprar", "Empresa", "Contacto y horario"], $titulos, $n);
-        $this->assertSame(0, $x->query("//footer//*[contains(@class,'bi-')]")->length, "$n: ningún icono en el pie");
+        $this->assertSame(0, $x->query("//footer//*[contains(@class,'bi-') and not(parent::*[contains(@class,'pie-icono') or contains(@class,'pie-red')])]")->length, "$n: icono del pie fuera de su pastilla o botón");
         $this->assertStringNotContainsString("contact-icon", $html);
         $this->assertStringNotContainsString("contact-item", $html);
     }

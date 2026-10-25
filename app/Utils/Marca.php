@@ -79,6 +79,22 @@ final class Marca {
         ]);
     }
 
+    /**
+     * Redes y mensajería con dirección http(s) válida, en el orden del archivo; las de dirección vacía no salen.
+     * @return list<array{nombre:string,url:string,icono:string}>
+     */
+    public static function redes(): array {
+        $out = [];
+        foreach ((array)self::get("redes", []) as $r) {
+            $url = trim((string)($r["url"] ?? ""));
+            $nombre = trim((string)($r["nombre"] ?? ""));
+            if ($nombre === "" || !preg_match('~^https?://~i', $url)) continue;
+            $icono = preg_replace('/[^a-z0-9-]/', "", strtolower((string)($r["icono"] ?? ""))) ?: "link-45deg";
+            $out[] = ["nombre" => $nombre, "url" => $url, "icono" => $icono];
+        }
+        return $out;
+    }
+
     /** Solo para pruebas: usa estos datos en lugar del archivo; null vuelve al archivo */
     public static function usarParaPruebas(?array $datos): void {
         self::$datos = $datos;
