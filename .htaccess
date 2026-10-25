@@ -6,4 +6,4 @@ Options -Indexes
 </FilesMatch>
 
 # Carpetas internas completas
-RedirectMatch 403 ^/rastroinventario/(vendor|docs|\.git|\.claude)(/|$)
+RedirectMatch 403 ^/rastroinventario/(vendor|docs|bin|\.git|\.claude)(/|$)

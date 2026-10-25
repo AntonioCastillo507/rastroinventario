@@ -2,54 +2,26 @@
 /* ══════════════════════════════════════════════════
    OVERRIDE TOTAL DE BOOTSTRAP 5 — MODO OSCURO
    ══════════════════════════════════════════════════ */
+/* Los colores, radios y fuentes salen de tema.css (docs/DESIGN.md). Estos alias heredados solo apuntan
+   a esos tokens, para que el CSS viejo cambie con el tema; el rediseño de cada pantalla los irá retirando. */
 :root {
-  /* Paleta principal */
-  --bg-0:      #0B0E11;
-  --bg-1:      #1E2026;
-  --bg-2:      #2B2F36;
-  --bg-3:      #363C45;
-  --accent:    #F0B90B;
-  --accent-h:  #D4A309;
-  --accent-dim: rgba(240,185,11,.15);
-  --text-1:    #EAECEF;
-  --text-2:    #848E9C;
-  --text-3:    #474D57;
-  --success:   #03C076;
-  --danger:    #F6465D;
-  --info:      #1890FF;
-  --border:    rgba(255,255,255,.08);
-  --radius:    12px;
-  --radius-sm: 8px;
+  --bg-0:      var(--canvas);
+  --bg-1:      var(--surface);
+  --bg-2:      var(--surface-elevated);
+  --bg-3:      var(--border-strong);
+  --accent:    var(--link);
+  --accent-h:  var(--link-hover);
+  --accent-dim: color-mix(in srgb, var(--btn-primary-bg) 15%, transparent);
+  --text-1:    var(--text);
+  --text-2:    var(--text-muted);
+  --text-3:    var(--text-muted);
+  --success:   var(--success-text);
+  --danger:    var(--danger-text);
+  --info:      var(--text-strong);
+  --border:    var(--hairline);
+  --radius:    var(--rounded-xl);
+  --radius-sm: var(--rounded-lg);
   --shadow:    0 4px 28px rgba(0,0,0,.5);
-
-  /* Forzar variables Bootstrap al tema oscuro */
-  --bs-body-bg:             #0B0E11;
-  --bs-body-color:          #EAECEF;
-  --bs-card-bg:             #1E2026;
-  --bs-card-cap-bg:         #2B2F36;
-  --bs-card-color:          #EAECEF;
-  --bs-card-border-color:   rgba(255,255,255,.08);
-  --bs-table-bg:            transparent;
-  --bs-table-color:         #EAECEF;
-  --bs-table-border-color:  rgba(255,255,255,.08);
-  --bs-table-striped-bg:    rgba(255,255,255,.03);
-  --bs-table-hover-bg:      rgba(255,255,255,.05);
-  --bs-table-hover-color:   #EAECEF;
-  --bs-table-striped-color: #EAECEF;
-  --bs-border-color:        rgba(255,255,255,.08);
-  --bs-link-color:          #F0B90B;
-  --bs-link-hover-color:    #D4A309;
-  --bs-input-bg:            #2B2F36;
-  --bs-breadcrumb-divider-color: #474D57;
-  --bs-form-check-input-border: rgba(255,255,255,.2);
-  --bs-modal-bg:            #1E2026;
-  --bs-modal-header-bg:     #2B2F36;
-  --bs-dropdown-bg:         #1E2026;
-  --bs-dropdown-border-color: rgba(255,255,255,.08);
-  --bs-dropdown-color:      #EAECEF;
-  --bs-dropdown-link-color: #EAECEF;
-  --bs-dropdown-link-hover-bg: #2B2F36;
-  --bs-nav-pills-link-active-bg: #F0B90B;
 }
 
 /* ── Reset global ──────────────────────────────── */

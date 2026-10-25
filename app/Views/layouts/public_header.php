@@ -11,7 +11,7 @@ $navActivo = ($_act==="detalle"||$_act==="comprar"||$_ver==="catalogo") ? "catal
 $esHome = empty($_qs);
 $cartCount = count($_SESSION["cart"]??[]);
 ?>
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?=htmlspecialchars($title)?></title>

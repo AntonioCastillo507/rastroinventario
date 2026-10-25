@@ -1,5 +1,5 @@
 <?php $err=$_SESSION["login_error"]??""; unset($_SESSION["login_error"]); $okMsg=$_SESSION["login_ok"]??""; unset($_SESSION["login_ok"]); ?>
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Iniciar Sesión — Rastro del Istmo</title>
