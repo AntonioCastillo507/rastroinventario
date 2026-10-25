@@ -8,8 +8,8 @@
     </div>
   </div>
   <div class="d-flex gap-2">
-    <a href="<?=APP_URL?>/admin/?mod=factura&action=generar&id=<?=$pedido["id"]?>" class="btn btn-gold btn-sm" target="_blank">
-      <i aria-hidden="true" class="bi bi-file-earmark-pdf me-1"></i>Descargar Factura PDF
+    <a href="<?=APP_URL?>/admin/?mod=factura&action=generar&id=<?=$pedido["id"]?>" class="btn btn-gold btn-sm" target="_blank" rel="noopener noreferrer">
+      <i aria-hidden="true" class="bi bi-file-earmark-pdf me-1"></i>Descargar Factura PDF<span class="visually-hidden"> (PDF, se abre en una pestaña nueva)</span>
     </a>
     <span class="chip-<?=match($pedido["estado"]){"pendiente"=>"warning","procesando"=>"info","entregado"=>"success",default=>"danger"}?> fs-6"><?=ucfirst($pedido["estado"])?></span>
   </div>
@@ -78,9 +78,6 @@
         </div>
       </div>
     </div>
-    <a href="<?=APP_URL?>/admin/?mod=factura&action=generar&id=<?=$pedido["id"]?>" class="btn btn-outline-warning w-100 mb-2" target="_blank">
-      <i aria-hidden="true" class="bi bi-file-earmark-pdf me-2"></i>Ver Factura PDF
-    </a>
     <?php if($pedido["firma_digital"]): ?><div class="firma-badge mt-2"><i aria-hidden="true" class="bi bi-shield-check text-success"></i>Pedido firmado digitalmente</div><?php endif; ?>
   </div>
 </div>

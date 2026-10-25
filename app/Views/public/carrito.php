@@ -2,6 +2,7 @@
 $title="Carrito";
 include BASE_PATH."/app/Views/layouts/public_header.php";
 $errCarro=$_SESSION["carrito_error"]??""; unset($_SESSION["carrito_error"]);
+$viejo=FormViejo::tomar("carrito");
 $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]??[]);
 ?>
 <div class="container-xl py-4">
@@ -61,21 +62,21 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
         <form method="POST" action="<?=APP_URL?>/?action=procesar_carrito">
           <?=CsrfToken::field()?>
           <label for="f-cliente-direccion" class="form-label-dark">Dirección de entrega *</label>
-          <textarea id="f-cliente-direccion" name="cliente_direccion" class="form-control dark-input auto-exp mb-2" required rows="2" autocomplete="street-address" placeholder="Dirección completa..."></textarea>
+          <textarea id="f-cliente-direccion" name="cliente_direccion" class="form-control dark-input auto-exp mb-2" required rows="2" autocomplete="street-address" placeholder="Dirección completa..."><?=htmlspecialchars($viejo["cliente_direccion"]??"")?></textarea>
           <label for="f-cliente-notas" class="form-label-dark">Mensaje (opcional)</label>
-          <textarea id="f-cliente-notas" name="cliente_notas" class="form-control dark-input auto-exp mb-3" rows="1"></textarea>
+          <textarea id="f-cliente-notas" name="cliente_notas" class="form-control dark-input auto-exp mb-3" rows="1"><?=htmlspecialchars($viejo["cliente_notas"]??"")?></textarea>
           <button type="submit" class="btn btn-gold fw-bold w-100 py-2"><i aria-hidden="true" class="bi bi-bag-check me-2"></i>Confirmar pedido</button>
         </form>
         <?php else: ?>
         <!-- Invitado: crear cuenta obligatoria -->
         <form method="POST" action="<?=APP_URL?>/?action=procesar_carrito">
           <?=CsrfToken::field()?>
-          <div class="mb-2"><label for="f-cliente-nombre" class="form-label-dark">Nombre *</label><input id="f-cliente-nombre" type="text" name="cliente_nombre" class="form-control dark-input form-control-sm" required autocomplete="name"></div>
-          <div class="mb-2"><label for="f-cliente-telefono" class="form-label-dark">Teléfono *</label><input id="f-cliente-telefono" type="tel" name="cliente_telefono" class="form-control dark-input form-control-sm" required autocomplete="tel"></div>
-          <div class="mb-2"><label for="f-cliente-email" class="form-label-dark">Correo *</label><input id="f-cliente-email" type="email" name="cliente_email" class="form-control dark-input form-control-sm" required autocomplete="email"></div>
+          <div class="mb-2"><label for="f-cliente-nombre" class="form-label-dark">Nombre *</label><input id="f-cliente-nombre" type="text" name="cliente_nombre" class="form-control dark-input form-control-sm" required autocomplete="name" value="<?=htmlspecialchars($viejo["cliente_nombre"]??"")?>"></div>
+          <div class="mb-2"><label for="f-cliente-telefono" class="form-label-dark">Teléfono *</label><input id="f-cliente-telefono" type="tel" name="cliente_telefono" class="form-control dark-input form-control-sm" required autocomplete="tel" value="<?=htmlspecialchars($viejo["cliente_telefono"]??"")?>"></div>
+          <div class="mb-2"><label for="f-cliente-email" class="form-label-dark">Correo *</label><input id="f-cliente-email" type="email" name="cliente_email" class="form-control dark-input form-control-sm" required autocomplete="email" value="<?=htmlspecialchars($viejo["cliente_email"]??"")?>"></div>
           <div class="mb-2"><label for="f-nueva-pass" class="form-label-dark">Contraseña * (mínimo <?=Validator::PASS_MIN?> caracteres, máximo <?=Validator::PASS_MAX?> bytes)</label><input id="f-nueva-pass" type="password" name="nueva_pass" class="form-control dark-input form-control-sm" minlength="<?=Validator::PASS_MIN?>" maxlength="<?=Validator::PASS_MAX?>" required autocomplete="new-password"></div>
-          <div class="mb-2"><label for="f-cliente-direccion" class="form-label-dark">Dirección entrega *</label><textarea id="f-cliente-direccion" name="cliente_direccion" class="form-control dark-input form-control-sm" required rows="2" autocomplete="street-address"></textarea></div>
-          <div class="mb-3"><label for="f-cliente-notas" class="form-label-dark">Mensaje (opcional)</label><textarea id="f-cliente-notas" name="cliente_notas" class="form-control dark-input form-control-sm" rows="1"></textarea></div>
+          <div class="mb-2"><label for="f-cliente-direccion" class="form-label-dark">Dirección entrega *</label><textarea id="f-cliente-direccion" name="cliente_direccion" class="form-control dark-input form-control-sm" required rows="2" autocomplete="street-address"><?=htmlspecialchars($viejo["cliente_direccion"]??"")?></textarea></div>
+          <div class="mb-3"><label for="f-cliente-notas" class="form-label-dark">Mensaje (opcional)</label><textarea id="f-cliente-notas" name="cliente_notas" class="form-control dark-input form-control-sm" rows="1"><?=htmlspecialchars($viejo["cliente_notas"]??"")?></textarea></div>
           <button type="submit" class="btn btn-gold fw-bold w-100 py-2"><i aria-hidden="true" class="bi bi-person-check me-2"></i>Crear cuenta y pedir</button>
         </form>
         <?php endif; ?>

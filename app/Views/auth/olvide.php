@@ -36,4 +36,5 @@
     <a href="<?=APP_URL?>/login.php" class="text-warning small fw-semibold"><i aria-hidden="true" class="bi bi-box-arrow-in-right me-1"></i>Volver a iniciar sesión</a>
   </div>
 </main>
+<script src="<?=Assets::url("js/envio.js")?>"></script>
 </body></html>

@@ -27,6 +27,11 @@ final class ServidorTemporal {
         throw new \RuntimeException("php -S no respondió a tiempo.");
     }
 
+    /** Dirección base del servidor, p. ej. http://127.0.0.1:50321 */
+    public function base(): string {
+        return "http://127.0.0.1:" . $this->puerto;
+    }
+
     public function detener(): void {
         if (is_resource($this->proceso)) {
             $estado = proc_get_status($this->proceso);

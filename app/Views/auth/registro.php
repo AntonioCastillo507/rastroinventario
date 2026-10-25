@@ -24,21 +24,21 @@
       <label for="f-nombre" class="form-label-dark">Nombre completo</label>
       <div class="input-group">
         <span class="input-group-text"><i aria-hidden="true" class="bi bi-person text-warning"></i></span>
-        <input id="f-nombre" type="text" name="nombre" class="form-control dark-input" required placeholder="Tu nombre" autocomplete="name">
+        <input id="f-nombre" type="text" name="nombre" class="form-control dark-input" required placeholder="Tu nombre" autocomplete="name" value="<?=htmlspecialchars($viejo["nombre"]??"")?>">
       </div>
     </div>
     <div class="mb-3">
       <label for="f-email" class="form-label-dark">Correo Electrónico</label>
       <div class="input-group">
         <span class="input-group-text"><i aria-hidden="true" class="bi bi-envelope text-warning"></i></span>
-        <input id="f-email" type="email" name="email" class="form-control dark-input" required placeholder="tu@correo.com" autocomplete="email">
+        <input id="f-email" type="email" name="email" class="form-control dark-input" required placeholder="tu@correo.com" autocomplete="email" value="<?=htmlspecialchars($viejo["email"]??"")?>">
       </div>
     </div>
     <div class="mb-3">
       <label for="f-telefono" class="form-label-dark">Teléfono <span class="text-secondary fw-normal">(opcional)</span></label>
       <div class="input-group">
         <span class="input-group-text"><i aria-hidden="true" class="bi bi-telephone text-warning"></i></span>
-        <input id="f-telefono" type="tel" name="telefono" class="form-control dark-input" placeholder="6000-0000" autocomplete="tel">
+        <input id="f-telefono" type="tel" name="telefono" class="form-control dark-input" placeholder="6000-0000" autocomplete="tel" value="<?=htmlspecialchars($viejo["telefono"]??"")?>">
       </div>
     </div>
     <div class="mb-4">
@@ -59,4 +59,5 @@
     <a href="<?=APP_URL?>/" class="text-secondary small"><i aria-hidden="true" class="bi bi-arrow-left me-1"></i>Volver a la tienda</a>
   </div>
 </main>
+<script src="<?=Assets::url("js/envio.js")?>"></script>
 </body></html>

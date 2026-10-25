@@ -20,7 +20,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
         <hr style="border-color:var(--border)">
         <div class="d-flex gap-2 justify-content-center">
           <a href="<?=APP_URL?>/?action=mis_pedidos" class="btn btn-outline-secondary btn-sm"><i aria-hidden="true" class="bi bi-bag-check me-1"></i>Mis Pedidos</a>
-          <a href="<?=APP_URL?>/logout.php" class="btn btn-outline-danger btn-sm"><i aria-hidden="true" class="bi bi-box-arrow-right me-1"></i>Cerrar sesión</a>
+          <form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="btn btn-outline-danger btn-sm" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-1"></i>Cerrar sesión</button></form>
         </div>
       </div>
     </div>

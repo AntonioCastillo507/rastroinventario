@@ -23,10 +23,10 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       <input type="hidden" name="parte_id" value="<?=$parte["id"]?>">
       <div style="background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem">
         <h2 class="h6 text-warning fw-bold mb-3"><i aria-hidden="true" class="bi bi-truck me-2"></i>Dirección de entrega</h2>
-        <textarea name="direccion_entrega" class="form-control dark-input auto-exp" required rows="2" aria-label="Dirección de entrega" autocomplete="street-address" placeholder="Corregimiento, calle, punto de referencia..."><?=htmlspecialchars($userInfo["direccion"]??"")?></textarea>
-        <div class="mb-3 mt-3"><label for="f-cantidad" class="form-label-dark">Cantidad *</label><input id="f-cantidad" type="number" name="cantidad" class="form-control dark-input" min="1" max="<?=$parte["cantidad"]?>" value="1" required></div>
+        <textarea name="direccion_entrega" class="form-control dark-input auto-exp" required rows="2" aria-label="Dirección de entrega" autocomplete="street-address" placeholder="Corregimiento, calle, punto de referencia..."><?=htmlspecialchars($viejo["direccion_entrega"]??$userInfo["direccion"]??"")?></textarea>
+        <div class="mb-3 mt-3"><label for="f-cantidad" class="form-label-dark">Cantidad *</label><input id="f-cantidad" type="number" name="cantidad" class="form-control dark-input" min="1" max="<?=$parte["cantidad"]?>" value="<?=(int)($viejo["cantidad"]??1)?:1?>" required></div>
         <label for="f-cliente-notas" class="form-label-dark">Mensaje al vendedor <span class="text-secondary fw-normal">(opcional)</span></label>
-        <textarea id="f-cliente-notas" name="cliente_notas" class="form-control dark-input auto-exp" rows="2" placeholder="Instrucciones especiales..."></textarea>
+        <textarea id="f-cliente-notas" name="cliente_notas" class="form-control dark-input auto-exp" rows="2" placeholder="Instrucciones especiales..."><?=htmlspecialchars($viejo["cliente_notas"]??"")?></textarea>
       </div>
       <div style="background:rgba(240,185,11,.06);border:1px solid rgba(240,185,11,.2);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem">
         <p class="text-warning mb-1 fw-semibold"><i aria-hidden="true" class="bi bi-info-circle me-2"></i>¿Seguro que quieres realizar esta compra?</p>

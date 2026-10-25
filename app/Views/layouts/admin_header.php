@@ -45,8 +45,8 @@ $masActivo = in_array($modActivo, array_column($menuMas, 0), true);
       <li class="nav-item"><button type="button" class="btn btn-sm btn-outline-secondary tema-toggle" data-tema-toggle aria-label="Cambiar a modo claro" title="Cambiar a modo claro"><i aria-hidden="true" class="bi bi-sun"></i></button></li>
       <li class="nav-item"><span class="text-warning small fw-semibold"><i aria-hidden="true" class="bi bi-person-circle me-1"></i><?=htmlspecialchars($_SESSION["user"]["nombre"]??"")?></span></li>
       <li class="nav-item"><a href="<?=APP_URL?>/admin/?mod=usuarios&action=mi_clave" class="btn btn-sm btn-outline-warning" title="Cambiar mi contraseña" aria-label="Cambiar mi contraseña"><i aria-hidden="true" class="bi bi-key"></i></a></li>
-      <li class="nav-item"><a href="<?=APP_URL?>/" class="btn btn-sm btn-outline-secondary" target="_blank"><i aria-hidden="true" class="bi bi-shop me-1"></i>Tienda</a></li>
-      <li class="nav-item"><a href="<?=APP_URL?>/logout.php" class="btn btn-sm btn-danger" aria-label="Cerrar sesión"><i aria-hidden="true" class="bi bi-box-arrow-right"></i></a></li>
+      <li class="nav-item"><a href="<?=APP_URL?>/" class="btn btn-sm btn-outline-secondary"><i aria-hidden="true" class="bi bi-shop me-1"></i>Tienda</a></li>
+      <li class="nav-item"><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="btn btn-sm btn-danger" aria-label="Cerrar sesión" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right"></i></button></form></li>
     </ul>
   </div>
 </nav>

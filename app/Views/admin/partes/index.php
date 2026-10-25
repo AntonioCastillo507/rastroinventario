@@ -53,7 +53,7 @@
         <?=CsrfToken::field()?>
         <button type="submit" class="icon-btn" title="Desactivar" aria-label="Desactivar <?=htmlspecialchars($p["nombre"])?>"><i aria-hidden="true" class="bi bi-trash text-danger"></i></button>
       </form>
-      <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="icon-btn" title="Ver público" target="_blank" aria-label="Ver <?=htmlspecialchars($p["nombre"])?> en la tienda (se abre en una pestaña nueva)"><i aria-hidden="true" class="bi bi-eye icon-info"></i></a>
+      <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="icon-btn" title="Ver público" aria-label="Ver <?=htmlspecialchars($p["nombre"])?> en la tienda"><i aria-hidden="true" class="bi bi-eye icon-info"></i></a>
     </td>
   </tr>
   <?php endforeach; ?>

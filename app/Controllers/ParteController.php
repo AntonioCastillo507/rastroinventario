@@ -20,9 +20,11 @@ class ParteController extends BaseController {
 
     public function crear(): void {
         $this->requirePermission("partes","puede_crear");
-        $autos=$this->am->findActive(); $secciones=$this->sm->findActive(); $error="";
+        $autos=$this->am->findActive(); $secciones=$this->sm->findActive(); $error=""; $viejo=[];
         if ($this->isPost()) {
             CsrfToken::verify();
+            // Con un error, el formulario vuelve con lo escrito (la foto hay que elegirla otra vez: un navegador no deja rellenarla)
+            $viejo=array_intersect_key($_POST,array_flip(["nombre","descripcion","auto_id","seccion_id","precio","cantidad"]));
             $nombre=Sanitizer::post("nombre"); $precio=Sanitizer::post("precio","float"); $cant=Sanitizer::post("cantidad","int");
             $v=(new Validator())->required("nombre",$nombre,"Nombre")->numeric("precio",$precio,0.01)->numeric("cantidad",$cant,0);
             if ($v->isValid()) {
@@ -37,7 +39,7 @@ class ParteController extends BaseController {
                 }
             } else $error=$v->first();
         }
-        $this->view("admin/partes/form",compact("autos","secciones","error"));
+        $this->view("admin/partes/form",compact("autos","secciones","error","viejo"));
     }
     public function editar(): void {
         $this->requirePermission("partes","puede_editar");

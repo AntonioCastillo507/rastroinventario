@@ -20,7 +20,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       <td class="text-secondary"><span class="num"><?=$p["total_items"]?></span> pieza(s)</td>
       <td><span class="estado-<?=$p["estado"]?> fw-semibold"><?=ucfirst($p["estado"])?></span></td>
       <td class="text-secondary small"><?=date("d/m/Y H:i",strtotime($p["creado_en"]))?></td>
-      <td><a href="<?=APP_URL?>/?action=factura&pedido=<?=$p["id"]?>" class="btn btn-sm btn-outline-warning" target="_blank" title="Descargar factura" aria-label="Descargar la factura del pedido #<?=(int)$p["id"]?> (PDF, se abre en una pestaña nueva)"><i aria-hidden="true" class="bi bi-file-earmark-pdf"></i></a></td>
+      <td><a href="<?=APP_URL?>/?action=factura&pedido=<?=$p["id"]?>" class="btn btn-sm btn-outline-warning" target="_blank" rel="noopener noreferrer" title="Descargar factura" aria-label="Descargar la factura del pedido #<?=(int)$p["id"]?> (PDF, se abre en una pestaña nueva)"><i aria-hidden="true" class="bi bi-file-earmark-pdf"></i></a></td>
     </tr>
     <?php endforeach; ?></tbody>
   </table></div></div>

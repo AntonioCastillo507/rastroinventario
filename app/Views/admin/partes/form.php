@@ -1,4 +1,4 @@
-<?php $edit=!empty($parte); $title=$edit?"Editar Parte":"Nueva Parte"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
+<?php $edit=!empty($parte); $d=$edit?$parte:($viejo??[]); $title=$edit?"Editar Parte":"Nueva Parte"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
 <div class="page-header mb-4">
   <div class="d-flex align-items-center gap-3">
     <a href="<?=APP_URL?>/admin/?mod=partes" class="btn-back" aria-label="Volver"><i aria-hidden="true" class="bi bi-arrow-left"></i></a>
@@ -13,22 +13,22 @@
   <div class="row g-4">
     <div class="col-md-8">
       <label for="f-nombre" class="form-label-dark">Nombre de la Parte *</label>
-      <input id="f-nombre" type="text" name="nombre" class="form-control dark-input" required maxlength="150" value="<?=htmlspecialchars($parte["nombre"]??"")?>">
+      <input id="f-nombre" type="text" name="nombre" class="form-control dark-input" required maxlength="150" value="<?=htmlspecialchars($d["nombre"]??"")?>">
     </div>
     <div class="col-md-4">
       <label for="f-precio" class="form-label-dark">Precio ($) *</label>
-      <input id="f-precio" type="number" name="precio" class="form-control dark-input" step="0.01" min="0" required value="<?=htmlspecialchars($parte["precio"]??"")?>">
+      <input id="f-precio" type="number" name="precio" class="form-control dark-input" step="0.01" min="0" required value="<?=htmlspecialchars($d["precio"]??"")?>">
     </div>
     <div class="col-12">
       <label for="f-descripcion" class="form-label-dark">Descripción</label>
-      <textarea id="f-descripcion" name="descripcion" class="form-control dark-input" rows="3"><?=htmlspecialchars($parte["descripcion"]??"")?></textarea>
+      <textarea id="f-descripcion" name="descripcion" class="form-control dark-input" rows="3"><?=htmlspecialchars($d["descripcion"]??"")?></textarea>
     </div>
     <div class="col-md-4">
       <label for="f-auto-id" class="form-label-dark">Auto (Marca / Modelo / Año)</label>
       <select id="f-auto-id" name="auto_id" class="form-select dark-input">
         <option value="">— Sin especificar —</option>
         <?php foreach($autos as $a): ?>
-        <option value="<?=$a["id"]?>" <?=($parte["auto_id"]??"")==$a["id"]?"selected":""?>><?=htmlspecialchars($a["marca"]." ".$a["modelo"]." (".$a["anio"].")")?></option>
+        <option value="<?=$a["id"]?>" <?=($d["auto_id"]??"")==$a["id"]?"selected":""?>><?=htmlspecialchars($a["marca"]." ".$a["modelo"]." (".$a["anio"].")")?></option>
         <?php endforeach; ?>
       </select>
     </div>
@@ -37,13 +37,13 @@
       <select id="f-seccion-id" name="seccion_id" class="form-select dark-input">
         <option value="">— Sin sección —</option>
         <?php foreach($secciones as $s): ?>
-        <option value="<?=$s["id"]?>" <?=($parte["seccion_id"]??"")==$s["id"]?"selected":""?>><?=htmlspecialchars($s["nombre"])?></option>
+        <option value="<?=$s["id"]?>" <?=($d["seccion_id"]??"")==$s["id"]?"selected":""?>><?=htmlspecialchars($s["nombre"])?></option>
         <?php endforeach; ?>
       </select>
     </div>
     <div class="col-md-4">
       <label for="f-cantidad" class="form-label-dark">Cantidad en Stock *</label>
-      <input id="f-cantidad" type="number" name="cantidad" class="form-control dark-input" min="0" required value="<?=htmlspecialchars($parte["cantidad"]??0)?>">
+      <input id="f-cantidad" type="number" name="cantidad" class="form-control dark-input" min="0" required value="<?=htmlspecialchars($d["cantidad"]??0)?>">
     </div>
     <div class="col-12">
       <label for="f-imagen" class="form-label-dark">Imagen de la Parte</label>

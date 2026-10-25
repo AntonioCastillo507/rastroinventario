@@ -25,6 +25,7 @@ class AuthController extends BaseController {
         // Bloqueo temporal por correo + IP; igual exista o no el correo. El intento
         // bloqueado no se registra, así la espera no se alarga sola.
         if ($log->fallosRecientes($email, $ip, self::VENTANA_MIN) >= self::MAX_INTENTOS) {
+            FormViejo::guardar("login", ["email" => $email], ["email"]);
             $_SESSION["login_error"] = "Demasiados intentos fallidos. Intenta de nuevo en unos minutos.";
             $this->redirect(APP_URL . "/login.php");
         }
@@ -34,6 +35,7 @@ class AuthController extends BaseController {
         // Un solo mensaje para: correo inexistente, clave mala, cuenta desactivada o bloqueada
         if (!$user || !$passOk || !$user["activo"] || $user["bloqueado"]) {
             $log->registrar(["usuario_id" => $user["id"] ?? null, "email" => $email, "ip" => $ip, "exitoso" => false]);
+            FormViejo::guardar("login", ["email" => $email], ["email"]);
             $_SESSION["login_error"] = "Correo o contraseña incorrectos.";
             $this->redirect(APP_URL . "/login.php");
         }
@@ -54,13 +56,24 @@ class AuthController extends BaseController {
     public function destinoTrasLogin(int $uid): string {
         return (new UserModel())->tieneAccesoPanel($uid) ? APP_URL . "/admin/" : APP_URL . "/";
     }
-    public function doLogout(): void { destruirSesion(); header("Location: " . APP_URL . "/login.php"); exit; }
+    /**
+     * Cerrar sesión solo por POST con token: un enlace, una imagen ajena o la precarga del navegador no pueden
+     * dispararlo. Por GET no cierra nada y manda al inicio. Con un token que no vale (p. ej. otra pestaña ya lo usó)
+     * la sesión también se cierra y se va al acceso: salir es reversible y no debe quedar a medias.
+     */
+    public function doLogout(): void {
+        if (!$this->isPost()) { header("Location: " . APP_URL . "/"); exit; }
+        CsrfToken::check();
+        destruirSesion();
+        header("Location: " . APP_URL . "/login.php"); exit;
+    }
 
     // ── Registro público de clientes (separado del checkout) ─────────
     public function registro(): void {
         if (!empty($_SESSION["user"])) $this->redirect(APP_URL . "/");
         $err = $_SESSION["registro_error"] ?? ""; unset($_SESSION["registro_error"]);
-        $this->view("auth/registro", compact("err"));
+        $viejo = FormViejo::tomar("registro");
+        $this->view("auth/registro", compact("err", "viejo"));
     }
 
     public function procesarRegistro(): void {
@@ -73,13 +86,16 @@ class AuthController extends BaseController {
         $v = (new Validator())->required("nombre", $nombre, "Nombre")
               ->required("email", $email, "Correo")->email("email", $email)
               ->password("pass", $pass, $email, $nombre);
+        $conservar = fn() => FormViejo::guardar("registro", ["nombre" => $nombre, "email" => $email, "telefono" => $tel], ["nombre", "email", "telefono"]);
         if (!$v->isValid()) {
+            $conservar();
             $_SESSION["registro_error"] = $v->first();
             $this->redirect(APP_URL . "/registro.php");
         }
 
         $um = new UserModel();
         if ($um->findByEmail($email)) {
+            $conservar();
             $_SESSION["registro_error"] = "Ya existe una cuenta con ese correo.";
             $this->redirect(APP_URL . "/registro.php");
         }
@@ -90,6 +106,7 @@ class AuthController extends BaseController {
             "telefono" => $tel, "direccion" => "",
         ]);
         if (!$uid) {
+            $conservar();
             $_SESSION["registro_error"] = "No se pudo crear la cuenta. Intenta de nuevo.";
             $this->redirect(APP_URL . "/registro.php");
         }

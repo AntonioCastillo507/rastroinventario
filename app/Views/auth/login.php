@@ -1,4 +1,4 @@
-<?php $err=$_SESSION["login_error"]??""; unset($_SESSION["login_error"]); $okMsg=$_SESSION["login_ok"]??""; unset($_SESSION["login_ok"]); ?>
+<?php $err=$_SESSION["login_error"]??""; unset($_SESSION["login_error"]); $viejo=FormViejo::tomar("login"); $okMsg=$_SESSION["login_ok"]??""; unset($_SESSION["login_ok"]); ?>
 <!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -27,7 +27,7 @@
       <label for="f-email" class="form-label-dark">Correo Electrónico</label>
       <div class="input-group">
         <span class="input-group-text"><i aria-hidden="true" class="bi bi-envelope text-warning"></i></span>
-        <input id="f-email" type="email" name="email" class="form-control dark-input" required placeholder="tu@correo.com" autocomplete="username">
+        <input id="f-email" type="email" name="email" class="form-control dark-input" required placeholder="tu@correo.com" autocomplete="username" value="<?=htmlspecialchars($viejo["email"]??"")?>">
       </div>
     </div>
     <div class="mb-4">
@@ -48,4 +48,5 @@
     <a href="<?=APP_URL?>/" class="text-secondary small"><i aria-hidden="true" class="bi bi-arrow-left me-1"></i>Volver a la tienda</a>
   </div>
 </main>
+<script src="<?=Assets::url("js/envio.js")?>"></script>
 </body></html>

@@ -37,8 +37,8 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
     <div class="dark-card p-4 mb-4" style="border-color:rgba(240,185,11,.3)">
       <h2 class="h6 fw-bold text-warning mb-2"><i aria-hidden="true" class="bi bi-file-earmark-pdf me-2"></i>Factura Electrónica</h2>
       <p class="text-secondary small mb-3">Descarga tu factura oficial con firma digital y desglose del <?=htmlspecialchars(Marca::impuestoEtiqueta())?>.</p>
-      <a href="<?=APP_URL?>/?action=factura&pedido=<?=$pedido["id"]?>" class="btn btn-gold fw-bold w-100" target="_blank">
-        <i aria-hidden="true" class="bi bi-download me-2"></i>Descargar Factura PDF
+      <a href="<?=APP_URL?>/?action=factura&pedido=<?=$pedido["id"]?>" class="btn btn-gold fw-bold w-100" target="_blank" rel="noopener noreferrer">
+        <i aria-hidden="true" class="bi bi-download me-2"></i>Descargar Factura PDF<span class="visually-hidden"> (PDF, se abre en una pestaña nueva)</span>
       </a>
     </div>
 

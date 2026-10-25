@@ -60,7 +60,7 @@ $cartCount = count($_SESSION["cart"]??[]);
                 <li><a class="dropdown-item" href="<?=APP_URL?>/?action=mi_perfil"><i aria-hidden="true" class="bi bi-person-gear me-2"></i>Mi Perfil</a></li>
                 <li><a class="dropdown-item" href="<?=APP_URL?>/?action=mis_pedidos"><i aria-hidden="true" class="bi bi-bag-check me-2"></i>Mis Pedidos</a></li>
                 <li><hr class="dropdown-divider" style="border-color:var(--border)"></li>
-                <li><a class="dropdown-item text-danger" href="<?=APP_URL?>/logout.php"><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+                <li><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="dropdown-item text-danger" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button></form></li>
               </ul>
             </div>
           <?php endif; ?>
