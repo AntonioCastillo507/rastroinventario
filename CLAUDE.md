@@ -22,6 +22,9 @@ Inventario y tienda de repuestos de autos usados. Al empezar, lee ESTADO.md (es 
 - La real (`rastroinventario`) solo recibe SELECT hasta que el usuario dé un OK explícito. Antes de cualquier cambio de datos o de esquema: respaldo en C:\wamp64\respaldo_rastro\ (nunca dentro del proyecto) y ensayo en rastroinventario_test.
 - Cambio de esquema: editar database/schema.sql, añadir la migración en database/migraciones/ y aplicarla con aplicar.ps1 -Confirmar (hace el respaldo antes). Después, `composer test:reset`.
 
+## Diseño
+- Todo cambio visual (colores, tipografía, espaciado, componentes, modo claro/oscuro) debe seguir docs/DESIGN.md. No se inventan colores ni medidas fuera de ese archivo; si algo no está, se pregunta.
+
 ## Seguridad
 - Nunca leer, mostrar ni hacer grep en app/Config/config.php, app/Config/rsa_secret.php ni ssl/rastro.key. Si se copian carpetas, excluir rsa_secret.php y ssl/. No escribir contraseñas, llaves ni tokens en ningún archivo ni respuesta.
 - SQL siempre con parámetros; salida siempre con htmlspecialchars; acciones que cambian datos solo por POST con CsrfToken; errores internos solo a logs/error.log.
