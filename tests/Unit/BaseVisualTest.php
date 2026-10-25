@@ -37,7 +37,7 @@ final class BaseVisualTest extends TestCase {
             $this->assertStringContainsString($s, $css, $s);
         }
         $this->assertMatchesRegularExpression('/outline:\s*2px solid var\(--focus-ring\) !important;\s*outline-offset:\s*2px !important;\s*box-shadow:\s*none !important;/', $css);
-        $this->assertStringNotContainsString("outline: none", preg_replace('/body:focus-visible \{ outline: none; \}/', "", $css), "Ningún elemento puede quitar el contorno de foco");
+        $this->assertStringNotContainsString("outline: none", preg_replace('/body:focus-visible, main:focus, main:focus-visible \{ outline: none; \}/', "", $css), "Solo el body y el <main> (destino del enlace de salto) pueden quedarse sin contorno");
         $this->assertStringNotContainsString("outline: 0", $css);
     }
 
@@ -109,7 +109,7 @@ final class BaseVisualTest extends TestCase {
             $php = (string)file_get_contents(BASE_PATH . "/app/Views/$v.php");
             $this->assertSame(1, substr_count($php, "data-tema-toggle"), $v);
             $this->assertMatchesRegularExpression('/<button type="button"[^>]*data-tema-toggle[^>]*aria-label="Cambiar a modo claro"/', $php, $v);
-            $this->assertMatchesRegularExpression('/data-tema-toggle[^>]*><i class="bi bi-sun" aria-hidden="true"><\/i><\/button>/', $php, "$v: el icono es decorativo");
+            $this->assertMatchesRegularExpression('/data-tema-toggle[^>]*><i aria-hidden="true" class="bi bi-sun"><\/i><\/button>/', $php, "$v: el icono es decorativo");
         }
     }
 

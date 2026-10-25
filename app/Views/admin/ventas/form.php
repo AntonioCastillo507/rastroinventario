@@ -1,17 +1,17 @@
 <?php $title="Nueva Venta"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
 <div class="page-header mb-4">
   <div class="d-flex align-items-center gap-3">
-    <a href="<?=APP_URL?>/admin/?mod=ventas" class="btn-back"><i class="bi bi-arrow-left"></i></a>
-    <h4 class="fw-bold text-white mb-0">Registrar Venta</h4>
+    <a href="<?=APP_URL?>/admin/?mod=ventas" class="btn-back" aria-label="Volver"><i aria-hidden="true" class="bi bi-arrow-left"></i></a>
+    <h1 class="h4 fw-bold text-white mb-0">Registrar Venta</h1>
   </div>
 </div>
-<?php if($error??""): ?><div class="alert-dark-danger d-flex gap-2 mb-4"><i class="bi bi-exclamation-triangle-fill text-danger"></i><?=htmlspecialchars($error)?></div><?php endif; ?>
+<?php if($error??""): ?><div role="alert" class="alert-dark-danger d-flex gap-2 mb-4"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill text-danger"></i><?=htmlspecialchars($error)?></div><?php endif; ?>
 <div class="dark-card" style="max-width:580px">
 <div class="card-body p-4">
 <form action="<?=APP_URL?>/admin/?mod=ventas&action=crear" method="POST">
   <?=CsrfToken::field()?>
   <div class="mb-4">
-    <label class="form-label-dark">Parte del Inventario *</label>
+    <label for="parteSelect" class="form-label-dark">Parte del Inventario *</label>
     <select name="parte_id" id="parteSelect" class="form-select dark-input" required onchange="setPrecio(this)">
       <option value="">— Seleccionar parte —</option>
       <?php foreach($partes as $p): ?>
@@ -21,23 +21,23 @@
       <?php endforeach; ?>
     </select>
   </div>
-  <div id="stockAlert" class="alert-dark-info mb-4 d-none">
-    <i class="bi bi-info-circle text-info me-2"></i><span id="stockMsg"></span>
+  <div id="stockAlert" role="status" class="alert-dark-info mb-4 d-none">
+    <i aria-hidden="true" class="bi bi-info-circle text-info me-2"></i><span id="stockMsg"></span>
   </div>
   <div class="mb-4">
-    <label class="form-label-dark">Precio de Venta ($) *</label>
+    <label for="precioVenta" class="form-label-dark">Precio de Venta ($) *</label>
     <input type="number" name="precio_venta" id="precioVenta" class="form-control dark-input" step="0.01" min="0.01" required value="0.00">
     <div class="text-secondary small mt-1">Puedes ajustar el precio antes de confirmar.</div>
   </div>
   <div class="mb-4">
-    <label class="form-label-dark">Cantidad *</label>
+    <label for="cantVenta" class="form-label-dark">Cantidad *</label>
     <input type="number" name="cantidad" id="cantVenta" class="form-control dark-input" min="1" value="1" required>
   </div>
   <div id="totalPreview" class="total-preview mb-4 d-none">
     Total estimado: <span id="totalVal" class="text-success fw-bold"></span>
   </div>
   <button type="submit" class="btn btn-gold fw-bold w-100 py-2">
-    <i class="bi bi-cart-check me-2"></i>Confirmar y Registrar Venta
+    <i aria-hidden="true" class="bi bi-cart-check me-2"></i>Confirmar y Registrar Venta
   </button>
 </form>
 </div>

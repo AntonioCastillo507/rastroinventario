@@ -1,7 +1,7 @@
 <?php $title="Ventas"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
 <div class="page-header mb-4">
-  <div><h4 class="fw-bold text-white mb-0"><i class="bi bi-cart-check me-2 text-warning"></i>Registro de Ventas</h4></div>
-  <a href="<?=APP_URL?>/admin/?mod=ventas&action=crear" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg me-1"></i>Nueva Venta</a>
+  <div><h1 class="h4 fw-bold text-white mb-0"><i aria-hidden="true" class="bi bi-cart-check me-2 text-warning"></i>Registro de Ventas</h1></div>
+  <a href="<?=APP_URL?>/admin/?mod=ventas&action=crear" class="btn btn-gold btn-sm"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nueva Venta</a>
 </div>
 <div class="dark-card">
 <div class="table-responsive">
@@ -18,8 +18,8 @@
     <td class="fw-bold text-success">$<?=number_format($v["precio_venta"]*$v["cantidad"],2)?></td>
     <td class="small text-secondary"><?=htmlspecialchars($v["vendedor"]??"—")?></td>
     <td><?=$v["firma_ok"]
-      ? "<span class=\"chip-success\"><i class=\"bi bi-shield-check me-1\"></i>OK</span>"
-      : "<span class=\"chip-danger\"><i class=\"bi bi-shield-x me-1\"></i>Inválida</span>"?></td>
+      ? "<span class=\"chip-success\"><i aria-hidden=\"true\" class=\"bi bi-shield-check me-1\"></i>OK</span>"
+      : "<span class=\"chip-danger\"><i aria-hidden=\"true\" class=\"bi bi-shield-x me-1\"></i>Inválida</span>"?></td>
     <td class="small text-secondary"><?=$v["fecha"]?></td>
   </tr>
   <?php endforeach; ?>

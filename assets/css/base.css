@@ -39,7 +39,7 @@ input, select, textarea, .form-control, .form-select,
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
-body:focus-visible { outline: none; }
+body:focus-visible, main:focus, main:focus-visible { outline: none; }
 .btn:focus-visible, .btn-check:focus-visible + .btn, .form-control:focus, .form-control:focus-visible,
 .form-select:focus, .form-select:focus-visible, .dark-input:focus, .dark-input:focus-visible,
 .form-check-input:focus, .form-check-input:focus-visible, .page-link:focus, .page-link:focus-visible,
@@ -60,7 +60,7 @@ body:focus-visible { outline: none; }
     scroll-behavior: auto !important;
   }
   .pub-card:hover, .sec-card:hover, .stat-card:hover, a.stat-card:hover, .btn-gold:hover, .btn-warning:hover,
-  .btn-float-back:hover, .pub-card:hover .pub-card-img { transform: none !important; }
+  .pub-card:hover .pub-card-img { transform: none !important; }
 }
 
 /* ── Zonas táctiles: 44 px en pantallas táctiles y en móvil ───────────── */
@@ -153,8 +153,6 @@ body, .hero-section { color: var(--text); }
   color: var(--btn-primary-fg);
 }
 .cart-count { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
-.btn-float-back { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
-.btn-float-back:hover { color: var(--btn-primary-fg); }
 input[type="file"].form-control::file-selector-button:hover { background: var(--btn-primary-bg) !important; color: var(--btn-primary-fg) !important; }
 .paginacion .pagination {
   --bs-pagination-active-bg: var(--btn-primary-bg);
@@ -225,3 +223,20 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
   .admin-nav .navbar-nav.ms-auto { gap: 0.25rem !important; }
   .admin-nav .tema-toggle { padding-inline: 0.4rem; }
 }
+
+/* Enlace de salto al contenido: solo aparece al enfocarlo con el teclado */
+.skip-link:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 2000;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--rounded-md);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+  font-weight: var(--type-button-weight);
+  text-decoration: none;
+}
+
+/* Calificación con estrellas: el foco del teclado se ve en la estrella */
+.star-rate input:focus-visible + label { outline: 2px solid var(--focus-ring); outline-offset: 2px; }

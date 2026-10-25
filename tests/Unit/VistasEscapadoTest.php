@@ -30,6 +30,7 @@ final class VistasEscapadoTest extends TestCase {
         "totalStockBajo", "totalVentas", "sz", "i", "n", "ic",
         "c", "e", "m", "a", "ML",
         "pMin", "pMax", // precios del filtro; PublicController los convierte a float
+        "rol",          // role del aviso (alert o status), calculado en el encabezado a partir de un tipo literal
     ];
 
     public static function permitida(string $variable, ?string $clave): bool {

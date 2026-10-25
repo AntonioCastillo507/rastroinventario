@@ -23,18 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Botón flotante "Volver" — aparece en páginas internas
-  var search = window.location.search;
-  var isInternal = search.includes("action=") || search.includes("ver=catalogo") || search.includes("seccion=");
-  if (isInternal && !document.querySelector(".btn-float-back")) {
-    var btn = document.createElement("button");
-    btn.className = "btn-float-back";
-    btn.title = "Volver atrás";
-    btn.innerHTML = "<i class=\"bi bi-arrow-left\"></i>";
-    btn.onclick = function(){ history.back(); };
-    document.body.appendChild(btn);
-  }
-
   // Textarea auto-expandible
   document.querySelectorAll("textarea.auto-exp").forEach(function(ta){
     ta.addEventListener("input", function(){

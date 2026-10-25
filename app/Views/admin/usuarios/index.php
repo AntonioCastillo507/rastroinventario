@@ -1,7 +1,7 @@
 <?php $title="Usuarios"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
 <div class="page-header mb-4">
-  <div><h4 class="fw-bold text-white mb-0"><i class="bi bi-people me-2 text-warning"></i>Usuarios del Sistema</h4></div>
-  <a href="<?=APP_URL?>/admin/?mod=usuarios&action=crear" class="btn btn-gold btn-sm"><i class="bi bi-person-plus me-1"></i>Nuevo Usuario</a>
+  <div><h1 class="h4 fw-bold text-white mb-0"><i aria-hidden="true" class="bi bi-people me-2 text-warning"></i>Usuarios del Sistema</h1></div>
+  <a href="<?=APP_URL?>/admin/?mod=usuarios&action=crear" class="btn btn-gold btn-sm"><i aria-hidden="true" class="bi bi-person-plus me-1"></i>Nuevo Usuario</a>
 </div>
 <div class="dark-card">
 <div class="table-responsive">
@@ -15,18 +15,18 @@
     <td class="text-secondary small"><?=htmlspecialchars($u["email"])?></td>
     <td><span class="chip-info"><?=htmlspecialchars($u["roles"]??"Sin rol")?></span></td>
     <td><?=$u["bloqueado"]
-        ? "<span class=\"chip-danger\"><i class=\"bi bi-lock-fill me-1\"></i>Bloqueado</span>"
+        ? "<span class=\"chip-danger\"><i aria-hidden=\"true\" class=\"bi bi-lock-fill me-1\"></i>Bloqueado</span>"
         : ($u["activo"]
-            ? "<span class=\"chip-success\"><i class=\"bi bi-check-circle me-1\"></i>Activo</span>"
+            ? "<span class=\"chip-success\"><i aria-hidden=\"true\" class=\"bi bi-check-circle me-1\"></i>Activo</span>"
             : "<span class=\"chip-neutral\">Inactivo</span>")
     ?></td>
     <td class="small text-secondary"><?=date("d/m/Y", strtotime($u["creado_en"]))?></td>
     <td>
-      <a href="<?=APP_URL?>/admin/?mod=usuarios&action=editar&id=<?=$u["id"]?>" class="icon-btn" title="Editar"><i class="bi bi-pencil-square text-warning"></i></a>
+      <a href="<?=APP_URL?>/admin/?mod=usuarios&action=editar&id=<?=$u["id"]?>" class="icon-btn" title="Editar" aria-label="Editar a <?=htmlspecialchars($u["nombre"])?>"><i aria-hidden="true" class="bi bi-pencil-square text-warning"></i></a>
       <form method="POST" action="<?=APP_URL?>/admin/?mod=usuarios&action=toggle&id=<?=$u["id"]?>" class="d-inline">
         <?=CsrfToken::field()?>
-        <button type="submit" class="icon-btn" title="<?=$u["activo"]?"Desactivar":"Activar"?>">
-          <i class="bi bi-power <?=$u["activo"]?"text-danger":"text-success"?>"></i>
+        <button type="submit" class="icon-btn" title="<?=$u["activo"]?"Desactivar":"Activar"?>" aria-label="<?=$u["activo"]?"Desactivar":"Activar"?> a <?=htmlspecialchars($u["nombre"])?>">
+          <i aria-hidden="true" class="bi bi-power <?=$u["activo"]?"text-danger":"text-success"?>"></i>
         </button>
       </form>
     </td>

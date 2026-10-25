@@ -1,4 +1,4 @@
-</div>
+</main>
 <footer class="admin-footer text-center py-3 small">
   Rastro del Istmo &copy; <?=date("Y")?>
 </footer>

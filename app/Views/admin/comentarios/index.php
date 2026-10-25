@@ -1,6 +1,6 @@
 <?php $title="Comentarios"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
 <div class="page-header mb-4">
-  <div><h4 class="fw-bold text-white mb-0"><i class="bi bi-chat-dots me-2 text-warning"></i>Moderación de Comentarios</h4></div>
+  <div><h1 class="h4 fw-bold text-white mb-0"><i aria-hidden="true" class="bi bi-chat-dots me-2 text-warning"></i>Moderación de Comentarios</h1></div>
 </div>
 <div class="dark-card"><div class="table-responsive">
 <table class="table dark-table mb-0">
@@ -13,19 +13,19 @@
     <td class="text-white"><?=htmlspecialchars($c["nombre_visitante"])?></td>
     <td class="small text-secondary" style="max-width:280px"><?=htmlspecialchars(mb_substr($c["comentario"],0,90)).(mb_strlen($c["comentario"])>90?"…":"")?></td>
     <td><?=$c["publicado"]
-      ? "<span class=\"chip-success\"><i class=\"bi bi-eye me-1\"></i>Publicado</span>"
-      : "<span class=\"chip-warning\"><i class=\"bi bi-hourglass me-1\"></i>Pendiente</span>"?></td>
+      ? "<span class=\"chip-success\"><i aria-hidden=\"true\" class=\"bi bi-eye me-1\"></i>Publicado</span>"
+      : "<span class=\"chip-warning\"><i aria-hidden=\"true\" class=\"bi bi-hourglass me-1\"></i>Pendiente</span>"?></td>
     <td class="small text-secondary"><?=date("d/m/Y H:i",strtotime($c["creado_en"]))?></td>
     <td>
       <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=toggle&id=<?=$c["id"]?>" class="d-inline">
         <?=CsrfToken::field()?>
-        <button type="submit" class="icon-btn" title="<?=$c["publicado"]?"Ocultar":"Publicar"?>">
-          <i class="bi bi-<?=$c["publicado"]?"eye-slash text-warning":"check-circle text-success"?>"></i>
+        <button type="submit" class="icon-btn" title="<?=$c["publicado"]?"Ocultar":"Publicar"?>" aria-label="<?=$c["publicado"]?"Ocultar":"Publicar"?> el comentario de <?=htmlspecialchars($c["nombre_visitante"])?>">
+          <i aria-hidden="true" class="bi bi-<?=$c["publicado"]?"eye-slash text-warning":"check-circle text-success"?>"></i>
         </button>
       </form>
       <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=eliminar&id=<?=$c["id"]?>" class="d-inline" onsubmit="return confirm('¿Eliminar este comentario?')">
         <?=CsrfToken::field()?>
-        <button type="submit" class="icon-btn" title="Eliminar"><i class="bi bi-trash text-danger"></i></button>
+        <button type="submit" class="icon-btn" title="Eliminar" aria-label="Eliminar el comentario de <?=htmlspecialchars($c["nombre_visitante"])?>"><i aria-hidden="true" class="bi bi-trash text-danger"></i></button>
       </form>
     </td>
   </tr>
