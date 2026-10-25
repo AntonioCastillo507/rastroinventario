@@ -16,7 +16,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
     <tbody><?php foreach($pedidos as $p): ?>
     <tr>
       <td class="text-warning fw-bold">#<?=$p["id"]?></td>
-      <td class="text-success fw-bold num">$<?=number_format($p["total"],2)?></td>
+      <td class="text-precio fw-bold num">$<?=number_format($p["total"],2)?></td>
       <td class="text-secondary"><span class="num"><?=$p["total_items"]?></span> pieza(s)</td>
       <td><span class="estado-<?=$p["estado"]?> fw-semibold"><?=ucfirst($p["estado"])?></span></td>
       <td class="text-secondary small"><?=date("d/m/Y H:i",strtotime($p["creado_en"]))?></td>

@@ -69,7 +69,7 @@ final class TemaGenerador {
             "surface-strong" => "surface-card-dark",
             "text" => "body", "text-strong" => "on-dark", "text-muted" => "muted-strong",
             "hairline" => "hairline-on-dark", "border-strong" => "muted", "input-border" => "input-border-dark",
-            "link" => "primary-text-on-dark", "link-hover" => "on-dark", "success-text" => "success", "danger-text" => "danger",
+            "link" => "primary-text-on-dark", "precio" => "primary-text-on-dark", "link-hover" => "on-dark", "success-text" => "success", "danger-text" => "danger",
             "danger-text-elevated" => "danger-on-elevated", "warning-text" => "warning",
             "focus-ring" => "focus-ring-dark",
             "btn-primary-bg" => "primary", "btn-primary-bg-active" => "primary-active", "btn-primary-fg" => "on-primary",
@@ -83,7 +83,7 @@ final class TemaGenerador {
             "surface-strong" => "surface-strong-light",
             "text" => "body-on-light", "text-strong" => "ink", "text-muted" => "muted-on-light",
             "hairline" => "hairline-on-light", "border-strong" => "border-strong", "input-border" => "input-border-light",
-            "link" => "link-on-light", "link-hover" => "ink", "success-text" => "success-on-light", "danger-text" => "danger-on-light",
+            "link" => "link-on-light", "precio" => "link-on-light", "link-hover" => "ink", "success-text" => "success-on-light", "danger-text" => "danger-on-light",
             "danger-text-elevated" => "danger-on-light", "warning-text" => "warning-on-light",
             "focus-ring" => "focus-ring-light",
             "btn-primary-bg" => "primary", "btn-primary-bg-active" => "primary-active", "btn-primary-fg" => "on-primary",
@@ -103,7 +103,7 @@ final class TemaGenerador {
     public static function pares(): array {
         $p = [];
         foreach (["canvas", "surface", "surface-elevated"] as $f) {
-            foreach (["text", "text-strong", "text-muted", "link", "link-hover", "success-text", "warning-text"] as $t) $p[] = [$t, $f, 4.5, "texto"];
+            foreach (["text", "text-strong", "text-muted", "link", "precio", "link-hover", "success-text", "warning-text"] as $t) $p[] = [$t, $f, 4.5, "texto"];
             $p[] = ["focus-ring", $f, 3.0, "componente"];
         }
         foreach (["canvas", "surface"] as $f) $p[] = ["danger-text", $f, 4.5, "texto"];
@@ -111,6 +111,7 @@ final class TemaGenerador {
         $p[] = ["text", "surface-strong", 4.5, "texto"];
         $p[] = ["text-muted", "surface-strong", 4.5, "texto"];
         $p[] = ["link", "surface-strong", 4.5, "texto"];
+        $p[] = ["precio", "surface-strong", 4.5, "texto"];
         $p[] = ["input-border", "surface", 3.0, "componente"];
         $p[] = ["input-border", "canvas", 3.0, "componente"];
         $p[] = ["btn-primary-fg", "btn-primary-bg", 4.5, "texto"];

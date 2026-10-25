@@ -27,7 +27,8 @@ input, select, textarea, .form-control, .form-select,
   font-size: var(--type-input-text-size) !important;
   line-height: var(--type-input-text-line-height);
 }
-.num, .pub-price, .detail-price, .stat-val, .stat-pill-num, .cart-count, .total-preview, #totalEstimado,
+.text-precio { color: var(--precio) !important; }
+.num, .pub-price, .detail-price, .text-precio, .stat-val, .stat-pill-num, .cart-count, .total-preview, #totalEstimado,
 .fw-bold.text-success, .fs-4.text-success, .fs-5.text-success, input[type="number"], .chip-success,
 .pub-card-badge, .page-link, .chip-warning, .chip-danger, .chip-info, [style*="var(--success)"] {
   font-family: var(--font-numeric);

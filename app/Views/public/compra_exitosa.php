@@ -23,13 +23,13 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       <?php foreach($pedido["items"] as $item): ?>
       <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color:var(--border)!important">
         <div><div class="text-white small fw-semibold"><?=htmlspecialchars($item["parte_nombre"])?></div><div class="text-secondary" style="font-size:.75rem">Cant: <span class="num"><?=$item["cantidad"]?></span> x <span class="num">$<?=number_format($item["precio_unitario"],2)?></span></div></div>
-        <div class="text-success fw-bold num">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></div>
+        <div class="text-precio fw-bold num">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></div>
       </div>
       <?php endforeach; ?>
       <div class="mt-2 text-end">
         <div class="text-secondary small">Subtotal: <span class="num">$<?=number_format($monto["subtotal"],2)?></span></div>
         <div class="text-secondary small"><?=htmlspecialchars(Marca::impuestoEtiqueta())?>: <span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
-        <div class="text-white fw-bold fs-5">Total: <span class="text-success num">$<?=number_format($monto["total"],2)?></span></div>
+        <div class="text-white fw-bold fs-5">Total: <span class="text-precio num">$<?=number_format($monto["total"],2)?></span></div>
       </div>
     </div>
 

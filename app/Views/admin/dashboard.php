@@ -26,7 +26,7 @@
   <div class="col-6 col-lg-3">
     <a href="<?=APP_URL?>/admin/?mod=ventas" class="stat-card d-block" style="text-decoration:none">
       <div class="stat-icon green"><i aria-hidden="true" class="bi bi-cash-coin"></i></div>
-      <div class="stat-val green num">$<?=number_format($totalVendido,2)?></div><div class="stat-lbl">Total vendido</div>
+      <div class="stat-val precio num">$<?=number_format($totalVendido,2)?></div><div class="stat-lbl">Total vendido</div>
     </a>
   </div>
 </div>

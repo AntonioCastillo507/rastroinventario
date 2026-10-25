@@ -26,7 +26,7 @@
           <td class="fw-semibold text-white"><?=htmlspecialchars($item["parte_nombre"])?></td>
           <td class="text-secondary num">$<?=number_format($item["precio_unitario"],2)?></td>
           <td class="num"><?=$item["cantidad"]?></td>
-          <td class="fw-bold text-success num">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></td>
+          <td class="fw-bold text-precio num">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
@@ -35,7 +35,7 @@
         <?php $monto=Itbms::dePedido($pedido); ?>
         <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>Subtotal:</span><span class="num">$<?=number_format($monto["subtotal"],2)?></span></div>
         <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span><?=htmlspecialchars(Marca::impuestoEtiqueta())?>:</span><span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
-        <div class="d-flex justify-content-end gap-4 fw-bold text-white"><span>TOTAL:</span><span class="text-success num">$<?=number_format($monto["total"],2)?></span></div>
+        <div class="d-flex justify-content-end gap-4 fw-bold text-white"><span>TOTAL:</span><span class="text-precio num">$<?=number_format($monto["total"],2)?></span></div>
       </div>
     </div>
     <div class="dark-card">

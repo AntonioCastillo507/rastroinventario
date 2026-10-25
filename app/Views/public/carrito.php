@@ -34,11 +34,11 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
         <div class="flex-fill">
           <div class="text-white fw-semibold"><?=htmlspecialchars($item["nombre"])?></div>
           <?php if($item["marca"]??""): ?><div class="text-secondary small"><?=htmlspecialchars($item["marca"])?></div><?php endif; ?>
-          <div class="text-success fw-bold num">$<?=number_format($item["precio"],2)?></div>
+          <div class="text-precio fw-bold num">$<?=number_format($item["precio"],2)?></div>
         </div>
         <div class="d-flex align-items-center gap-2">
           <input type="number" name="cantidad[<?=$id?>]" value="<?=$item["cantidad"]?>" min="1" max="<?=$item["max"]?>" class="form-control dark-input text-center" style="width:70px" aria-label="Cantidad de <?=htmlspecialchars($item["nombre"])?>">
-          <span class="text-success fw-bold num" style="min-width:70px;text-align:right">$<?=number_format($item["precio"]*$item["cantidad"],2)?></span>
+          <span class="text-precio fw-bold num" style="min-width:70px;text-align:right">$<?=number_format($item["precio"]*$item["cantidad"],2)?></span>
           <button type="submit" formmethod="post" formaction="<?=APP_URL?>/?action=quitar_carrito&id=<?=$id?>" class="btn btn-sm btn-outline-danger" aria-label="Quitar <?=htmlspecialchars($item["nombre"])?> del carrito" onclick="return confirm('¿Quitar esta pieza?')"><i aria-hidden="true" class="bi bi-trash"></i></button>
         </div>
       </div>
@@ -55,7 +55,7 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
         <hr style="border-color:var(--border)">
         <div class="d-flex justify-content-between mb-1 small"><span class="text-secondary">Subtotal</span><span class="text-white num">$<?=number_format($subtotal,2)?></span></div>
         <div class="d-flex justify-content-between mb-2 small"><span class="text-secondary"><?=htmlspecialchars(Marca::impuestoEtiqueta())?></span><span class="text-white num">$<?=number_format($itbms,2)?></span></div>
-        <div class="d-flex justify-content-between mb-3"><span class="text-white fw-bold">Total</span><span class="text-success fw-bold fs-5 num">$<?=number_format($total,2)?></span></div>
+        <div class="d-flex justify-content-between mb-3"><span class="text-white fw-bold">Total</span><span class="text-precio fw-bold fs-5 num">$<?=number_format($total,2)?></span></div>
 
         <?php if($isCliente): ?>
         <!-- Cliente logueado: checkout rápido -->

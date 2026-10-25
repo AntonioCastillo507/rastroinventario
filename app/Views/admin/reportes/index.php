@@ -17,7 +17,7 @@
 <div class="row g-3 mb-4">
   <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon gold"><i aria-hidden="true" class="bi bi-box-seam"></i></div><div class="stat-val"><?=$totalPartes?></div><div class="stat-lbl">Piezas activas</div></div></div>
   <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon blue"><i aria-hidden="true" class="bi bi-cart-check"></i></div><div class="stat-val"><?=$totalVentas?></div><div class="stat-lbl">Ventas registradas</div></div></div>
-  <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon green"><i aria-hidden="true" class="bi bi-cash-coin"></i></div><div class="stat-val green num">$<?=number_format($ingresos,2)?></div><div class="stat-lbl">Ingresos totales</div></div></div>
+  <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon green"><i aria-hidden="true" class="bi bi-cash-coin"></i></div><div class="stat-val precio num">$<?=number_format($ingresos,2)?></div><div class="stat-lbl">Ingresos totales</div></div></div>
   <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon gold"><i aria-hidden="true" class="bi bi-bag-check"></i></div><div class="stat-val"><?=$totalPedidos?></div><div class="stat-lbl">Pedidos online</div></div></div>
 </div>
 

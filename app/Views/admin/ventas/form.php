@@ -34,7 +34,7 @@
     <input type="number" name="cantidad" id="cantVenta" class="form-control dark-input" min="1" value="1" required>
   </div>
   <div id="totalPreview" class="total-preview mb-4 d-none">
-    Total estimado: <span id="totalVal" class="text-success fw-bold"></span>
+    Total estimado: <span id="totalVal" class="text-precio fw-bold"></span>
   </div>
   <button type="submit" class="btn btn-gold fw-bold w-100 py-2">
     <i aria-hidden="true" class="bi bi-cart-check me-2"></i>Confirmar y Registrar Venta

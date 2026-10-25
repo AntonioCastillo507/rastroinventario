@@ -15,7 +15,7 @@
     <td class="small text-secondary"><?=htmlspecialchars(($v["marca"]??"")." ".($v["modelo"]??""))?></td>
     <td class="text-white num"><?=$v["cantidad"]?></td>
     <td class="text-secondary num">$<?=number_format($v["precio_venta"],2)?></td>
-    <td class="fw-bold text-success num">$<?=number_format($v["precio_venta"]*$v["cantidad"],2)?></td>
+    <td class="fw-bold text-precio num">$<?=number_format($v["precio_venta"]*$v["cantidad"],2)?></td>
     <td class="small text-secondary"><?=htmlspecialchars($v["vendedor"]??"—")?></td>
     <td><?=$v["firma_ok"]
       ? "<span class=\"chip-success\"><i aria-hidden=\"true\" class=\"bi bi-shield-check me-1\"></i>OK</span>"

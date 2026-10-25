@@ -14,7 +14,7 @@
     <td class="fw-semibold text-white"><?=htmlspecialchars($p["cliente_nombre"])?></td>
     <td class="text-secondary small"><?=htmlspecialchars($p["cliente_email"])?></td>
     <td class="text-secondary small"><?=htmlspecialchars($p["cliente_telefono"])?></td>
-    <td class="fw-bold text-success num">$<?=number_format($p["total"],2)?></td>
+    <td class="fw-bold text-precio num">$<?=number_format($p["total"],2)?></td>
     <td><span class="estado-<?=$p["estado"]?> fw-semibold chip-<?=match($p["estado"]){"pendiente"=>"warning","procesando"=>"info","entregado"=>"success",default=>"danger"} ?>"><?=ucfirst($p["estado"])?></span></td>
     <td class="text-secondary small"><?=date("d/m/Y H:i",strtotime($p["creado_en"]))?></td>
     <td><a href="<?=APP_URL?>/admin/?mod=pedidos&action=detalle&id=<?=$p["id"]?>" class="btn btn-sm btn-outline-warning" aria-label="Ver el pedido #<?=(int)$p["id"]?>"><i aria-hidden="true" class="bi bi-eye me-1"></i>Ver</a></td>
