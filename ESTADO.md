@@ -188,6 +188,13 @@
 12. Personalización del tema: un archivo de variables `assets/css/tema.css` (oscuro y claro), editado a mano; sin selector en el panel.
 - Orden propuesto de trabajo: variables y tema, foco y contraste, estructura y etiquetas, gutter y menú, autoalojado, iconos y símbolos, tablas en tarjetas, modal de confirmación, páginas propias, marca y demo; al final la compra como invitado (punto 5).
 
+## Base visual (2026-10-24, avance del orden propuesto: 1 Variables y tema, 2 Foco y contraste, 5 Autoalojado)
+- Sub-paso 1, autoalojado (hecho): sin CDN en ninguna vista. Recursos en `assets/vendor/` y `assets/fonts/`; el `<head>` común de las 6 plantillas (login, registro, olvide, restablecer, cabecera pública y del panel) sale de `app/Views/layouts/recursos_head.php`. Prueba: `tests/Unit/RecursosAutoalojadosTest.php`.
+- Versiones y origen (descargados con OK de Tony, solo de los paquetes oficiales de npm vía jsdelivr, sin modificar):
+  - Bootstrap 5.3.3 (`npm/bootstrap@5.3.3`: `bootstrap.min.css` y `bootstrap.bundle.min.js` con sus `.map`; licencia MIT en `assets/vendor/bootstrap/LICENSE.txt`).
+  - Bootstrap Icons 1.11.3 (`npm/bootstrap-icons@1.11.3`: CSS y fuentes `woff2`/`woff`; licencia MIT en `assets/vendor/bootstrap-icons/LICENSE.txt`).
+  - Manrope 5.3.0 (`npm/@fontsource-variable/manrope@5.3.0`, variable en peso 200–800, subconjuntos latin y latin-ext) y IBM Plex Sans 5.3.0 (`npm/@fontsource-variable/ibm-plex-sans@5.3.0`, variable 100–700, latin y latin-ext). Archivos WOFF2 en `assets/fonts/`, declaradas en `assets/fonts/fuentes.css` con `font-display: swap`, y licencias SIL OFL 1.1 en `OFL-Manrope.txt` y `OFL-IBM-Plex-Sans.txt`.
+
 ## Registro de sesiones
 - 2026-10-22 y 2026-10-23: auditoría de seguridad, etapas 1, 2A y 2B completas (ver tabla de commits).
 - 2026-10-23: verificación. Conteos de base revisados (solo `login_logs` difería, por 3 logins legítimos del administrador). Pruebas en el navegador integrado todas OK: carrito, factura PDF del pedido 1, login del administrador y compra normal (pedido 18, usuario 36, factura PDF descargable). Los commits 2B ya están en GitHub. Un solo commit de ESTADO.md, sin push.

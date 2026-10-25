@@ -3,8 +3,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <title>Nueva contraseña — Rastro del Istmo</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<?php require __DIR__ . "/../layouts/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/style.css">
 </head>
 <body class="login-body d-flex align-items-center justify-content-center min-vh-100 p-3">
