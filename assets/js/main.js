@@ -45,13 +45,13 @@ document.addEventListener("DOMContentLoaded", function () {
     sel.addEventListener("change", function(){ this.closest("form").submit(); });
   });
 
-  // Highlight nav activo por URL
-  var href = window.location.href;
-  document.querySelectorAll(".public-nav .nav-link").forEach(function(link){
-    var lh = link.getAttribute("href")||"";
-    if (lh !== "#" && lh !== "" && href.startsWith(lh) && lh.length > 3) {
-      link.classList.add("nav-active");
-    }
+  // El menú plegable se cierra al elegir una opción (las anclas de la portada no recargan la página)
+  document.querySelectorAll(".navbar-collapse").forEach(function(menu){
+    menu.addEventListener("click", function(e){
+      var enlace = e.target.closest ? e.target.closest("a.nav-link, a.dropdown-item") : null;
+      if (!enlace || !menu.classList.contains("show")) return;
+      bootstrap.Collapse.getOrCreateInstance(menu, { toggle: false }).hide();
+    });
   });
 
 });

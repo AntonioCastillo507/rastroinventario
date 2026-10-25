@@ -1,4 +1,4 @@
-<?php $title="Rastro del Istmo — Partes y Repuestos en Panamá"; include BASE_PATH."/app/Views/layouts/public_header.php"; ?>
+<?php $title="Rastro del Istmo — Partes y Repuestos en Panamá"; $navActivo="inicio"; include BASE_PATH."/app/Views/layouts/public_header.php"; ?>
 
 <!-- HERO  ── hero-bg.jpg en assets/img/ (1920×800 px) -->
 <section id="inicio" class="hero-section" style="background-image:url('<?=APP_URL?>/assets/img/hero-bg.jpg')">
@@ -114,7 +114,7 @@
 <!-- QUIÉNES SOMOS -->
 <section id="nosotros" class="about-section py-5">
   <div class="container-xl">
-    <div class="row align-items-center g-5">
+    <div class="row align-items-center g-4 gx-xl-5">
       <div class="col-md-5">
         <img src="<?=APP_URL?>/assets/img/carro1.jpg" class="img-fluid rounded-3" alt="Rastro del Istmo" onerror="this.style.display='none'" style="border:1px solid var(--border);width:100%">
       </div>

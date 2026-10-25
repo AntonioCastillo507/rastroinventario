@@ -93,7 +93,7 @@ body:focus-visible, main:focus, main:focus-visible { outline: none; }
 body, .hero-section { color: var(--text); }
 .text-white, .admin-nav .navbar-brand { color: var(--text-strong) !important; }
 .hero-title { color: var(--text-strong); }
-.public-nav .nav-link.active, .public-nav .nav-link.nav-active { color: var(--text-strong) !important; }
+.public-nav .nav-link.active { color: var(--text-strong) !important; }
 .text-info { color: var(--text) !important; }
 .text-primary { color: var(--link) !important; }
 ::selection { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
@@ -240,3 +240,10 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 
 /* Calificación con estrellas: el foco del teclado se ve en la estrella */
 .star-rate input:focus-visible + label { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Las anclas de la portada no quedan tapadas por la barra fija */
+#inicio, #secciones, #nosotros, #contacto { scroll-margin-top: 5rem; }
+
+/* El texto solo para lectores (visually-hidden) es absoluto: dentro de una tabla con scroll lateral tiene que
+   quedar contenido en su caja, o ensancha la página entera */
+.table-responsive, .dark-card { position: relative; }

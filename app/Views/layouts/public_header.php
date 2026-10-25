@@ -1,14 +1,8 @@
 <?php
 if(empty($title))$title="Rastro del Istmo";
-// Determinar nav activo.
-// "Catalogo" es la unica pestana que depende del servidor (es una pagina real, ?ver=catalogo).
-// Inicio / Secciones / Quienes somos / Contacto viven dentro de la home y se resaltan
-// solos con Bootstrap Scrollspy (ver data-bs-spy mas abajo), asi nunca se marcan mal.
-$_qs  = $_GET;
-$_act = $_qs["action"]??"";
-$_ver = $_qs["ver"]??"";
-$navActivo = ($_act==="detalle"||$_act==="comprar"||$_ver==="catalogo") ? "catalogo" : "";
-$esHome = empty($_qs);
+// Opción activa del menú: la decide cada vista con $navActivo ("inicio" o "catalogo") antes de incluir
+// este encabezado. Secciones, Quiénes somos y Contacto son anclas de la portada y no se marcan.
+$navActivo = $navActivo ?? "";
 $cartCount = count($_SESSION["cart"]??[]);
 ?>
 <!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
@@ -20,7 +14,7 @@ $cartCount = count($_SESSION["cart"]??[]);
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/extra.css">
 <link rel="stylesheet" href="<?=APP_URL?>/assets/css/base.css">
 </head>
-<body class="public-body"<?php if($esHome): ?> data-bs-spy="scroll" data-bs-target="#navP" data-bs-offset="90" data-bs-smooth-scroll="true" tabindex="0"<?php endif; ?>>
+<body class="public-body">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 <nav class="navbar navbar-expand-lg public-nav sticky-top" aria-label="Principal">
   <div class="container-xl">
@@ -34,13 +28,11 @@ $cartCount = count($_SESSION["cart"]??[]);
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navP" aria-controls="navP" aria-expanded="false" aria-label="Abrir o cerrar el menú"><span class="navbar-toggler-icon" aria-hidden="true"></span></button>
     <div class="collapse navbar-collapse" id="navP">
       <ul class="navbar-nav me-auto ms-3 gap-1">
-        <li class="nav-item"><a class="nav-link text-secondary" href="<?=APP_URL?>/#inicio">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link <?=$navActivo==="catalogo"?"active":"text-secondary"?>" href="<?=APP_URL?>/?ver=catalogo">Catálogo</a></li>
-        <li class="nav-item"><a class="nav-link text-secondary" href="<?=APP_URL?>/#secciones">Secciones</a></li>
-        <li class="nav-item"><a class="nav-link text-secondary" href="<?=APP_URL?>/#nosotros">Quiénes somos</a></li>
-        <li class="nav-item"><a class="nav-link text-secondary" href="<?=APP_URL?>/#contacto">Contacto</a></li>
+        <?php foreach([["inicio","Inicio","/"],["catalogo","Catálogo","/?ver=catalogo"],["secciones","Secciones","/#secciones"],["nosotros","Quiénes somos","/#nosotros"],["contacto","Contacto","/#contacto"]] as [$clave,$texto,$ruta]): $esActiva=$navActivo===$clave; ?>
+        <li class="nav-item"><a class="nav-link <?=$esActiva?"active":"text-secondary"?>" href="<?=APP_URL.htmlspecialchars($ruta)?>"<?=$esActiva?' aria-current="page"':""?>><?=htmlspecialchars($texto)?></a></li>
+        <?php endforeach; ?>
       </ul>
-      <div class="d-flex align-items-center gap-2 mt-2 mt-lg-0">
+      <div class="d-flex align-items-center flex-wrap gap-2 mt-2 mt-lg-0">
         <form class="d-flex" method="GET" action="<?=APP_URL?>/" role="search">
           <input type="hidden" name="ver" value="catalogo">
           <div class="input-group input-group-sm">

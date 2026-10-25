@@ -89,9 +89,6 @@ textarea.auto-exp:focus { min-height:140px; }
 /* ── Carrito page ───────────────────────────────────────────────── */
 .cart-item { background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.75rem; }
 
-/* ── Nav link activo ────────────────────────────────────────────── */
-.public-nav .nav-link.nav-active { color:#fff!important;font-weight:700; }
-
 /* ════ EXTRA.CSS v5 — setupfix5 ═════════════════════════════════ */
 
 /* ── Nav activo unificado (Bootstrap Scrollspy + PHP para Catálogo) ── */

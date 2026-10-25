@@ -1,9 +1,9 @@
 <?php
-$title="Comprar — Rastro del Istmo";
+$title="Comprar — Rastro del Istmo"; $navActivo="catalogo";
 include BASE_PATH."/app/Views/layouts/public_header.php";
 ?>
 <div class="container-xl py-5">
-<div class="row g-5 justify-content-center">
+<div class="row g-4 gx-xl-5 justify-content-center">
   <div class="col-lg-7">
     <div class="d-flex align-items-center gap-3 mb-4">
       <a href="<?=APP_URL?>/?action=detalle&id=<?=$parte["id"]?>" class="btn-back" aria-label="Volver al detalle de la pieza"><i aria-hidden="true" class="bi bi-arrow-left"></i></a>
