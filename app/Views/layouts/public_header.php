@@ -10,9 +10,9 @@ $cartCount = count($_SESSION["cart"]??[]);
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?=htmlspecialchars($title)?></title>
 <?php require __DIR__ . "/recursos_head.php"; ?>
-<link rel="stylesheet" href="<?=APP_URL?>/assets/css/style.css">
-<link rel="stylesheet" href="<?=APP_URL?>/assets/css/extra.css">
-<link rel="stylesheet" href="<?=APP_URL?>/assets/css/base.css">
+<link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
+<link rel="stylesheet" href="<?=Assets::url("css/extra.css")?>">
+<link rel="stylesheet" href="<?=Assets::url("css/base.css")?>">
 </head>
 <body class="public-body">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>

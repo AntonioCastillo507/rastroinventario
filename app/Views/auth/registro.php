@@ -3,9 +3,9 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Crear Cuenta — Rastro del Istmo</title>
 <?php require __DIR__ . "/../layouts/recursos_head.php"; ?>
-<link rel="stylesheet" href="<?=APP_URL?>/assets/css/style.css">
-<link rel="stylesheet" href="<?=APP_URL?>/assets/css/base.css">
-<link rel="stylesheet" href="<?=APP_URL?>/assets/css/extra.css">
+<link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
+<link rel="stylesheet" href="<?=Assets::url("css/extra.css")?>">
+<link rel="stylesheet" href="<?=Assets::url("css/base.css")?>">
 </head>
 <body class="login-body d-flex align-items-center justify-content-center min-vh-100 p-3">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>

@@ -99,7 +99,7 @@ final class BaseVisualTest extends TestCase {
 
     public function testElScriptDelTemaSeCargaEnElHeadSinDiferirse(): void {
         $parcial = (string)file_get_contents(BASE_PATH . "/app/Views/layouts/recursos_head.php");
-        $this->assertMatchesRegularExpression('~<script src="<\?=APP_URL\?>/assets/js/tema\.js"></script>~', $parcial, "Síncrono: sin defer ni async, para fijar el tema antes de pintar");
+        $this->assertMatchesRegularExpression('~<script src="<\?=Assets::url\("js/tema\.js"\)\?>"></script>~', $parcial, "Síncrono: sin defer ni async, para fijar el tema antes de pintar");
         $this->assertGreaterThan(strpos($parcial, "tema.css"), strpos($parcial, "tema.js"));
         $this->assertFileExists(BASE_PATH . "/assets/js/tema.js");
     }

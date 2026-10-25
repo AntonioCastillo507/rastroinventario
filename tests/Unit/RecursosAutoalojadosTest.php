@@ -94,7 +94,9 @@ final class RecursosAutoalojadosTest extends TestCase {
         foreach (self::archivosPhp() as $ruta) {
             $t = (string)file_get_contents($ruta);
             preg_match_all('/<' . self::ETIQUETAS . '\b[^>]*?\b(?:src|href)\s*=\s*["\']<\?=\s*APP_URL\s*\?>\/(assets\/[^"\'?#]+)/i', $t, $m);
-            foreach (array_unique($m[1]) as $rel) {
+            // los archivos propios se piden con Assets::url("css/x.css"), que añade ?v=
+            preg_match_all('/<' . self::ETIQUETAS . '\b[^>]*?\b(?:src|href)\s*=\s*["\']<\?=\s*Assets::url\("([^"]+)"\)\s*\?>/i', $t, $propios);
+            foreach (array_unique(array_merge($m[1], array_map(fn($r) => "assets/" . $r, $propios[1]))) as $rel) {
                 $revisados++;
                 if (!is_file(BASE_PATH . "/" . $rel)) $faltan[] = basename($ruta) . " → $rel";
             }
