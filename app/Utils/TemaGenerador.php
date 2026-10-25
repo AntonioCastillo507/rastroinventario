@@ -372,7 +372,7 @@ CSS;
     }
 
     public static function css(array $paleta, string $principal): string {
-        $o = "/*\n * Tokens de diseño de Rastro del Istmo (docs/DESIGN.md): oscuro por defecto y claro con data-theme=\"light\".\n";
+        $o = "/*\n * Tokens de diseño (docs/DESIGN.md): oscuro por defecto y claro con data-theme=\"light\".\n";
         $o .= " * Generado por bin/generar_tema.php con el color principal " . self::normalizar($principal) . ".\n";
         $o .= " * Para cambiar el color de la marca: php bin/generar_tema.php #RRGGBB (valida el contraste en ambos modos).\n";
         $o .= " * Si se edita a mano, php bin/generar_tema.php --validar comprueba que los pares sigan cumpliendo.\n */\n\n";

@@ -1,5 +1,6 @@
 <?php
-if(empty($title))$title="Rastro del Istmo";
+// $title es el nombre de la pantalla; aquí se le añade la marca
+$tituloPagina = empty($title) ? Marca::get("nombre") : $title . " — " . Marca::get("nombre");
 // Opción activa del menú: la decide cada vista con $navActivo ("inicio" o "catalogo") antes de incluir
 // este encabezado. Secciones, Quiénes somos y Contacto son anclas de la portada y no se marcan.
 $navActivo = $navActivo ?? "";
@@ -8,7 +9,7 @@ $cartCount = count($_SESSION["cart"]??[]);
 <!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title><?=htmlspecialchars($title)?></title>
+<title><?=htmlspecialchars($tituloPagina)?></title>
 <?php require __DIR__ . "/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/extra.css")?>">
@@ -19,10 +20,10 @@ $cartCount = count($_SESSION["cart"]??[]);
 <nav class="navbar navbar-expand-lg public-nav sticky-top" aria-label="Principal">
   <div class="container-xl">
     <a class="navbar-brand d-flex align-items-center gap-2" href="<?=APP_URL?>/">
-      <img src="<?=APP_URL?>/assets/img/logo.png" height="32" alt="" onerror="this.style.display='none'" style="filter:brightness(0)saturate(100%)invert(78%)sepia(67%)saturate(700%)hue-rotate(2deg)brightness(105%)">
+      <?php if(Marca::url("logo")!==""): ?><img src="<?=htmlspecialchars(Marca::url("logo"))?>" height="32" alt="" onerror="this.style.display='none'" style="filter:brightness(0)saturate(100%)invert(78%)sepia(67%)saturate(700%)hue-rotate(2deg)brightness(105%)"><?php endif; ?>
       <div>
-        <span class="fw-bold text-white d-block lh-1" style="font-size:1rem">Rastro del Istmo</span>
-        <span class="text-warning" style="font-size:.58rem;letter-spacing:.12em">RASTRO &amp; PARTES</span>
+        <span class="fw-bold text-white d-block lh-1" style="font-size:1rem"><?=Marca::h("nombre")?></span>
+        <?php if(Marca::get("eslogan")!==""): ?><span class="text-warning text-uppercase" style="font-size:.58rem;letter-spacing:.12em"><?=Marca::h("eslogan")?></span><?php endif; ?>
       </div>
     </a>
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navP" aria-controls="navP" aria-expanded="false" aria-label="Abrir o cerrar el menú"><span class="navbar-toggler-icon" aria-hidden="true"></span></button>

@@ -1,6 +1,6 @@
 <?php
 $navActivo="catalogo";
-$title=$parte["nombre"]." — Rastro del Istmo"; // el encabezado ya escapa el título
+$title=$parte["nombre"]; // el encabezado ya escapa el título y añade la marca
 include BASE_PATH."/app/Views/layouts/public_header.php";
 if (!function_exists("starsHtml")) { // la vista puede incluirse más de una vez en un proceso (pruebas)
 function starsHtml(float $n,int $sz=16): string {

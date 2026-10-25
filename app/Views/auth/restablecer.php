@@ -2,7 +2,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<title>Nueva contraseña — Rastro del Istmo</title>
+<title>Nueva contraseña — <?=Marca::h("nombre")?></title>
 <?php require __DIR__ . "/../layouts/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/base.css")?>">

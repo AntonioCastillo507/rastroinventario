@@ -1,5 +1,5 @@
 <?php
-$title="Catálogo — Rastro del Istmo"; $navActivo="catalogo";
+$title="Catálogo"; $navActivo="catalogo";
 include BASE_PATH."/app/Views/layouts/public_header.php";
 ?>
 <div class="container-xl py-4">

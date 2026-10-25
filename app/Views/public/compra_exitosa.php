@@ -1,5 +1,5 @@
 <?php
-$title = "Compra Exitosa — Rastro del Istmo";
+$title = "Compra Exitosa";
 include BASE_PATH."/app/Views/layouts/public_header.php";
 ?>
 <div class="container-xl py-5">
@@ -28,7 +28,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       <?php endforeach; ?>
       <div class="mt-2 text-end">
         <div class="text-secondary small">Subtotal: <span class="num">$<?=number_format($monto["subtotal"],2)?></span></div>
-        <div class="text-secondary small">ITBMS (7%): <span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
+        <div class="text-secondary small"><?=htmlspecialchars(Marca::impuestoEtiqueta())?>: <span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
         <div class="text-white fw-bold fs-5">Total: <span class="text-success num">$<?=number_format($monto["total"],2)?></span></div>
       </div>
     </div>
@@ -36,7 +36,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
     <!-- BOTÓN FACTURA PDF -->
     <div class="dark-card p-4 mb-4" style="border-color:rgba(240,185,11,.3)">
       <h2 class="h6 fw-bold text-warning mb-2"><i aria-hidden="true" class="bi bi-file-earmark-pdf me-2"></i>Factura Electrónica</h2>
-      <p class="text-secondary small mb-3">Descarga tu factura oficial con firma digital y desglose del ITBMS (7%).</p>
+      <p class="text-secondary small mb-3">Descarga tu factura oficial con firma digital y desglose del <?=htmlspecialchars(Marca::impuestoEtiqueta())?>.</p>
       <a href="<?=APP_URL?>/?action=factura&pedido=<?=$pedido["id"]?>" class="btn btn-gold fw-bold w-100" target="_blank">
         <i aria-hidden="true" class="bi bi-download me-2"></i>Descargar Factura PDF
       </a>

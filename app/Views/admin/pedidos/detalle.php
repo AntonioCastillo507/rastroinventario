@@ -34,7 +34,7 @@
       <div class="p-3 border-top" style="border-color:var(--border)!important">
         <?php $monto=Itbms::dePedido($pedido); ?>
         <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>Subtotal:</span><span class="num">$<?=number_format($monto["subtotal"],2)?></span></div>
-        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>ITBMS (7%):</span><span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
+        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span><?=htmlspecialchars(Marca::impuestoEtiqueta())?>:</span><span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
         <div class="d-flex justify-content-end gap-4 fw-bold text-white"><span>TOTAL:</span><span class="text-success num">$<?=number_format($monto["total"],2)?></span></div>
       </div>
     </div>

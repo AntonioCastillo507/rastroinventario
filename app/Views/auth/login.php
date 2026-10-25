@@ -2,7 +2,7 @@
 <!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Iniciar Sesión — Rastro del Istmo</title>
+<title>Iniciar Sesión — <?=Marca::h("nombre")?></title>
 <?php require __DIR__ . "/../layouts/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/base.css")?>">
@@ -12,7 +12,7 @@
 <main class="login-card" id="contenido" tabindex="-1">
   <div class="text-center mb-4">
     <div class="login-icon"><i aria-hidden="true" class="bi bi-tools"></i></div>
-    <h1 class="h3 fw-bold text-white mb-0">Rastro del Istmo</h1>
+    <h1 class="h3 fw-bold text-white mb-0"><?=Marca::h("nombre")?></h1>
     <p class="text-secondary small mt-1">Ingresa a tu cuenta para continuar</p>
   </div>
   <?php if($err): ?>

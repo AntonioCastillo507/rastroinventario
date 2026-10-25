@@ -59,6 +59,9 @@ class Validator {
         self::$comunes ??= require __DIR__ . "/contrasenas_comunes.php";
         $p = self::plano($v);
         $base = preg_replace('/^[\d\W_]+|[\d\W_]+$/u', "", $p); // sin números ni símbolos en las puntas
+        // El nombre de la marca (con o sin números en las puntas) tampoco vale como contraseña
+        $marca = self::plano((string)Marca::get("nombre"));
+        if ($marca !== "" && ($p === $marca || $base === $marca)) return true;
         return in_array($p, self::$comunes["exactas"], true)
             || in_array($p, self::$comunes["bases"], true)
             || ($base !== "" && in_array($base, self::$comunes["bases"], true));

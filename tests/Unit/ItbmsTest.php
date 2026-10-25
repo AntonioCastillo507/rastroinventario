@@ -24,7 +24,7 @@ final class ItbmsTest extends TestCase {
     }
 
     public function testLaTasaEsSietePorCiento(): void {
-        $this->assertSame(0.07, \Itbms::TASA);
+        $this->assertSame(0.07, \Itbms::tasa());
     }
 
     public function testEsRedondeaUnaSolaVezSobreElSubtotal(): void {

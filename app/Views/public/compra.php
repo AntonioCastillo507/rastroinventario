@@ -1,5 +1,5 @@
 <?php
-$title="Comprar — Rastro del Istmo"; $navActivo="catalogo";
+$title="Comprar"; $navActivo="catalogo";
 include BASE_PATH."/app/Views/layouts/public_header.php";
 ?>
 <div class="container-xl py-5">
@@ -43,8 +43,8 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
         <div><div class="text-white fw-semibold small"><?=htmlspecialchars($parte["nombre"])?></div><?php if($parte["marca"]??""): ?><div class="text-secondary" style="font-size:.75rem"><?=htmlspecialchars($parte["marca"]." ".$parte["modelo"])?></div><?php endif; ?></div>
       </div>
       <hr style="border-color:var(--border)">
-      <div class="d-flex justify-content-between mb-1"><span class="text-secondary small">Precio unit. (sin ITBMS)</span><span class="text-white small num">$<?=number_format($parte["precio"],2)?></span></div>
-      <div class="text-secondary mb-1" style="font-size:.75rem">Se suma ITBMS (7%) al confirmar el pedido.</div>
+      <div class="d-flex justify-content-between mb-1"><span class="text-secondary small">Precio unit. (sin <?=Marca::h("impuesto.nombre")?>)</span><span class="text-white small num">$<?=number_format($parte["precio"],2)?></span></div>
+      <div class="text-secondary mb-1" style="font-size:.75rem">Se suma <?=htmlspecialchars(Marca::impuestoEtiqueta())?> al confirmar el pedido.</div>
       <div class="d-flex justify-content-between"><span class="text-secondary small">Stock disp.</span><span class="chip-success"><?=$parte["cantidad"]?> uds.</span></div>
     </div>
   </div>

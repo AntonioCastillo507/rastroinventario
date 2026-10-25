@@ -42,7 +42,7 @@ class EmailJsService {
             [
                 "to_email"   => $email,
                 "to_name"    => $nombre,
-                "app_nombre" => "Rastro del Istmo",
+                "app_nombre" => Marca::get("nombre"),
             ]
         );
     }
@@ -57,7 +57,7 @@ class EmailJsService {
                 "pedido_id"    => str_pad((string)$pedidoId, 6, "0", STR_PAD_LEFT),
                 "pedido_total" => number_format($total, 2),
                 "factura_url"  => APP_URL . "/?action=factura&pedido=" . $pedidoId,
-                "app_nombre"   => "Rastro del Istmo",
+                "app_nombre"   => Marca::get("nombre"),
             ]
         );
     }
@@ -71,7 +71,7 @@ class EmailJsService {
                 "to_name"        => $nombre,
                 "reset_url"      => $url,
                 "expira_minutos" => PasswordResetModel::TTL_MIN,
-                "app_nombre"     => "Rastro del Istmo",
+                "app_nombre"     => Marca::get("nombre"),
             ]
         );
         // Solo en localhost y solo si el envio fallo: deja el enlace en un registro para probar el flujo

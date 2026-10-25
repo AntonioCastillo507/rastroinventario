@@ -2,7 +2,7 @@
 /**
  * FacturaController — Genera facturas electrónicas en PDF con TCPDF.
  * Firma digital via OpenSSL (TCPDF Example 052 / PDF/A).
- * Incluye cálculo del 7% de ITBMS (Impuesto de Transferencia de Bienes Muebles).
+ * Incluye el desglose del impuesto de la venta; el nombre, la tasa y los datos del negocio salen de app/Config/marca.php.
  * Requiere: composer require tecnickcom/tcpdf
  */
 class FacturaController extends BaseController {
@@ -46,26 +46,36 @@ class FacturaController extends BaseController {
 
     private function generarPDF(array $pedido): void {
         $this->loadTcpdf();
+        $pdf = $this->construirPDF($pedido, new RsaCrypto());
+        $numFactura = str_pad($pedido["id"], 6, "0", STR_PAD_LEFT);
+        $pdf->Output("factura_{$numFactura}.pdf", "D"); // D = descarga directa
+        exit;
+    }
 
-        // ── Cálculos de ITBMS ───────────────────────────────────
+    /** Arma la factura. Sin $rsa no lleva firma (lo usan las pruebas). */
+    public function construirPDF(array $pedido, ?RsaCrypto $rsa = null): TCPDF {
+        $nombre   = (string)Marca::get("nombre");
+        $impuesto = (string)Marca::get("impuesto.nombre");
+        $tasa     = Marca::impuestoPorcentaje();
+
+        // ── Cálculos del impuesto ───────────────────────────────
         // Lo que se cobró está guardado en el pedido: itbms = total - subtotal
         ["subtotal" => $subtotal, "itbms" => $itbms, "total" => $total] = Itbms::dePedido($pedido);
         $numFactura = str_pad($pedido["id"], 6, "0", STR_PAD_LEFT);
         $fecha      = date("d/m/Y H:i");
 
         // ── Firma RSA del contenido de la factura ────────────────
-        $rsa   = new RsaCrypto();
         $datosAFirmar = "FACTURA:{$numFactura}|PEDIDO:{$pedido["id"]}|TOTAL:{$total}|FECHA:{$fecha}|CLIENTE:{$pedido["cliente_email"]}";
-        $firma = $rsa->firmar($datosAFirmar);
+        $firma = $rsa ? $rsa->firmar($datosAFirmar) : null;
         $firmaCorta = $firma ? substr($firma, 0, 40)."..." : "N/D";
 
         // ── Crear PDF ────────────────────────────────────────────
         $pdf = new TCPDF("P", "mm", "A4", true, "UTF-8", false);
-        $pdf->SetCreator("Rastro del Istmo");
-        $pdf->SetAuthor("Antonio Castillo");
+        $pdf->SetCreator($nombre);
+        $pdf->SetAuthor($nombre);
         $pdf->SetTitle("Factura #{$numFactura}");
         $pdf->SetSubject("Factura Electrónica de Venta");
-        $pdf->SetKeywords("factura, ITBMS, rastro, Panama");
+        $pdf->SetKeywords("factura, {$impuesto}, ".Marca::get("pais"));
         $pdf->setHeaderFont(["helvetica","",10]);
         $pdf->setFooterFont(["helvetica","",8]);
         $pdf->SetDefaultMonospacedFont("courier");
@@ -77,14 +87,14 @@ class FacturaController extends BaseController {
         $pdf->setPrintFooter(false);
 
         // ── Firma digital con certificado OpenSSL ─────────────────
-        $certContent = $rsa->getCertContent();
-        $keyContent  = $rsa->getKeyContent();
+        $certContent = $rsa ? $rsa->getCertContent() : null;
+        $keyContent  = $rsa ? $rsa->getKeyContent() : null;
         if ($certContent && $keyContent) {
             $info = [
-                "Name"        => "Rastro del Istmo",
-                "Location"    => "Ciudad de Panama, Panama",
-                "Reason"      => "Factura Electronica de Venta - ITBMS 7%",
-                "ContactInfo" => "admin@rastrodelistmo.com",
+                "Name"        => $nombre,
+                "Location"    => Marca::get("ciudad"),
+                "Reason"      => "Factura Electronica de Venta - {$impuesto} {$tasa}%",
+                "ContactInfo" => Marca::get("correo"),
             ];
             $pdf->setSignature($certContent, $keyContent, $rsa->getKeyPassphrase(), "", 2, $info);
         }
@@ -97,11 +107,11 @@ class FacturaController extends BaseController {
         $pdf->SetTextColor(240, 185, 11); // --accent dorado
         $pdf->SetFont("helvetica","B",20);
         $pdf->SetXY(15, 10);
-        $pdf->Cell(0, 10, "RASTRO DEL ISTMO", 0, 1, "L");
+        $pdf->Cell(0, 10, mb_strtoupper($nombre, "UTF-8"), 0, 1, "L");
         $pdf->SetFont("helvetica","",9);
         $pdf->SetTextColor(132, 142, 156);
         $pdf->SetXY(15, 22);
-        $pdf->Cell(0, 5, "Ciudad de Panama, Republica de Panama  |  +507 6542-0519  |  chapimaster507@gmail.com", 0, 1, "L");
+        $pdf->Cell(0, 5, implode("  |  ", array_filter([Marca::get("ciudad"), Marca::get("telefono"), Marca::get("correo")])), 0, 1, "L");
 
         $pdf->SetTextColor(240, 185, 11);
         $pdf->SetFont("helvetica","B",14);
@@ -176,7 +186,7 @@ class FacturaController extends BaseController {
         $pdf->Cell(55, 6, "Subtotal:", "TB", 0, "R");
         $pdf->Cell(25, 6, "$ ".number_format($subtotal,2), "TB", 1, "R");
         $pdf->SetX(120);
-        $pdf->Cell(55, 6, "ITBMS (7%):", "B", 0, "R");
+        $pdf->Cell(55, 6, "{$impuesto} ({$tasa}%):", "B", 0, "R");
         $pdf->Cell(25, 6, "$ ".number_format($itbms,2), "B", 1, "R");
         $pdf->SetFont("helvetica","B",11);
         $pdf->SetFillColor(240,185,11);
@@ -191,19 +201,18 @@ class FacturaController extends BaseController {
         $pdf->SetTextColor(100,100,100);
         $pdf->MultiCell(180, 4,
             "FIRMA DIGITAL (HMAC-SHA256 + RSA-OpenSSL)\n".
-            "Pedido #{$numFactura} | Total: \$".number_format($total,2)." incl. ITBMS 7%\n".
+            "Pedido #{$numFactura} | Total: \$".number_format($total,2)." incl. {$impuesto} {$tasa}%\n".
             "Hash: ".$firmaCorta."\n".
-            "Este documento tiene validez legal como comprobante de compra. Rastro del Istmo - Panama.", 1, "L");
+            "Este documento tiene validez legal como comprobante de compra. {$nombre} - ".Marca::get("pais").".", 1, "L");
         $pdf->SetFont("helvetica","I",7);
         $pdf->SetY($pdf->GetY() + 4);
-        $pdf->Cell(180, 4, "Nota: El ITBMS corresponde al Impuesto de Transferencia de Bienes Muebles y Servicios (Ley 75 de 1976, Panama).", 0, 1, "C");
+        $pdf->Cell(180, 4, "Nota: El {$impuesto} corresponde al ".Marca::get("impuesto.descripcion").".", 0, 1, "C");
 
         // ── Campo de firma visible TCPDF ─────────────────────────
         if ($certContent && $keyContent) {
             $pdf->addEmptySignatureAppearance(15, $pdf->GetY() + 5, 80, 25);
         }
 
-        $pdf->Output("factura_{$numFactura}.pdf", "D"); // D = descarga directa
-        exit;
+        return $pdf;
     }
 }

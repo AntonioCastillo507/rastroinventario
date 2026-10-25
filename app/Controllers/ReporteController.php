@@ -25,6 +25,10 @@ class ReporteController extends BaseController {
         ]);
     }
 
+    private function marcaMayusculas(): string {
+        return mb_strtoupper((string)Marca::get("nombre"), "UTF-8");
+    }
+
     private function tituloPagina(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, string $titulo, int $cols): void {
         $colLetra = chr(64 + $cols);
         $sheet->mergeCells("A1:{$colLetra}1");
@@ -36,7 +40,7 @@ class ReporteController extends BaseController {
         ]);
         $sheet->getRowDimension(1)->setRowHeight(28);
         $sheet->mergeCells("A2:{$colLetra}2");
-        $sheet->setCellValue("A2", "Rastro del Istmo — Generado el ".date("d/m/Y H:i")." (Panamá)");
+        $sheet->setCellValue("A2", Marca::get("nombre")." — Generado el ".date("d/m/Y H:i")." (Panamá)");
         $sheet->getStyle("A2")->applyFromArray([
             "font" => ["italic"=>true,"size"=>9,"color"=>["rgb"=>"848E9C"]],
             "fill" => ["fillType"=>\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,"startColor"=>["rgb"=>"1E2026"]],
@@ -95,7 +99,7 @@ class ReporteController extends BaseController {
 
         $sp = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sh = $sp->getActiveSheet()->setTitle("Inventario");
-        $this->tituloPagina($sh, "REPORTE DE INVENTARIO — RASTRO DEL ISTMO", 9);
+        $this->tituloPagina($sh, "REPORTE DE INVENTARIO — ".$this->marcaMayusculas(), 9);
         $cols=["A"=>"#","B"=>"Sección","C"=>"Nombre de la Pieza","D"=>"Descripción","E"=>"Auto (Marca/Modelo)","F"=>"Año","G"=>"Precio ($)","H"=>"Stock","I"=>"Valor Total ($)"];
         $r=3; foreach($cols as $col=>$h){ $sh->setCellValue($col.$r,$h); $sh->getColumnDimension($col)->setAutoSize(true); }
         $this->estiloHeader($sh,"A3:I3");
@@ -163,7 +167,7 @@ class ReporteController extends BaseController {
 
         $sp = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sh = $sp->getActiveSheet()->setTitle("Total por Categoría");
-        $this->tituloPagina($sh,"TOTAL POR CATEGORÍA — RASTRO DEL ISTMO",6);
+        $this->tituloPagina($sh,"TOTAL POR CATEGORÍA — ".$this->marcaMayusculas(),6);
         $cols=["A"=>"Categoría/Sección","B"=>"# Piezas","C"=>"Unidades en Stock","D"=>"Valor Inventario ($)","E"=>"Unidades Vendidas","F"=>"Monto Vendido ($)"];
         $r=3; foreach($cols as $col=>$h){ $sh->setCellValue($col.$r,$h); $sh->getColumnDimension($col)->setAutoSize(true); }
         $this->estiloHeader($sh,"A3:F3");
@@ -196,7 +200,7 @@ class ReporteController extends BaseController {
 
         $sp = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sh = $sp->getActiveSheet()->setTitle("Más Vendidas");
-        $this->tituloPagina($sh,"PIEZAS MÁS VENDIDAS — RASTRO DEL ISTMO",8);
+        $this->tituloPagina($sh,"PIEZAS MÁS VENDIDAS — ".$this->marcaMayusculas(),8);
         $cols=["A"=>"Pos.","B"=>"Nombre de la Pieza","C"=>"Auto","D"=>"Sección","E"=>"Cant. Vendida","F"=>"Ingreso Total ($)","G"=>"Precio Prom. ($)","H"=>"N° Transacciones"];
         $r=3; foreach($cols as $col=>$h){ $sh->setCellValue($col.$r,$h); $sh->getColumnDimension($col)->setAutoSize(true); }
         $this->estiloHeader($sh,"A3:H3");

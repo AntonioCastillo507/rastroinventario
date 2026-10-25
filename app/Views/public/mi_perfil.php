@@ -1,5 +1,5 @@
 <?php
-$title="Mi Perfil — Rastro del Istmo";
+$title="Mi Perfil";
 include BASE_PATH."/app/Views/layouts/public_header.php";
 ?>
 <div class="container-xl py-4">

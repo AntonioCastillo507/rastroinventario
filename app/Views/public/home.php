@@ -1,16 +1,16 @@
-<?php $title="Rastro del Istmo — Partes y Repuestos en Panamá"; $navActivo="inicio"; include BASE_PATH."/app/Views/layouts/public_header.php"; ?>
+<?php $title=Marca::get("portada.titulo_pagina"); $navActivo="inicio"; include BASE_PATH."/app/Views/layouts/public_header.php"; ?>
 
 <!-- HERO  ── hero-bg.jpg en assets/img/ (1920×800 px) -->
 <section id="inicio" class="hero-section" style="background-image:url('<?=APP_URL?>/assets/img/hero-bg.jpg')">
   <div class="hero-overlay"></div>
   <div class="hero-content container-xl text-center">
-    <p class="text-warning small fw-bold mb-2" style="letter-spacing:.15em"><i aria-hidden="true" class="bi bi-tools me-1"></i>RASTRO DE AUTOS — PANAMÁ</p>
-    <h1 class="hero-title mb-3">Tu pieza al<br><span>mejor precio</span></h1>
-    <p class="mb-4 text-secondary mx-auto" style="max-width:500px;font-size:1.05rem">Repuestos originales para las principales marcas del mercado panameño.</p>
+    <p class="text-warning small fw-bold text-uppercase mb-2" style="letter-spacing:.15em"><?=Marca::h("portada.etiqueta")?></p>
+    <h1 class="hero-title mb-3"><?=Marca::h("portada.titulo")?><br><span><?=Marca::h("portada.titulo_resalte")?></span></h1>
+    <p class="mb-4 text-secondary mx-auto" style="max-width:500px;font-size:1.05rem"><?=Marca::h("portada.subtitulo")?></p>
     <form class="d-flex justify-content-center mb-4" method="GET" action="<?=APP_URL?>/" role="search">
       <input type="hidden" name="ver" value="catalogo">
       <div class="input-group input-group-lg" style="max-width:540px">
-        <input type="search" name="q" class="form-control dark-input" placeholder="Buscar: puerta, motor, vidrio, Toyota..." aria-label="Buscar piezas">
+        <input type="search" name="q" class="form-control dark-input" placeholder="<?=Marca::h("portada.buscador")?>" aria-label="Buscar piezas">
         <button class="btn btn-gold px-4" type="submit"><i aria-hidden="true" class="bi bi-search me-1"></i>Buscar</button>
       </div>
     </form>
@@ -45,8 +45,8 @@
 <section id="secciones" class="py-5">
   <div class="container-xl">
     <div class="text-center mb-4">
-      <h2 class="fw-bold text-white">Explorar por <span class="text-warning">Sección</span></h2>
-      <p class="text-secondary">Inventario organizado por área del rastro</p>
+      <h2 class="fw-bold text-white"><?=Marca::h("portada.secciones_titulo")?> <span class="text-warning"><?=Marca::h("portada.secciones_resalte")?></span></h2>
+      <p class="text-secondary"><?=Marca::h("portada.secciones_subtitulo")?></p>
     </div>
     <div class="row g-3">
       <?php $sicones=["Sección A"=>"bi-door-open","Sección B"=>"bi-gear-wide-connected","Sección C"=>"bi-eyeglasses","Sección D"=>"bi-lightning-charge","default"=>"bi-archive"]; ?>
@@ -69,8 +69,8 @@
   <div class="container-xl">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
       <div>
-        <h2 class="fw-bold text-white mb-0">Piezas <span class="text-warning">Destacadas</span></h2>
-        <p class="text-secondary small mb-0">Las piezas con mayor disponibilidad en stock</p>
+        <h2 class="fw-bold text-white mb-0"><?=Marca::h("portada.destacadas_titulo")?> <span class="text-warning"><?=Marca::h("portada.destacadas_resalte")?></span></h2>
+        <p class="text-secondary small mb-0"><?=Marca::h("portada.destacadas_subtitulo")?></p>
       </div>
       <a href="<?=APP_URL?>/?ver=catalogo" class="btn btn-gold px-4 fw-bold">
         <i aria-hidden="true" class="bi bi-grid me-2"></i>Ver todo el catálogo
@@ -116,18 +116,17 @@
   <div class="container-xl">
     <div class="row align-items-center g-4 gx-xl-5">
       <div class="col-md-5">
-        <img src="<?=APP_URL?>/assets/img/carro1.jpg" class="img-fluid rounded-3" alt="Rastro del Istmo" onerror="this.style.display='none'" style="border:1px solid var(--border);width:100%">
+        <img src="<?=htmlspecialchars(Marca::url("nosotros.imagen"))?>" class="img-fluid rounded-3" alt="<?=Marca::h("nombre")?>" onerror="this.style.display='none'" style="border:1px solid var(--border);width:100%">
       </div>
       <div class="col-md-7">
-        <p class="text-warning small fw-bold mb-2" style="letter-spacing:.1em"><i aria-hidden="true" class="bi bi-gear-wide-connected me-1"></i>QUIÉNES SOMOS</p>
-        <h2 class="fw-bold text-white mb-3">El rastro de <span class="text-warning">confianza</span> en Panamá</h2>
-        <p class="text-secondary mb-3">Somos un rastro de autos especializado en la comercialización de partes y repuestos de calidad para vehículos de las principales marcas del mercado panameño.</p>
-        <p class="text-secondary mb-4">Nuestro inventario se actualiza constantemente, garantizando que encuentres la pieza que necesitas al mejor precio.</p>
+        <h2 class="fw-bold text-white mb-3"><?=Marca::h("nosotros.titulo")?> <span class="text-warning"><?=Marca::h("nosotros.titulo_resalte")?></span></h2>
+        <?php foreach(Marca::get("nosotros.parrafos",[]) as $i=>$parrafo): ?>
+        <p class="text-secondary <?=$i===count(Marca::get("nosotros.parrafos",[]))-1?"mb-4":"mb-3"?>"><?=htmlspecialchars($parrafo)?></p>
+        <?php endforeach; ?>
         <div class="row g-3">
-          <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-shield-check text-success fs-4"></i><div><div class="text-white small fw-semibold">Calidad garantizada</div><div class="text-secondary" style="font-size:.75rem">Piezas revisadas</div></div></div></div>
-          <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-truck text-warning fs-4"></i><div><div class="text-white small fw-semibold">Entrega segura</div><div class="text-secondary" style="font-size:.75rem">A todo el país</div></div></div></div>
-          <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-headset icon-info fs-4"></i><div><div class="text-white small fw-semibold">Soporte directo</div><div class="text-secondary" style="font-size:.75rem">Lun–Sáb disponible</div></div></div></div>
-          <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-cash-coin text-success fs-4"></i><div><div class="text-white small fw-semibold">Mejores precios</div><div class="text-secondary" style="font-size:.75rem">Transparentes y justos</div></div></div></div>
+          <?php foreach(Marca::get("nosotros.destacados",[]) as $d): ?>
+          <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($d["icono"]??"check-circle")?> text-warning fs-4"></i><div><div class="text-white small fw-semibold"><?=htmlspecialchars($d["titulo"]??"")?></div><div class="text-secondary" style="font-size:.75rem"><?=htmlspecialchars($d["texto"]??"")?></div></div></div></div>
+          <?php endforeach; ?>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 /*
- * Tokens de diseño de Rastro del Istmo (docs/DESIGN.md): oscuro por defecto y claro con data-theme="light".
+ * Tokens de diseño (docs/DESIGN.md): oscuro por defecto y claro con data-theme="light".
  * Generado por bin/generar_tema.php con el color principal #fcd535.
  * Para cambiar el color de la marca: php bin/generar_tema.php #RRGGBB (valida el contraste en ambos modos).
  * Si se edita a mano, php bin/generar_tema.php --validar comprueba que los pares sigan cumpliendo.

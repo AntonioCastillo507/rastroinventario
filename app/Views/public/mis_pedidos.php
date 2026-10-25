@@ -1,5 +1,5 @@
 <?php
-$title="Mis Pedidos — Rastro del Istmo";
+$title="Mis Pedidos";
 include BASE_PATH."/app/Views/layouts/public_header.php";
 ?>
 <div class="container py-4">

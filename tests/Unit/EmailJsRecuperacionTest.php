@@ -74,7 +74,7 @@ final class EmailJsRecuperacionTest extends TestCase {
         $this->assertSame("Ana", $recibido[1]["to_name"]);
         $this->assertSame("http://localhost/app/restablecer.php?token=ABC", $recibido[1]["reset_url"]);
         $this->assertSame(30, $recibido[1]["expira_minutos"]);
-        $this->assertSame("Rastro del Istmo", $recibido[1]["app_nombre"]);
+        $this->assertSame(\Marca::get("nombre"), $recibido[1]["app_nombre"]);
     }
 
     public function testSiElEnvioSalioBienNoSeEscribeElRegistroDeDesarrollo(): void {

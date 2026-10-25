@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Recuperar contraseña — Rastro del Istmo</title>
+<title>Recuperar contraseña — <?=Marca::h("nombre")?></title>
 <?php require __DIR__ . "/../layouts/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/base.css")?>">

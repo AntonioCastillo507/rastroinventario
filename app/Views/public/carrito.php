@@ -1,5 +1,5 @@
 <?php
-$title="Carrito — Rastro del Istmo";
+$title="Carrito";
 include BASE_PATH."/app/Views/layouts/public_header.php";
 $errCarro=$_SESSION["carrito_error"]??""; unset($_SESSION["carrito_error"]);
 $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]??[]);
@@ -53,7 +53,7 @@ $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]
         <?php endforeach; ?>
         <hr style="border-color:var(--border)">
         <div class="d-flex justify-content-between mb-1 small"><span class="text-secondary">Subtotal</span><span class="text-white num">$<?=number_format($subtotal,2)?></span></div>
-        <div class="d-flex justify-content-between mb-2 small"><span class="text-secondary">ITBMS (7%)</span><span class="text-white num">$<?=number_format($itbms,2)?></span></div>
+        <div class="d-flex justify-content-between mb-2 small"><span class="text-secondary"><?=htmlspecialchars(Marca::impuestoEtiqueta())?></span><span class="text-white num">$<?=number_format($itbms,2)?></span></div>
         <div class="d-flex justify-content-between mb-3"><span class="text-white fw-bold">Total</span><span class="text-success fw-bold fs-5 num">$<?=number_format($total,2)?></span></div>
 
         <?php if($isCliente): ?>

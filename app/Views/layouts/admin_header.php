@@ -10,7 +10,7 @@ $masActivo = in_array($modActivo, array_column($menuMas, 0), true);
 <!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title><?=htmlspecialchars($title)?> — Rastro del Istmo</title>
+<title><?=htmlspecialchars($title)?> — <?=Marca::h("nombre")?></title>
 <?php require __DIR__ . "/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/extra.css")?>">
@@ -20,8 +20,8 @@ $masActivo = in_array($modActivo, array_column($menuMas, 0), true);
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 <nav class="navbar navbar-expand-xl admin-nav px-3" aria-label="Panel">
   <a class="navbar-brand d-flex align-items-center gap-2" href="<?=APP_URL?>/admin/">
-<img src="<?=APP_URL?>/assets/img/logo.png" height="28" alt="" onerror="this.style.display='none'">
-    <span class="fw-bold text-white">Rastro del Istmo</span>
+<?php if(Marca::url("logo")!==""): ?><img src="<?=htmlspecialchars(Marca::url("logo"))?>" height="28" alt="" onerror="this.style.display='none'"><?php endif; ?>
+    <span class="fw-bold text-white"><?=Marca::h("nombre")?></span>
   </a>
   <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navA" aria-controls="navA" aria-expanded="false" aria-label="Abrir o cerrar el menú"><span class="navbar-toggler-icon" aria-hidden="true"></span></button>
   <div class="collapse navbar-collapse" id="navA">
