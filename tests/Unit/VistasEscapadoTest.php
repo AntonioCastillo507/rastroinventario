@@ -31,6 +31,7 @@ final class VistasEscapadoTest extends TestCase {
         "c", "e", "m", "a", "ML",
         "pMin", "pMax", // precios del filtro; PublicController los convierte a float
         "rol",          // role del aviso (alert o status), calculado en el encabezado a partir de un tipo literal
+        "logoSvg",      // SVG del logo reconstruido por Logo::sanear con lista blanca (LogoSaneadoTest comprueba que solo sale de Logo::enLinea)
     ];
 
     public static function permitida(string $variable, ?string $clave): bool {

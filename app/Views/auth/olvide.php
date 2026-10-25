@@ -10,7 +10,7 @@
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 <main class="login-card" id="contenido" tabindex="-1">
   <div class="text-center mb-4">
-    <div class="login-icon"><i aria-hidden="true" class="bi bi-key"></i></div>
+    <?php include __DIR__ . "/../layouts/marca_logo.php"; ?>
     <h1 class="h3 fw-bold text-white mb-0">Recuperar contraseña</h1>
     <p class="text-secondary small mt-1">Te enviaremos un enlace para elegir una nueva</p>
   </div>

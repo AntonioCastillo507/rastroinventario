@@ -19,10 +19,7 @@ $masActivo = in_array($modActivo, array_column($menuMas, 0), true);
 <body class="admin-body">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 <nav class="navbar navbar-expand-xl admin-nav px-3" aria-label="Panel">
-  <a class="navbar-brand d-flex align-items-center gap-2" href="<?=APP_URL?>/admin/">
-<?php if(Marca::url("logo")!==""): ?><img src="<?=htmlspecialchars(Marca::url("logo"))?>" height="28" alt="" onerror="this.style.display='none'"><?php endif; ?>
-    <span class="fw-bold text-white"><?=Marca::h("nombre")?></span>
-  </a>
+  <a class="navbar-brand marca marca-panel" href="<?=APP_URL?>/admin/"><?php $marcaLema=false; include __DIR__."/marca_bloque.php"; ?></a>
   <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navA" aria-controls="navA" aria-expanded="false" aria-label="Abrir o cerrar el menú"><span class="navbar-toggler-icon" aria-hidden="true"></span></button>
   <div class="collapse navbar-collapse" id="navA">
 <ul class="navbar-nav me-auto ms-3 gap-1">

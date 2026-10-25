@@ -235,4 +235,13 @@ final class EstructuraVistasTest extends BaseDatos {
         $calificacion = $x->query("//*[@role='img' and starts-with(@aria-label,'Calificación')]");
         $this->assertGreaterThan(0, $calificacion->length, "Las estrellas mostradas llevan su texto");
     }
+    #[DataProvider("pantallas")]
+    public function testElPieDeLaTiendaTieneEnlacesConNombreYNingunIcono(string $n): void {
+        if (str_starts_with($n, "admin_") || in_array($n, Pantallas::deAcceso(), true)) { $this->addToAssertionCount(1); return; }
+        $x = Html::xpath(Pantallas::render($this->db, $n));
+        $this->assertSame(1, $x->query("//footer")->length, $n);
+        $this->assertSame(0, $x->query("//footer//*[contains(@class,'bi-')]")->length, "$n: sin iconos decorativos en el pie");
+        foreach ($x->query("//footer//a") as $a) $this->assertNotSame("", trim($a->textContent), "$n: enlace del pie sin texto");
+        $this->assertSame(["Comprar", "Empresa", "Contacto y horario"], array_map(fn($e) => trim($e->textContent), iterator_to_array($x->query("//footer//h2"))), $n);
+    }
 }

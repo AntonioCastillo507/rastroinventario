@@ -143,7 +143,6 @@ small,.small { color:var(--text-2); }
   border-radius:var(--radius);padding:2.5rem;width:100%;max-width:430px;
   box-shadow:var(--shadow);
 }
-.login-icon { color:var(--accent);font-size:3rem;margin-bottom:.75rem; }
 .alert-dark-danger { background:rgba(246,70,93,.1);border:1px solid rgba(246,70,93,.3);color:var(--text-1);padding:.75rem 1rem;border-radius:var(--radius-sm); }
 
 /* ══════════════════════════════════════════════════
@@ -316,8 +315,6 @@ small,.small { color:var(--text-2); }
 .section-title span { color:var(--accent); }
 .about-section { background:var(--bg-1);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
 .contact-bar { background:var(--bg-2);border-top:1px solid var(--border); }
-.contact-item { display:flex;align-items:center;gap:.75rem;padding:.75rem 0; }
-.contact-icon { width:40px;height:40px;background:var(--accent-dim);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1.1rem;flex-shrink:0; }
 
 /* Responsive */
 @media(max-width:576px) {

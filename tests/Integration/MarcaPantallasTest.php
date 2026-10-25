@@ -123,4 +123,20 @@ final class MarcaPantallasTest extends BaseDatos {
         $pie = $x->query("//footer")->item(0)->textContent;
         foreach (["telefono", "correo", "direccion"] as $k) $this->assertStringContainsString((string)$this->real[$k], $pie, $k);
     }
+    #[DataProvider("deLaTienda")]
+    public function testElBloqueDeMarcaSeparaNombreYLemaYUsaElLogoSvg(string $pantalla): void {
+        $x = Html::xpath(Pantallas::render($this->db, $pantalla));
+        $a = $x->query("//nav//a[contains(@class,'marca')]")->item(0);
+        $q = new \DOMXPath($a->ownerDocument);
+        $this->assertSame("Taller Cambiado Zeta", trim($q->query(".//span[contains(@class,'marca-nombre')]", $a)->item(0)->textContent), $pantalla);
+        $this->assertSame("Lema Cambiado", trim($q->query(".//span[contains(@class,'marca-lema')]", $a)->item(0)->textContent), $pantalla);
+        $this->assertSame(1, $q->query(".//svg[contains(@class,'marca-logo')]", $a)->length, "$pantalla: el logo es el SVG de un color");
+    }
+
+    public function testElAccesoYElPanelTambienLlevanElLogoDeLaMarca(): void {
+        foreach (["login", "registro", "olvide", "restablecer_valido", "admin_dashboard"] as $n) {
+            $x = Html::xpath(Pantallas::render($this->db, $n));
+            $this->assertSame(1, $x->query("//svg[contains(@class,'marca-logo')]")->length, "$n: logo de la marca");
+        }
+    }
 }

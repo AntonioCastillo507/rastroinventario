@@ -251,8 +251,6 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .admin-nav .dropdown-item { font-size: var(--type-nav-link-size); }
 
 /* Buscador del menú público: más estrecho entre 992 y 1199 px para que las acciones no salten de línea */
-.input-group > .nav-search { min-width: 160px; }
-@media (min-width: 992px) and (max-width: 1199.98px) { .input-group > .nav-search { min-width: 0; width: 6rem; flex: 0 1 6rem; } }
 
 /* Páginas propias (Quiénes somos y Contacto): tarjeta de información, insignia de confianza y banda de llamada a la acción de DESIGN.md */
 .pagina-foto { border: 1px solid var(--hairline); border-radius: var(--rounded-xl); }
@@ -275,3 +273,53 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 @media (min-width: 801px) { .hero-section { background-image: url("../img/hero-bg.jpg"); } }
 .hero-overlay { background: color-mix(in srgb, var(--color-canvas-dark) 65%, transparent); }
 .hero-subtitulo { color: var(--text); } /* el texto de cuerpo, no el secundario: sobre la foto el secundario deja poco margen */
+/* ── Marca del encabezado, del pie, del acceso y del panel (brand-lockup, DESIGN.md E6) ──
+   Un solo enlace: logo de 40 px (36 en móvil), 12 px de separación, nombre 16/700 y lema 12/500 a 2 px, todo centrado.
+   El logo es un SVG en línea de un color: toma el del tema por currentColor, sin filtros. El lema solo desde 768 px. */
+.marca { display: flex; align-items: center; gap: 12px; min-height: 44px; color: var(--text-strong); text-decoration: none; }
+.navbar-brand.marca { padding: 0; margin: 0; font-size: 16px; }
+.marca-logo { display: block; flex-shrink: 0; height: var(--marca-alto, 40px); width: auto; color: var(--link); }
+.marca-texto { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; }
+.marca-nombre { font-size: 16px; font-weight: 700; line-height: 1.2; color: var(--text-strong); white-space: nowrap; }
+.marca-lema { display: none; font-size: 12px; font-weight: 500; line-height: 1.2; color: var(--text-muted); white-space: nowrap; }
+@media (min-width: 768px) { .marca-lema { display: block; } }
+@media (max-width: 767.98px) { .public-nav .marca { --marca-alto: 36px; } }
+.marca-pie { --marca-alto: 32px; }
+.marca-panel { --marca-alto: 32px; }
+.marca-acceso { display: flex; justify-content: center; margin-bottom: 12px; }
+.marca-acceso .marca-logo { --marca-alto: 48px; }
+
+/* ── Encabezado de la tienda: barra de 64 px; en móvil, fila de 56 px y buscador en su propia fila ── */
+.public-nav { padding: 0; min-height: 64px; }
+.public-nav .nav-fila { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; min-height: 56px; }
+.public-nav .nav-fila > .marca, .public-nav .nav-fila > .nav-carrito, .public-nav .nav-fila > .navbar-toggler { margin-block: 6px; } /* fila de 56 px con objetivos de 44 */
+.public-nav .navbar-brand { order: 0; margin-right: auto; }
+.public-nav .nav-carrito { order: 1; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.public-nav .navbar-toggler { order: 2; min-width: 44px; min-height: 44px; }
+.public-nav .nav-buscador { order: 3; flex: 1 0 100%; padding-bottom: 4px; } /* fila de 48 px: 44 del campo y 4 de aire */
+.public-nav .navbar-collapse { order: 4; flex-basis: 100%; }
+.public-nav .nav-cuenta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 8px 0 12px; }
+.public-nav .nav-iniciar { color: var(--text); }
+.public-nav .nav-buscador .nav-search { min-width: 0; }
+.public-nav .nav-buscador .btn { min-width: 44px; }
+/* Botón de la cuenta con el menú abierto o pulsado: Bootstrap lo rellena de amarillo con texto amarillo (1,1:1); aquí queda sobre superficie elevada con el color de enlace (≥ 4,5:1 en los dos modos) */
+.nav-cuenta .btn-outline-warning { --bs-btn-hover-bg: var(--surface-elevated); --bs-btn-hover-color: var(--link); --bs-btn-hover-border-color: var(--link); --bs-btn-active-bg: var(--surface-elevated); --bs-btn-active-color: var(--link); --bs-btn-active-border-color: var(--link); }
+@media (min-width: 992px) {
+  .public-nav .nav-fila { flex-wrap: nowrap; min-height: 64px; column-gap: 12px; }
+  .public-nav .navbar-collapse { display: contents !important; }
+  .public-nav .navbar-toggler { display: none; }
+  .public-nav .navbar-brand { margin-right: 4px; }
+  .public-nav .navbar-nav { order: 1; flex-direction: row; margin-right: auto; }
+  .public-nav .nav-buscador { order: 2; flex: 0 1 140px; min-width: 0; padding: 0; }
+  .public-nav .nav-carrito { order: 3; }
+  .public-nav .nav-cuenta { order: 4; flex-wrap: nowrap; padding: 0; }
+}
+@media (min-width: 1200px) { .public-nav .nav-buscador { flex-basis: 280px; } }
+.admin-nav { min-height: 64px; }
+
+/* ── Pie: 4 columnas, sin cuadritos de icono; los datos de contacto son enlaces tel: y mailto: ── */
+.pie-titulo { font-size: var(--type-body-md-size); font-weight: 600; line-height: 1.4; color: var(--text-strong); margin: 0 0 var(--spacing-sm); }
+.pie-lista { list-style: none; margin: 0; padding: 0; font-size: var(--type-body-md-size); color: var(--text-muted); }
+.pie-lista li { padding: var(--spacing-xxs) 0; }
+.pie-lista a { display: inline-block; padding: var(--spacing-xs) 0; color: var(--text-muted); text-decoration: none; }
+.pie-lista a:hover { color: var(--link-hover); text-decoration: underline; }

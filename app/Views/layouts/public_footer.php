@@ -2,21 +2,35 @@
 <footer class="public-footer pt-5 pb-4 mt-5">
   <div class="container-xl">
     <div class="row g-4">
-      <div class="col-md-4">
-        <div class="fw-bold text-white mb-2 fs-5"><?=Marca::h("nombre")?></div>
-        <p class="text-secondary small"><?=Marca::h("descripcion")?></p>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="marca marca-pie mb-3"><?php $marcaLema=false; include __DIR__."/marca_bloque.php"; ?></div>
+        <p class="text-secondary small mb-0"><?=Marca::h("descripcion")?></p>
       </div>
-      <div class="col-md-4">
-        <h2 class="h6 text-warning fw-bold mb-3">Contáctanos</h2>
-        <div class="contact-item"><div class="contact-icon"><i aria-hidden="true" class="bi bi-geo-alt-fill"></i></div><span class="text-secondary small"><?=Marca::h("direccion")?></span></div>
-        <div class="contact-item"><div class="contact-icon"><i aria-hidden="true" class="bi bi-telephone-fill"></i></div><span class="text-secondary small"><?=Marca::h("telefono")?></span></div>
-        <div class="contact-item"><div class="contact-icon"><i aria-hidden="true" class="bi bi-envelope-fill"></i></div><span class="text-secondary small"><?=Marca::h("correo")?></span></div>
+      <div class="col-6 col-md-3 col-lg-2 offset-lg-1">
+        <h2 class="pie-titulo">Comprar</h2>
+        <ul class="pie-lista">
+          <li><a href="<?=APP_URL?>/?ver=catalogo">Catálogo</a></li>
+          <li><a href="<?=APP_URL?>/?action=carrito">Carrito</a></li>
+          <li><a href="<?=empty($_SESSION["user"])?APP_URL."/login.php":APP_URL."/?action=mi_perfil"?>">Mi cuenta</a></li>
+        </ul>
       </div>
-      <div class="col-md-4">
-        <h2 class="h6 text-warning fw-bold mb-3">Horario</h2>
-        <?php foreach(Marca::get("horario",[]) as $h): ?>
-        <p class="text-secondary small mb-1"><i aria-hidden="true" class="bi <?=!empty($h["abierto"])?"bi-clock text-warning":"bi-x-circle text-danger"?> me-2"></i><?=htmlspecialchars($h["dia"]??"")?>: <?=htmlspecialchars($h["horas"]??"")?></p>
-        <?php endforeach; ?>
+      <div class="col-6 col-md-3 col-lg-2">
+        <h2 class="pie-titulo">Empresa</h2>
+        <ul class="pie-lista">
+          <li><a href="<?=APP_URL?>/?action=nosotros">Quiénes somos</a></li>
+          <li><a href="<?=APP_URL?>/?action=contacto">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <h2 class="pie-titulo">Contacto y horario</h2>
+        <ul class="pie-lista">
+          <?php if(Marca::get("direccion")!==""): ?><li><?=Marca::h("direccion")?></li><?php endif; ?>
+          <?php if(Marca::get("telefono")!==""): ?><li><a href="tel:<?=htmlspecialchars(preg_replace('/[^\d+]/','',(string)Marca::get("telefono")))?>"><?=Marca::h("telefono")?></a></li><?php endif; ?>
+          <?php if(Marca::get("correo")!==""): ?><li><a href="mailto:<?=Marca::h("correo")?>"><?=Marca::h("correo")?></a></li><?php endif; ?>
+          <?php foreach(Marca::get("horario",[]) as $h): ?>
+          <li class="pie-horario"><?=htmlspecialchars($h["dia"]??"")?>: <?=htmlspecialchars($h["horas"]??"")?></li>
+          <?php endforeach; ?>
+        </ul>
       </div>
     </div>
     <hr style="border-color:var(--border);margin-top:2rem">

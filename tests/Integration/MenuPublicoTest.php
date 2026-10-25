@@ -79,4 +79,13 @@ final class MenuPublicoTest extends BaseDatos {
             $this->assertMatchesRegularExpression('/class="row [^"]*\bg-4\b[^"]*\bgx-xl-5\b/', (string)file_get_contents(BASE_PATH . "/app/Views/public/$v.php"), $v);
         }
     }
+    public function testElBuscadorTieneSuPropiaFilaYElMenuPlegableSoloLlevaLosCuatroEnlaces(): void {
+        foreach (["home", "catalogo", "detalle_cliente", "carrito_invitado"] as $n) {
+            $x = Html::xpath(Pantallas::render($this->db, $n));
+            $this->assertSame(0, $x->query("//*[@id='navP']//form[@role='search']")->length, "$n: el buscador no está dentro del menú plegable");
+            $this->assertSame(1, $x->query("//div[contains(@class,'nav-fila')]/form[@role='search']//input[@type='search']")->length, "$n: buscador en la fila del encabezado");
+            $this->assertSame(4, $x->query("//*[@id='navP']//ul[contains(@class,'navbar-nav')]//a")->length, $n);
+            $this->assertSame(1, $x->query("//*[@id='navP']//div[contains(@class,'nav-cuenta')]")->length, "$n: la cuenta va dentro del menú plegable");
+        }
+    }
 }

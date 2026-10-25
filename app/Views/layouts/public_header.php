@@ -18,55 +18,48 @@ $cartCount = count($_SESSION["cart"]??[]);
 <body class="public-body">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 <nav class="navbar navbar-expand-lg public-nav sticky-top" aria-label="Principal">
-  <div class="container-xl">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="<?=APP_URL?>/">
-      <?php if(Marca::url("logo")!==""): ?><img src="<?=htmlspecialchars(Marca::url("logo"))?>" height="32" alt="" onerror="this.style.display='none'" style="filter:brightness(0)saturate(100%)invert(78%)sepia(67%)saturate(700%)hue-rotate(2deg)brightness(105%)"><?php endif; ?>
-      <div>
-        <span class="fw-bold text-white d-block lh-1" style="font-size:1rem"><?=Marca::h("nombre")?></span>
-        <?php if(Marca::get("eslogan")!==""): ?><span class="text-warning text-uppercase" style="font-size:.58rem;letter-spacing:.12em"><?=Marca::h("eslogan")?></span><?php endif; ?>
+  <div class="container-xl nav-fila">
+    <a class="navbar-brand marca" href="<?=APP_URL?>/"><?php $marcaLema=true; include __DIR__."/marca_bloque.php"; ?></a>
+    <form class="nav-buscador" method="GET" action="<?=APP_URL?>/" role="search">
+      <input type="hidden" name="ver" value="catalogo">
+      <div class="input-group">
+        <input type="search" name="q" class="form-control dark-input nav-search" placeholder="Buscar pieza..." aria-label="Buscar pieza" value="<?=htmlspecialchars($q??"")?>">
+        <button class="btn btn-gold" type="submit" aria-label="Buscar"><i aria-hidden="true" class="bi bi-search"></i></button>
       </div>
+    </form>
+    <a href="<?=APP_URL?>/?action=carrito" class="btn btn-sm btn-outline-secondary cart-btn nav-carrito" aria-label="Carrito, <?=(int)$cartCount?> pieza<?=$cartCount!==1?"s":""?>">
+      <i aria-hidden="true" class="bi bi-cart3"></i>
+      <?php if($cartCount>0): ?><span class="cart-count" aria-hidden="true"><?=$cartCount?></span><?php endif; ?>
     </a>
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navP" aria-controls="navP" aria-expanded="false" aria-label="Abrir o cerrar el menú"><span class="navbar-toggler-icon" aria-hidden="true"></span></button>
     <div class="collapse navbar-collapse" id="navP">
-      <ul class="navbar-nav me-auto ms-3 gap-1">
+      <ul class="navbar-nav me-auto gap-1">
         <?php foreach([["inicio","Inicio","/"],["catalogo","Catálogo","/?ver=catalogo"],["nosotros","Quiénes somos","/?action=nosotros"],["contacto","Contacto","/?action=contacto"]] as [$clave,$texto,$ruta]): $esActiva=$navActivo===$clave; ?>
         <li class="nav-item"><a class="nav-link <?=$esActiva?"active":"text-secondary"?>" href="<?=APP_URL.htmlspecialchars($ruta)?>"<?=$esActiva?' aria-current="page"':""?>><?=htmlspecialchars($texto)?></a></li>
         <?php endforeach; ?>
       </ul>
-      <div class="d-flex align-items-center flex-wrap gap-2 mt-2 mt-lg-0">
-        <form class="d-flex" method="GET" action="<?=APP_URL?>/" role="search">
-          <input type="hidden" name="ver" value="catalogo">
-          <div class="input-group input-group-sm">
-            <input type="search" name="q" class="form-control dark-input nav-search" placeholder="Buscar pieza..." aria-label="Buscar pieza" value="<?=htmlspecialchars($q??"")?>">
-            <button class="btn btn-gold" type="submit" aria-label="Buscar"><i aria-hidden="true" class="bi bi-search"></i></button>
-          </div>
-        </form>
+      <div class="nav-cuenta">
         <button type="button" class="btn btn-sm btn-outline-secondary tema-toggle" data-tema-toggle aria-label="Cambiar a modo claro" title="Cambiar a modo claro"><i aria-hidden="true" class="bi bi-sun"></i></button>
-        <!-- Carrito -->
-        <a href="<?=APP_URL?>/?action=carrito" class="btn btn-sm btn-outline-secondary cart-btn" aria-label="Carrito, <?=(int)$cartCount?> pieza<?=$cartCount!==1?"s":""?>">
-          <i aria-hidden="true" class="bi bi-cart3"></i>
-          <?php if($cartCount>0): ?><span class="cart-count" aria-hidden="true"><?=$cartCount?></span><?php endif; ?>
-        </a>
         <?php if(!empty($_SESSION["user"])): ?>
           <?php $roles=$_SESSION["user_roles"]??[]; $isAdmin=array_intersect(["Administrador","Vendedor","Consultor"],$roles); ?>
-          <?php if($isAdmin): ?>
-            <a href="<?=APP_URL?>/admin/" class="btn btn-sm btn-gold"><i aria-hidden="true" class="bi bi-speedometer2 me-1"></i>Admin</a>
-          <?php else: ?>
-            <div class="dropdown">
-              <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i aria-hidden="true" class="bi bi-person-circle me-1"></i><?=htmlspecialchars(explode(" ",$_SESSION["user"]["nombre"])[0])?>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="<?=APP_URL?>/?action=mi_perfil"><i aria-hidden="true" class="bi bi-person-gear me-2"></i>Mi Perfil</a></li>
-                <li><a class="dropdown-item" href="<?=APP_URL?>/?action=mis_pedidos"><i aria-hidden="true" class="bi bi-bag-check me-2"></i>Mis Pedidos</a></li>
-                <li><hr class="dropdown-divider" style="border-color:var(--border)"></li>
-                <li><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="dropdown-item text-danger" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button></form></li>
-              </ul>
-            </div>
-          <?php endif; ?>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menú de la cuenta de <?=htmlspecialchars(explode(" ",$_SESSION["user"]["nombre"])[0])?>">
+              <i aria-hidden="true" class="bi bi-person-circle me-1"></i><span class="cuenta-nombre"><?=htmlspecialchars(explode(" ",$_SESSION["user"]["nombre"])[0])?></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <?php if($isAdmin): ?>
+              <li><a class="dropdown-item" href="<?=APP_URL?>/admin/"><i aria-hidden="true" class="bi bi-speedometer2 me-2"></i>Ir al panel</a></li>
+              <?php else: ?>
+              <li><a class="dropdown-item" href="<?=APP_URL?>/?action=mi_perfil"><i aria-hidden="true" class="bi bi-person-gear me-2"></i>Mi Perfil</a></li>
+              <li><a class="dropdown-item" href="<?=APP_URL?>/?action=mis_pedidos"><i aria-hidden="true" class="bi bi-bag-check me-2"></i>Mis Pedidos</a></li>
+              <?php endif; ?>
+              <li><hr class="dropdown-divider" style="border-color:var(--border)"></li>
+              <li><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="dropdown-item text-danger" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button></form></li>
+            </ul>
+          </div>
         <?php else: ?>
-          <a href="<?=APP_URL?>/login.php" class="btn btn-sm btn-outline-warning"><i aria-hidden="true" class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</a>
-          <a href="<?=APP_URL?>/registro.php" class="btn btn-sm btn-outline-secondary btn-crear-cuenta"><i aria-hidden="true" class="bi bi-person-plus me-1"></i>Crear cuenta</a>
+          <a href="<?=APP_URL?>/login.php" class="nav-link nav-iniciar">Iniciar sesión</a>
+          <a href="<?=APP_URL?>/registro.php" class="btn btn-sm btn-outline-secondary btn-crear-cuenta d-none d-xl-inline-flex align-items-center">Crear cuenta</a>
         <?php endif; ?>
       </div>
     </div>
