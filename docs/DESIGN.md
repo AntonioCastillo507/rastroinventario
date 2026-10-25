@@ -265,6 +265,27 @@ components:
     backgroundColor: transparent
     textColor: "{colors.primary}"
     typography: "{typography.number-display}"
+  kpi-card-value:
+    backgroundColor: transparent
+    textColor: "{colors.primary-text-on-dark}"
+    fontFamily: "IBM Plex Sans"
+    fontSize: 32px
+    fontWeight: 700
+    lineHeight: 1.2
+  brand-lockup:
+    backgroundColor: transparent
+    textColor: "{colors.on-dark}"
+    fontFamily: "Manrope"
+    fontSize: 16px
+    fontWeight: 700
+    lineHeight: 1.2
+    taglineFontSize: 12px
+    taglineFontWeight: 500
+    height: 40px
+    gap: 12px
+  product-photo-tile:
+    backgroundColor: "{colors.canvas-light}"
+    rounded: "{rounded.xl}"
   trust-badge:
     backgroundColor: "{colors.surface-card-dark}"
     textColor: "{colors.on-dark}"
@@ -279,8 +300,18 @@ components:
     padding: 16px
   product-price:
     backgroundColor: transparent
-    textColor: "{colors.primary}"
-    typography: "{typography.number-md}"
+    textColor: "{colors.primary-text-on-dark}"
+    fontFamily: "IBM Plex Sans"
+    fontSize: 20px
+    fontWeight: 600
+    lineHeight: 1.3
+  product-price-on-light:
+    backgroundColor: transparent
+    textColor: "{colors.link-on-light}"
+    fontFamily: "IBM Plex Sans"
+    fontSize: 20px
+    fontWeight: 600
+    lineHeight: 1.3
   badge-stock-ok:
     backgroundColor: transparent
     textColor: "{colors.success}"
@@ -447,7 +478,10 @@ Los verdes y rojos del análisis base eran para precios que suben o bajan. En es
 | `{typography.title-md}` | 20 px | 600 | 1,35 | 0 | Títulos de tarjetas; nombre de pieza en escritorio (en móvil usa `{typography.title-sm}`) |
 | `{typography.title-sm}` | 16 px | 600 | 1,4 | 0 | Insignias de confianza, etiquetas |
 | `{typography.number-display}` | 40 px | 700 | 1,1 | -0,3 px | Cifras grandes (estadísticas) |
-| `{typography.number-md}` | 16 px | 500 | 1,4 | 0 | Precios y celdas de tabla |
+| `{typography.number-md}` | 16 px | 500 | 1,4 | 0 | Celdas de tabla y cifras en línea |
+| Precio (E2) | 20 px | 600 | 1,3 | 0 | Precio en tarjeta y detalle (IBM Plex Sans, token CSS `--precio` para el color) |
+| Valor KPI (E3) | 32 px | 700 | 1,2 | -0,3 px | Valor de las tarjetas KPI del panel |
+| Marca (E6) | 16 px / 12 px | 700 / 500 | 1,2 | 0 | Nombre y lema del `brand-lockup` |
 | `{typography.number-sm}` | 14 px | 500 | 1,4 | 0 | Precios y cantidades en línea |
 | `{typography.body-lg}` | 16 px | 400 | 1,5 | 0 | **Texto base de la tienda** |
 | `{typography.body-md}` | 14 px | 400 | 1,5 | 0 | **Texto base del panel** y texto secundario |
@@ -469,8 +503,9 @@ Los tamaños grandes llevan peso 700 y los medianos 600: el sistema confía en e
 - Separación entre tarjetas: 24 px en escritorio; en móvil un gutter responsivo que **no provoque desplazamiento horizontal**.
 
 ### Rejilla y contenedor
-- Ancho máximo: unos 1280 px en la tienda y 1440 px en el panel.
-- Catálogo: 4 columnas en escritorio, 3 en 1024 px, 2 en tableta y móvil.
+- Ancho máximo: 1280 px en la tienda y 1440 px en el panel.
+- Relleno lateral del contenedor (E5): 16 px en móvil, 24 px desde 768 px y 32 px desde 1200 px.
+- Catálogo (E1): 4 columnas desde 1200 px, 3 desde 768 px, 2 desde 576 px y, por debajo, filas horizontales de una columna con la foto de 96 px a la izquierda.
 - Filtros del catálogo en móvil: plegables, para que el primer producto aparezca sin bajar media pantalla.
 
 ### Filosofía del espacio
@@ -507,8 +542,10 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 ## Componentes
 
 ### Navegación
-- **`top-nav-dark` / `top-nav-light`**: 64 px de alto, marca a la izquierda, menú horizontal (Inicio, Catálogo, Quiénes somos, Contacto), a la derecha el interruptor de tema, el carrito y la cuenta. La opción activa la decide el servidor, no JavaScript. En móvil se pliega a un menú que **se cierra al elegir una opción**.
+- **`top-nav-dark` / `top-nav-light`**: 64 px de alto en la tienda y en el panel (E7), marca a la izquierda (`brand-lockup`, E6), menú horizontal (Inicio, Catálogo, Quiénes somos, Contacto), a la derecha el interruptor de tema, el carrito y la cuenta. La opción activa la decide el servidor, no JavaScript. En móvil se pliega a un menú que **se cierra al elegir una opción**.
 - Un enlace de salto al contenido, un solo `h1` por página y un `<main>` en cada vista.
+
+- **`brand-lockup`** (E6): un solo enlace de al menos 44 px de alto con el logo (40 px de alto, 36 en móvil; ancho automático), 12 px de separación y, a la derecha, el nombre (Manrope 16/700) con el lema (Manrope 12/500, sin mayúsculas forzadas) 2 px debajo. El conjunto va centrado en vertical. El lema se muestra desde 768 px y se oculta por debajo. El logo es de un solo color y toma el del tema (`{colors.primary-text-on-dark}` en oscuro y `{colors.link-on-light}` en claro), sin filtros CSS; el nombre usa el color de titulares. Misma pieza en el pie (32 px), en el acceso (48 px) y en el panel (32 px).
 
 ### Botones
 - **`button-primary`**: amarillo con texto `{colors.on-primary}`, 6 px de radio, 40 px de alto en escritorio y **44 px en pantallas táctiles**. Pulsado: `{colors.primary-active}`. Deshabilitado: `{colors.primary-disabled}`.
@@ -519,8 +556,8 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 - Un solo botón principal por vista.
 
 ### Tarjetas y contenedores
-- **`product-card`**: foto, nombre (`title-md` en escritorio, `title-sm` en móvil), marca y modelo, precio (`product-price` en `{typography.number-md}` y amarillo), indicador de stock y botón principal "Añadir al carrito". El indicador usa texto y color (`badge-stock-*`), nunca solo color.
-- **`stat-callout-card`**: cifras grandes del panel y de la portada, en amarillo sobre fondo plano, en `{typography.number-display}`.
+- **`product-card`**: foto sobre la baldosa blanca fija (`product-photo-tile`, E4: `{colors.canvas-light}` en los dos modos, foto completa con `contain`), nombre (`title-md` en escritorio, `title-sm` en móvil), marca y modelo, precio (`product-price`, IBM Plex Sans 20/600: amarillo `{colors.primary-text-on-dark}` en oscuro y bronce `{colors.link-on-light}` en claro; el verde no se usa en precios), indicador de stock y botón principal "Añadir al carrito". El indicador usa texto y color (`badge-stock-*`), nunca solo color.
+- **`stat-callout-card`**: cifras grandes del panel y de la portada, en amarillo sobre fondo plano, en `{typography.number-display}`. El valor de las tarjetas KPI del panel (`kpi-card-value`, E3) va en IBM Plex Sans 32/700.
 - **`trust-badge`**: etiquetas de confianza (envío, garantía), opcionales.
 - **`data-table-card` y `data-row`**: tablas del panel. Cabecera fija, cifras alineadas, acciones al final con nombre accesible. **En móvil (menos de 768 px) cada fila pasa a `admin-card-mobile`**: una tarjeta con el nombre, los datos clave y las acciones siempre visibles, hecha con CSS y un `data-label` por celda, sin duplicar el HTML.
 - **`cta-band`**: banda de llamada a la acción con un solo botón.
@@ -540,7 +577,7 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 ## Qué hacer y qué no
 
 ### Qué hacer
-- Reservar `{colors.primary}` para acciones principales, la marca y los precios destacados. Su escasez es su fuerza.
+- Reservar el amarillo (`{colors.primary}` y su variante como texto, `{colors.primary-text-on-dark}`) para acciones principales, la marca y los precios. Su escasez es su fuerza.
 - Mantener `button-primary` idéntico en los dos modos.
 - Usar la fuente numérica para toda cifra.
 - Elegir el modo con el interruptor del usuario, oscuro por defecto, sin cambiar de tema según la pantalla.
@@ -560,9 +597,9 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 
 | Nombre | Ancho | Cambios clave |
 |---|---|---|
-| Móvil | < 768 px | **Se diseña primero.** Menú plegable que se cierra al elegir; título principal a 36 px; catálogo en 2 columnas; filtros plegables; tablas del panel como tarjetas; pie en 1 columna; sin desplazamiento horizontal |
-| Tableta | 768–1024 px | Menú horizontal más compacto; catálogo en 2 o 3 columnas |
-| Escritorio | 1024–1440 px | Menú completo; catálogo en 4 columnas; tablas completas |
+| Móvil | < 768 px | **Se diseña primero.** Menú plegable que se cierra al elegir; buscador en fila propia; título principal a 36 px; catálogo en filas horizontales (< 576 px) o 2 columnas; lema de la marca oculto; filtros plegables; tablas del panel como tarjetas; pie en 1 columna; sin desplazamiento horizontal |
+| Tableta | 768–1024 px | Menú horizontal más compacto; catálogo en 3 columnas (E1); lema de la marca visible |
+| Escritorio | 1024–1440 px | Menú completo; catálogo en 3 columnas hasta 1199 px y en 4 desde 1200 px; tablas completas |
 | Ancho | > 1440 px | Igual, con más margen; contenedor limitado a 1280–1440 px |
 
 ### Zonas táctiles
@@ -611,6 +648,13 @@ La derivación la hace un **script de línea de comandos** que recibe el color p
 | 20 | Provisional aprobado: fondo de portada y superficie elevada en claro (`hero-band-light`, `surface-elevated-light`) | El archivo base solo definía la banda de portada y la superficie elevada sobre oscuro |
 | 21 | Nuevo token `primary-text-on-dark` | Con un principal oscuro (el azul de prueba) el principal como texto da 2,87:1 sobre oscuro; el token lo aclara hasta 4,5:1 (en el dorado coincide con el principal) |
 | 22 | Nombre de la pieza en tarjeta: `title-sm` en móvil | A dos columnas, `title-md` partía el nombre en tres líneas |
+| 23 | E1: catálogo en 3 columnas desde 768 px (antes 2 en tableta) | A 768 px, 2 columnas daban fotos de 348 px, demasiado grandes. Aprobada por Tony (2026-10-25) |
+| 24 | E2: precio de tarjeta y detalle a 20/600 con token `--precio`: amarillo (`primary-text-on-dark`) en oscuro y bronce (`link-on-light`, 6,25:1 sobre blanco) en claro. El verde queda solo para éxito y stock disponible | El sitio pintaba los precios en verde (`success`), contra lo que decía este archivo. Aprobada con el color decidido por Tony |
+| 25 | E3: valor de las tarjetas KPI a 32 px (IBM Plex Sans 32/700) | Hoy 30,4 px; se alinea con la escala (`display-sm`) |
+| 26 | E4: baldosa blanca fija (`canvas-light`) para toda foto de producto, en los dos modos | Las fotos de pieza suelen tener fondo blanco: sobre tarjeta oscura mostrarían un rectángulo |
+| 27 | E5: relleno lateral del contenedor 16 / 24 / 32 px | No estaba definido |
+| 28 | E6: especificación de la marca del encabezado (`brand-lockup`), con el lema oculto por debajo de 768 px y una sola versión del logo (sin variante clara) | Hoy el lema (9,28 px) queda 13 px lejos del nombre y el logo tiene un filtro CSS |
+| 29 | E7: barra superior de 64 px en la tienda y en el panel | Hoy mide 81 px en la tienda y 58 en el panel |
 
 ## Guía de iteración
 
@@ -619,7 +663,7 @@ La derivación la hace un **script de línea de comandos** que recibe el color p
 3. Las variantes (`-active`, `-disabled`) son entradas separadas de `components:`.
 4. Citar siempre los tokens en vez de valores sueltos; no escribir colores en las vistas.
 5. Toda cifra va en la fuente numérica.
-6. Verde y rojo son estados (éxito y error), nunca decoración.
+6. Verde y rojo son estados (éxito y error), nunca decoración ni color de precio.
 7. Antes de dar por terminada una pantalla: contraste en ambos modos, vista en 390 px y en 1280 px, foco visible con teclado, y `composer test` en verde.
 
 ## Lagunas conocidas
