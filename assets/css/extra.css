@@ -58,7 +58,7 @@ input[type="file"].form-control { color:var(--text-2)!important; }
 
 /* ── Hero ───────────────────────────────────────────────────────── */
 .hero-section { position:relative;min-height:440px;background:var(--bg-2) center/cover no-repeat;display:flex;align-items:center;overflow:hidden; }
-.hero-overlay { position:absolute;inset:0;background:linear-gradient(135deg,rgba(11,14,17,.97)0%,rgba(11,14,17,.75)100%); }
+.hero-overlay { position:absolute;inset:0; } /* el color lo pone base.css (scrim plano) */
 .hero-content { position:relative;z-index:1;padding:4rem 1rem;width:100%; }
 .hero-title { font-size:clamp(2rem,5vw,3.2rem);font-weight:800;color:#fff;line-height:1.1; }
 .hero-title span { color:var(--accent); }

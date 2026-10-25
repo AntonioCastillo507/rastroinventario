@@ -64,7 +64,7 @@ final class MarcaPantallasTest extends BaseDatos {
         foreach (["nombre", "telefono", "correo"] as $k) {
             $this->assertStringNotContainsStringIgnoringCase((string)$this->real[$k], $plano, "$pantalla muestra $k real");
         }
-        $this->assertStringNotContainsString("6542", $html, $pantalla);
+        foreach (["telefono", "correo"] as $k) $this->assertStringNotContainsString((string)$this->real[$k], $html, "$pantalla deja $k real en el HTML (enlaces, atributos)");
     }
 
     #[DataProvider("deLaTienda")]

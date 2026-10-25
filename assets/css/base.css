@@ -267,3 +267,10 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .contacto-etiqueta { font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text-muted); }
 .contacto-enlace { display: inline-flex; align-items: center; min-height: 44px; color: var(--link); }
 .contacto-enlace:hover { color: var(--link-hover); }
+
+/* Portada: foto de fondo (copia chica en móvil) y scrim plano del color del lienzo oscuro, sin degradado (DESIGN.md).
+   La opacidad del scrim es la que mide tests/Support/contraste_hero.js: el texto sobre la foto da 4,5:1 hasta en su punto más claro. */
+.hero-section { background-image: url("../img/hero-bg-800.jpg"); }
+@media (min-width: 801px) { .hero-section { background-image: url("../img/hero-bg.jpg"); } }
+.hero-overlay { background: color-mix(in srgb, var(--color-canvas-dark) 65%, transparent); }
+.hero-subtitulo { color: var(--text); } /* el texto de cuerpo, no el secundario: sobre la foto el secundario deja poco margen */

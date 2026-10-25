@@ -1,12 +1,12 @@
 <?php $title=Marca::get("portada.titulo_pagina"); $navActivo="inicio"; include BASE_PATH."/app/Views/layouts/public_header.php"; ?>
 
-<!-- HERO  ── hero-bg.jpg en assets/img/ (1920×800 px) -->
-<section id="inicio" class="hero-section" style="background-image:url('<?=APP_URL?>/assets/img/hero-bg.jpg')">
+<!-- HERO  ── la foto (hero-bg.jpg y su copia chica para móvil) y el scrim se definen en base.css -->
+<section id="inicio" class="hero-section">
   <div class="hero-overlay"></div>
   <div class="hero-content container-xl text-center">
     <p class="text-warning small fw-bold text-uppercase mb-2" style="letter-spacing:.15em"><?=Marca::h("portada.etiqueta")?></p>
     <h1 class="hero-title mb-3"><?=Marca::h("portada.titulo")?><br><span><?=Marca::h("portada.titulo_resalte")?></span></h1>
-    <p class="mb-4 text-secondary mx-auto" style="max-width:500px;font-size:1.05rem"><?=Marca::h("portada.subtitulo")?></p>
+    <p class="hero-subtitulo mb-4 mx-auto" style="max-width:500px;font-size:1.05rem"><?=Marca::h("portada.subtitulo")?></p>
     <form class="d-flex justify-content-center mb-4" method="GET" action="<?=APP_URL?>/" role="search">
       <input type="hidden" name="ver" value="catalogo">
       <div class="input-group input-group-lg" style="max-width:540px">
