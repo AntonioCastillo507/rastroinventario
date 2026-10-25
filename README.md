@@ -129,6 +129,15 @@ Notas: si cambia el esquema, regenera `database/schema.sql` y corre `composer te
 
 ---
 
+### 2.5. Personalizar la marca (nombre, logo, contacto, textos, impuesto)
+
+Todo lo que identifica al negocio vive en un solo archivo, [`app/Config/marca.php`](./app/Config/marca.php) (versionado y sin secretos): nombre, eslogan, logo, teléfono, correo, dirección, horario, redes, textos de la portada, de «Quiénes somos» y de «Contacto», nombre y tasa del impuesto, y texto del pie. Se edita ese archivo y el sitio entero lo refleja: cabecera, pie, portada, páginas, acceso y registro, títulos de página, correos, factura PDF y reportes de Excel. Si falta una clave, el sitio usa un valor neutro y deja una línea en `logs/error.log`.
+
+- El logo se cambia con la ruta de `logo` (por ejemplo `assets/img/logo.png`; con 128 px de alto basta). La foto de la portada es `assets/img/hero-bg.jpg` (escritorio) y `assets/img/hero-bg-800.jpg` (móvil).
+- El color de la marca no está aquí: se genera con `php bin/generar_tema.php #RRGGBB`.
+- Una prueba automática (`composer test`) falla si el nombre, el teléfono o el correo de la marca aparecen escritos a mano fuera de `marca.php`, de `docs/` y de `database/demo.sql`.
+- Los pedidos ya guardados no se recalculan si cambia la tasa del impuesto: lo cobrado queda en el pedido.
+
 ## 3. Matriz de Roles y Credenciales de Prueba
 
 | Rol de Usuario | Usuario de Acceso | Contraseña de Prueba | Permisos / Qué puede hacer |
