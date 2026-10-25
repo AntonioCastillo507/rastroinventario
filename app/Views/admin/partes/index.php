@@ -44,7 +44,7 @@
     <td class="fw-semibold text-white"><?=htmlspecialchars($p["nombre"])?></td>
     <td class="small text-secondary"><?=htmlspecialchars(($p["marca"]??"")." ".($p["modelo"]??""))?></td>
     <td class="small text-secondary"><?=htmlspecialchars($p["seccion"]??"—")?></td>
-    <td class="fw-bold text-success">$<?=number_format($p["precio"],2)?></td>
+    <td class="fw-bold text-success num">$<?=number_format($p["precio"],2)?></td>
     <td><?php $c=$p["cantidad"]; if($c>5) echo"<span class=\"chip-success\">$c</span>"; elseif($c>0) echo"<span class=\"chip-warning\">$c</span>"; else echo"<span class=\"chip-danger\">Agotada</span>"; ?></td>
     <td><?=$p["firma_digital"]?"<i aria-hidden=\"true\" class=\"bi bi-shield-check text-success fs-5\"></i><span class=\"visually-hidden\">Firmada</span>":"<i aria-hidden=\"true\" class=\"bi bi-shield-x text-secondary\"></i><span class=\"visually-hidden\">Sin firma</span>"?></td>
     <td>
@@ -53,7 +53,7 @@
         <?=CsrfToken::field()?>
         <button type="submit" class="icon-btn" title="Desactivar" aria-label="Desactivar <?=htmlspecialchars($p["nombre"])?>"><i aria-hidden="true" class="bi bi-trash text-danger"></i></button>
       </form>
-      <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="icon-btn" title="Ver público" target="_blank" aria-label="Ver <?=htmlspecialchars($p["nombre"])?> en la tienda (se abre en una pestaña nueva)"><i aria-hidden="true" class="bi bi-eye text-info"></i></a>
+      <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="icon-btn" title="Ver público" target="_blank" aria-label="Ver <?=htmlspecialchars($p["nombre"])?> en la tienda (se abre en una pestaña nueva)"><i aria-hidden="true" class="bi bi-eye icon-info"></i></a>
     </td>
   </tr>
   <?php endforeach; ?>

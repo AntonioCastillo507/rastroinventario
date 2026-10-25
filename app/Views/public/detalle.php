@@ -39,8 +39,8 @@ function starsHtml(float $n,int $sz=16): string {
       <?php if($parte["descripcion"]): ?><p class="text-secondary lh-relaxed mt-2"><?=nl2br(htmlspecialchars($parte["descripcion"]))?></p><?php endif; ?>
       <hr style="border-color:var(--border)">
       <div class="d-flex align-items-end gap-4 my-3">
-        <div><div style="font-size:2.4rem;font-weight:800;color:var(--success)">$<?=number_format($parte["precio"],2)?></div><div class="text-secondary small">Precio por unidad</div></div>
-        <div><?php if($parte["cantidad"]>0): ?><span class="chip-success"><i aria-hidden="true" class="bi bi-check-circle me-1"></i>Disponible</span><div class="text-secondary small mt-1"><?=$parte["cantidad"]?> uds.</div><?php else: ?><span class="chip-danger">Agotado</span><?php endif; ?></div>
+        <div><div class="num" style="font-size:2.4rem;font-weight:800;color:var(--success)">$<?=number_format($parte["precio"],2)?></div><div class="text-secondary small">Precio por unidad</div></div>
+        <div><?php if($parte["cantidad"]>0): ?><span class="chip-success"><i aria-hidden="true" class="bi bi-check-circle me-1"></i>Disponible</span><div class="text-secondary small mt-1"><span class="num"><?=$parte["cantidad"]?></span> uds.</div><?php else: ?><span class="chip-danger">Agotado</span><?php endif; ?></div>
       </div>
       <?php if($parte["firma_digital"]): ?><div class="firma-badge mb-3"><i aria-hidden="true" class="bi bi-shield-check text-success"></i>Verificado con firma digital HMAC-SHA256</div><?php endif; ?>
       <!-- Botones de acción -->

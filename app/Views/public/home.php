@@ -95,7 +95,7 @@
           <?php if($p["marca"]??""): ?><p class="pub-card-meta"><i aria-hidden="true" class="bi bi-car-front me-1"></i><?=htmlspecialchars($p["marca"]." ".$p["modelo"])?></p><?php endif; ?>
           <?php if($p["seccion"]??""): ?><p class="pub-card-meta"><i aria-hidden="true" class="bi bi-archive me-1"></i><?=htmlspecialchars($p["seccion"])?></p><?php endif; ?>
           <div class="pub-card-footer">
-            <span class="pub-price">$<?=number_format($p["precio"],2)?></span>
+            <span class="pub-price num">$<?=number_format($p["precio"],2)?></span>
             <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="btn btn-gold btn-sm">Ver</a>
           </div>
         </div>
@@ -126,7 +126,7 @@
         <div class="row g-3">
           <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-shield-check text-success fs-4"></i><div><div class="text-white small fw-semibold">Calidad garantizada</div><div class="text-secondary" style="font-size:.75rem">Piezas revisadas</div></div></div></div>
           <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-truck text-warning fs-4"></i><div><div class="text-white small fw-semibold">Entrega segura</div><div class="text-secondary" style="font-size:.75rem">A todo el país</div></div></div></div>
-          <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-headset text-info fs-4"></i><div><div class="text-white small fw-semibold">Soporte directo</div><div class="text-secondary" style="font-size:.75rem">Lun–Sáb disponible</div></div></div></div>
+          <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-headset icon-info fs-4"></i><div><div class="text-white small fw-semibold">Soporte directo</div><div class="text-secondary" style="font-size:.75rem">Lun–Sáb disponible</div></div></div></div>
           <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-cash-coin text-success fs-4"></i><div><div class="text-white small fw-semibold">Mejores precios</div><div class="text-secondary" style="font-size:.75rem">Transparentes y justos</div></div></div></div>
         </div>
       </div>

@@ -30,7 +30,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       </div>
       <div style="background:rgba(240,185,11,.06);border:1px solid rgba(240,185,11,.2);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem">
         <p class="text-warning mb-1 fw-semibold"><i aria-hidden="true" class="bi bi-info-circle me-2"></i>¿Seguro que quieres realizar esta compra?</p>
-        <p class="text-secondary small mb-0">Pieza: <strong class="text-white"><?=htmlspecialchars($parte["nombre"])?></strong> — Precio: <strong class="text-success">$<?=number_format($parte["precio"],2)?></strong></p>
+        <p class="text-secondary small mb-0">Pieza: <strong class="text-white"><?=htmlspecialchars($parte["nombre"])?></strong> — Precio: <strong class="text-success num">$<?=number_format($parte["precio"],2)?></strong></p>
       </div>
       <button type="submit" class="btn btn-gold fw-bold w-100 py-3" style="font-size:1.05rem">
         <i aria-hidden="true" class="bi bi-check-circle me-2"></i>Sí, confirmar compra
@@ -43,9 +43,9 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       <?php if(ImageHelper::existe($parte["thumbnail"],"thumbnails")): ?><img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($parte["thumbnail"])?>" class="img-fluid rounded mb-3" style="border:1px solid var(--border)" alt=""><?php endif; ?>
       <div class="text-white fw-semibold mb-1"><?=htmlspecialchars($parte["nombre"])?></div>
       <?php if($parte["marca"]??""): ?><div class="text-secondary small mb-2"><?=htmlspecialchars($parte["marca"]." ".$parte["modelo"])?></div><?php endif; ?>
-      <div class="text-success fw-bold fs-4">$<?=number_format($parte["precio"],2)?></div>
+      <div class="text-success fw-bold fs-4 num">$<?=number_format($parte["precio"],2)?></div>
       <div class="text-secondary" style="font-size:.75rem">Precio sin ITBMS. Se suma el 7% al confirmar.</div>
-      <div class="text-secondary small mt-1"><?=$parte["cantidad"]?> unidades disponibles</div>
+      <div class="text-secondary small mt-1"><span class="num"><?=$parte["cantidad"]?></span> unidades disponibles</div>
     </div>
   </div>
 </div>

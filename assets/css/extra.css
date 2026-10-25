@@ -115,27 +115,26 @@ select:-webkit-autofill {
 /* ── Boton "Crear cuenta" junto a Iniciar sesion ── */
 .btn-crear-cuenta { white-space:nowrap; }
 .admin-nav { height:auto; min-height:58px; padding:.4rem 0; }
-.admin-nav .nav-link { font-size:.78rem; padding:.3rem .5rem; }
 
 .admin-nav .navbar-brand span { font-size: .95rem; }
 .admin-nav .navbar-brand img { height: 22px; }
 .admin-nav .nav-link {
-  font-size: .72rem;
-  padding: .3rem .45rem;
+  font-size: var(--type-nav-link-size);
+  padding: .3rem .5rem;
   white-space: nowrap;
 }
-.admin-nav .nav-link i { font-size: .78rem; }
+.admin-nav .nav-link i { font-size: .9em; }
 .admin-nav .btn-outline-secondary,
-.admin-nav .btn-danger { font-size: .72rem; padding: .3rem .55rem; }
+.admin-nav .btn-danger { font-size: var(--type-button-size); padding: .3rem .55rem; }
 
 .public-nav .nav-link {
-  font-size: .82rem;
+  font-size: var(--type-nav-link-size);
   padding: .35rem .5rem;
   white-space: nowrap;
 }
 .public-nav .btn-outline-warning,
 .public-nav .btn-outline-secondary {
-  font-size: .78rem;
+  font-size: var(--type-button-size);
   padding: .32rem .6rem;
   white-space: nowrap;
 }

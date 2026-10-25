@@ -36,7 +36,7 @@ $cartCount = count($_SESSION["cart"]??[]);
         <form class="d-flex" method="GET" action="<?=APP_URL?>/" role="search">
           <input type="hidden" name="ver" value="catalogo">
           <div class="input-group input-group-sm">
-            <input type="search" name="q" class="form-control dark-input" style="min-width:160px" placeholder="Buscar pieza..." aria-label="Buscar pieza" value="<?=htmlspecialchars($q??"")?>">
+            <input type="search" name="q" class="form-control dark-input nav-search" placeholder="Buscar pieza..." aria-label="Buscar pieza" value="<?=htmlspecialchars($q??"")?>">
             <button class="btn btn-gold" type="submit" aria-label="Buscar"><i aria-hidden="true" class="bi bi-search"></i></button>
           </div>
         </form>

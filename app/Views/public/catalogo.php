@@ -83,7 +83,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
         <?php if($p["marca"]??""): ?><p class="pub-card-meta"><i aria-hidden="true" class="bi bi-car-front me-1"></i><?=htmlspecialchars($p["marca"]." ".$p["modelo"]." ".$p["anio"])?></p><?php endif; ?>
         <?php if($p["seccion"]??""): ?><p class="pub-card-meta"><i aria-hidden="true" class="bi bi-archive me-1"></i><?=htmlspecialchars($p["seccion"])?></p><?php endif; ?>
         <div class="pub-card-footer">
-          <span class="pub-price">$<?=number_format($p["precio"],2)?></span>
+          <span class="pub-price num">$<?=number_format($p["precio"],2)?></span>
           <div class="d-flex gap-1">
             <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="btn btn-outline-secondary btn-sm" title="Ver detalle" aria-label="Ver detalle de <?=htmlspecialchars($p["nombre"])?>"><i aria-hidden="true" class="bi bi-eye"></i></a>
             <?php if($p["cantidad"]>0): ?><form method="POST" action="<?=APP_URL?>/?action=agregar_carrito&id=<?=$p["id"]?>" class="d-inline"><?=CsrfToken::field()?><button type="submit" class="btn btn-gold btn-sm" title="Añadir al carrito" aria-label="Añadir <?=htmlspecialchars($p["nombre"])?> al carrito"><i aria-hidden="true" class="bi bi-cart-plus"></i></button></form><?php endif; ?>

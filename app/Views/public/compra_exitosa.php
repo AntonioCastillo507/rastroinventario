@@ -22,14 +22,14 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       <?php $monto=Itbms::dePedido($pedido); ?>
       <?php foreach($pedido["items"] as $item): ?>
       <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color:var(--border)!important">
-        <div><div class="text-white small fw-semibold"><?=htmlspecialchars($item["parte_nombre"])?></div><div class="text-secondary" style="font-size:.75rem">Cant: <?=$item["cantidad"]?> x $<?=number_format($item["precio_unitario"],2)?></div></div>
-        <div class="text-success fw-bold">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></div>
+        <div><div class="text-white small fw-semibold"><?=htmlspecialchars($item["parte_nombre"])?></div><div class="text-secondary" style="font-size:.75rem">Cant: <span class="num"><?=$item["cantidad"]?></span> x <span class="num">$<?=number_format($item["precio_unitario"],2)?></span></div></div>
+        <div class="text-success fw-bold num">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></div>
       </div>
       <?php endforeach; ?>
       <div class="mt-2 text-end">
-        <div class="text-secondary small">Subtotal: $<?=number_format($monto["subtotal"],2)?></div>
-        <div class="text-secondary small">ITBMS (7%): $<?=number_format($monto["itbms"],2)?></div>
-        <div class="text-white fw-bold fs-5">Total: <span class="text-success">$<?=number_format($monto["total"],2)?></span></div>
+        <div class="text-secondary small">Subtotal: <span class="num">$<?=number_format($monto["subtotal"],2)?></span></div>
+        <div class="text-secondary small">ITBMS (7%): <span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
+        <div class="text-white fw-bold fs-5">Total: <span class="text-success num">$<?=number_format($monto["total"],2)?></span></div>
       </div>
     </div>
 
@@ -43,7 +43,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
     </div>
 
     <div role="status" class="alert-dark-info mb-4 small">
-      <i aria-hidden="true" class="bi bi-info-circle text-info me-2"></i>
+      <i aria-hidden="true" class="bi bi-info-circle icon-info me-2"></i>
       Te contactaremos al número <strong><?=htmlspecialchars($pedido["cliente_telefono"])?></strong> para coordinar la entrega.
     </div>
     <div class="d-flex gap-3 justify-content-center">

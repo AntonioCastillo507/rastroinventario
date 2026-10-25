@@ -13,7 +13,7 @@ final class Pantallas {
     /** @var array<string,array{0:string,1:callable(array):void}> */
     private static function definiciones(): array {
         $pub  = fn() => new \PublicController();
-        $get  = function (array $g): void { $_GET = $g; };
+        $get  = function (array $g): void { $_GET = array_merge($_GET, $g); }; // las pantallas del panel ya llevan ?mod=
         return [
             // ── Tienda ──
             "home"              => ["invitado", fn($f) => $pub()->home()],
@@ -150,6 +150,10 @@ final class Pantallas {
         $f = self::datos($db);
         $_GET = [];
         $_POST = [];
+        if (str_starts_with($nombre, "admin_") && !in_array($nombre, ["admin_dashboard", "admin_aviso_error"], true)) {
+            // admin/index.php enruta con ?mod=; el menú del panel lo usa para marcar la opción activa
+            $_GET["mod"] = ["pedido_detalle" => "pedidos"][substr($nombre, 6)] ?? explode("_", substr($nombre, 6))[0];
+        }
         $_SERVER["REQUEST_METHOD"] = "GET";
         self::sesion($db, $contexto, $f);
         ob_start();

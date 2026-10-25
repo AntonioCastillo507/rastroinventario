@@ -94,7 +94,6 @@ body, .hero-section { color: var(--text); }
 .text-white, .admin-nav .navbar-brand { color: var(--text-strong) !important; }
 .hero-title { color: var(--text-strong); }
 .public-nav .nav-link.active { color: var(--text-strong) !important; }
-.text-info { color: var(--text) !important; }
 .text-primary { color: var(--link) !important; }
 ::selection { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
 
@@ -218,12 +217,6 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 [data-theme="light"] .pub-card:hover, [data-theme="light"] .stat-card:hover, [data-theme="light"] a.stat-card:hover,
 [data-theme="light"] .sec-card:hover, [data-theme="light"] .login-card { box-shadow: none !important; }
 
-/* Barra del panel: el interruptor de tema cabe en 1280 px sin desbordar (el menú se rediseñará con la estructura) */
-@media (min-width: 992px) {
-  .admin-nav .navbar-nav.ms-auto { gap: 0.25rem !important; }
-  .admin-nav .tema-toggle { padding-inline: 0.4rem; }
-}
-
 /* Enlace de salto al contenido: solo aparece al enfocarlo con el teclado */
 .skip-link:focus {
   position: fixed;
@@ -247,3 +240,15 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 /* El texto solo para lectores (visually-hidden) es absoluto: dentro de una tabla con scroll lateral tiene que
    quedar contenido en su caja, o ensancha la página entera */
 .table-responsive, .dark-card { position: relative; }
+
+/* Información: solo como icono (DESIGN.md), nunca como texto sobre claro */
+.icon-info, .stat-icon.blue { color: var(--color-info); }
+
+/* Barra del panel: "Más" muestra lo que no cabe a la vista; el menú activo lo marca PHP */
+.admin-nav .dropdown-menu { min-width: 12rem; }
+.admin-nav .dropdown-item.active, .admin-nav .dropdown-item:active { background: var(--surface-elevated); color: var(--text-strong); }
+.admin-nav .dropdown-item { font-size: var(--type-nav-link-size); }
+
+/* Buscador del menú público: más estrecho entre 992 y 1199 px para que las acciones no salten de línea */
+.input-group > .nav-search { min-width: 160px; }
+@media (min-width: 992px) and (max-width: 1199.98px) { .input-group > .nav-search { min-width: 0; width: 6rem; flex: 0 1 6rem; } }

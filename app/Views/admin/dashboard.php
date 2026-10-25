@@ -26,7 +26,7 @@
   <div class="col-6 col-lg-3">
     <a href="<?=APP_URL?>/admin/?mod=ventas" class="stat-card d-block" style="text-decoration:none">
       <div class="stat-icon green"><i aria-hidden="true" class="bi bi-cash-coin"></i></div>
-      <div class="stat-val green">$<?=number_format($totalVendido,2)?></div><div class="stat-lbl">Total vendido</div>
+      <div class="stat-val green num">$<?=number_format($totalVendido,2)?></div><div class="stat-lbl">Total vendido</div>
     </a>
   </div>
 </div>
@@ -56,8 +56,8 @@
         <?php if($pedidosPendientes>0): ?><span class="badge bg-danger rounded-pill ms-auto me-2"><?=$pedidosPendientes?></span><?php endif; ?>
         <i aria-hidden="true" class="bi bi-chevron-right text-secondary"></i>
       </a>
-      <a href="<?=APP_URL?>/admin/?mod=ventas&action=crear" class="quick-link"><i aria-hidden="true" class="bi bi-cart-plus text-info"></i><span>Registrar Venta</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
-      <a href="<?=APP_URL?>/admin/?mod=comentarios" class="quick-link"><i aria-hidden="true" class="bi bi-chat-dots text-primary"></i><span>Ver Comentarios</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
+      <a href="<?=APP_URL?>/admin/?mod=ventas&action=crear" class="quick-link"><i aria-hidden="true" class="bi bi-cart-plus icon-info"></i><span>Registrar Venta</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
+      <a href="<?=APP_URL?>/admin/?mod=comentarios" class="quick-link"><i aria-hidden="true" class="bi bi-chat-dots icon-info"></i><span>Ver Comentarios</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
       <a href="<?=APP_URL?>/admin/?mod=usuarios&action=crear" class="quick-link"><i aria-hidden="true" class="bi bi-person-plus text-warning"></i><span>Nuevo Usuario</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
     </div>
   </div></div>

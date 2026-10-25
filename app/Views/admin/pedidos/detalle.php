@@ -24,18 +24,18 @@
         <?php foreach($pedido["items"] as $item): ?>
         <tr>
           <td class="fw-semibold text-white"><?=htmlspecialchars($item["parte_nombre"])?></td>
-          <td class="text-secondary">$<?=number_format($item["precio_unitario"],2)?></td>
-          <td><?=$item["cantidad"]?></td>
-          <td class="fw-bold text-success">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></td>
+          <td class="text-secondary num">$<?=number_format($item["precio_unitario"],2)?></td>
+          <td class="num"><?=$item["cantidad"]?></td>
+          <td class="fw-bold text-success num">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
       </table></div>
       <div class="p-3 border-top" style="border-color:var(--border)!important">
         <?php $monto=Itbms::dePedido($pedido); ?>
-        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>Subtotal:</span><span>$<?=number_format($monto["subtotal"],2)?></span></div>
-        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>ITBMS (7%):</span><span>$<?=number_format($monto["itbms"],2)?></span></div>
-        <div class="d-flex justify-content-end gap-4 fw-bold text-white"><span>TOTAL:</span><span class="text-success">$<?=number_format($monto["total"],2)?></span></div>
+        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>Subtotal:</span><span class="num">$<?=number_format($monto["subtotal"],2)?></span></div>
+        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>ITBMS (7%):</span><span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
+        <div class="d-flex justify-content-end gap-4 fw-bold text-white"><span>TOTAL:</span><span class="text-success num">$<?=number_format($monto["total"],2)?></span></div>
       </div>
     </div>
     <div class="dark-card">

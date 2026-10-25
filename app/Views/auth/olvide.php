@@ -18,7 +18,7 @@
   <div role="alert" class="alert-dark-danger d-flex align-items-center gap-2 mb-3 small"><i aria-hidden="true" class="bi bi-shield-exclamation text-danger fs-5"></i><?=htmlspecialchars($err)?></div>
   <?php endif; ?>
   <?php if($ok): ?>
-  <div role="status" class="alert-dark-info d-flex align-items-center gap-2 mb-3 small"><i aria-hidden="true" class="bi bi-envelope-check text-info fs-5"></i><?=htmlspecialchars($ok)?></div>
+  <div role="status" class="alert-dark-info d-flex align-items-center gap-2 mb-3 small"><i aria-hidden="true" class="bi bi-envelope-check icon-info fs-5"></i><?=htmlspecialchars($ok)?></div>
   <?php else: ?>
   <form action="<?=APP_URL?>/olvide.php" method="POST">
     <?=CsrfToken::field()?>

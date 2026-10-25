@@ -19,7 +19,7 @@
   <div role="alert" class="alert-dark-danger d-flex align-items-center gap-2 mb-3 small"><i aria-hidden="true" class="bi bi-shield-exclamation text-danger fs-5"></i><?=htmlspecialchars($err)?></div>
   <?php endif; ?>
   <?php if($okMsg): ?>
-  <div role="status" class="alert-dark-info d-flex align-items-center gap-2 mb-3 small"><i aria-hidden="true" class="bi bi-check-circle text-info fs-5"></i><?=htmlspecialchars($okMsg)?></div>
+  <div role="status" class="alert-dark-info d-flex align-items-center gap-2 mb-3 small"><i aria-hidden="true" class="bi bi-check-circle icon-info fs-5"></i><?=htmlspecialchars($okMsg)?></div>
   <?php endif; ?>
   <form action="<?=APP_URL?>/login.php" method="POST">
     <?=CsrfToken::field()?>
