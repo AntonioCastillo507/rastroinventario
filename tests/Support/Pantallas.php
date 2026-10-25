@@ -17,6 +17,8 @@ final class Pantallas {
         return [
             // ── Tienda ──
             "home"              => ["invitado", fn($f) => $pub()->home()],
+            "nosotros"          => ["invitado", fn($f) => $pub()->nosotros()],
+            "contacto"          => ["invitado", fn($f) => $pub()->contacto()],
             "catalogo"          => ["invitado", function ($f) use ($get, $pub) { $get(["ver" => "catalogo"]); $pub()->home(); }],
             "catalogo_filtros"  => ["invitado", function ($f) use ($get, $pub) { $get(["ver" => "catalogo", "q" => "Pieza", "marca" => "Volumen Alfa", "precio_min" => "5", "orden" => "precio_asc"]); $pub()->home(); }],
             "catalogo_vacio"    => ["invitado", function ($f) use ($get, $pub) { $get(["ver" => "catalogo", "q" => "zzzz-no-existe"]); $pub()->home(); }],

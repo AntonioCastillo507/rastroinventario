@@ -1,8 +1,8 @@
 <?php
 // $title es el nombre de la pantalla; aquí se le añade la marca
 $tituloPagina = empty($title) ? Marca::get("nombre") : $title . " — " . Marca::get("nombre");
-// Opción activa del menú: la decide cada vista con $navActivo ("inicio" o "catalogo") antes de incluir
-// este encabezado. Secciones, Quiénes somos y Contacto son anclas de la portada y no se marcan.
+// Opción activa del menú: la decide cada vista con $navActivo ("inicio", "catalogo", "nosotros" o "contacto")
+// antes de incluir este encabezado.
 $navActivo = $navActivo ?? "";
 $cartCount = count($_SESSION["cart"]??[]);
 ?>
@@ -29,7 +29,7 @@ $cartCount = count($_SESSION["cart"]??[]);
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navP" aria-controls="navP" aria-expanded="false" aria-label="Abrir o cerrar el menú"><span class="navbar-toggler-icon" aria-hidden="true"></span></button>
     <div class="collapse navbar-collapse" id="navP">
       <ul class="navbar-nav me-auto ms-3 gap-1">
-        <?php foreach([["inicio","Inicio","/"],["catalogo","Catálogo","/?ver=catalogo"],["secciones","Secciones","/#secciones"],["nosotros","Quiénes somos","/#nosotros"],["contacto","Contacto","/#contacto"]] as [$clave,$texto,$ruta]): $esActiva=$navActivo===$clave; ?>
+        <?php foreach([["inicio","Inicio","/"],["catalogo","Catálogo","/?ver=catalogo"],["nosotros","Quiénes somos","/?action=nosotros"],["contacto","Contacto","/?action=contacto"]] as [$clave,$texto,$ruta]): $esActiva=$navActivo===$clave; ?>
         <li class="nav-item"><a class="nav-link <?=$esActiva?"active":"text-secondary"?>" href="<?=APP_URL.htmlspecialchars($ruta)?>"<?=$esActiva?' aria-current="page"':""?>><?=htmlspecialchars($texto)?></a></li>
         <?php endforeach; ?>
       </ul>

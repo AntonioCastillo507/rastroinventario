@@ -7,6 +7,8 @@ try {
     $ctrl   = new PublicController();
 
     match($action) {
+        "nosotros"           => $ctrl->nosotros(),
+        "contacto"           => $ctrl->contacto(),
         "detalle"            => $ctrl->detalle(),
         "comprar"            => $ctrl->comprar(),
         "procesar_compra"    => $ctrl->procesarCompra(),

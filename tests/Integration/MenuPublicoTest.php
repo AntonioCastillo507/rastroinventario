@@ -18,7 +18,7 @@ final class MenuPublicoTest extends BaseDatos {
 
     /** @return array<string,array{0:string,1:?string}> pantalla => opción que debe estar activa (null = ninguna) */
     public static function activas(): array {
-        $o = ["home" => ["home", "Inicio"]];
+        $o = ["home" => ["home", "Inicio"], "nosotros" => ["nosotros", "Quiénes somos"], "contacto" => ["contacto", "Contacto"]];
         foreach (["catalogo", "catalogo_filtros", "catalogo_vacio", "detalle_invitado", "detalle_cliente", "comprar_invitado", "comprar_cliente"] as $n) $o[$n] = [$n, "Catálogo"];
         foreach (["carrito_vacio", "carrito_invitado", "carrito_cliente", "compra_exitosa", "mis_pedidos", "mis_pedidos_vacio", "mi_perfil", "con_aviso_exito", "con_aviso_error"] as $n) $o[$n] = [$n, null];
         return $o;
@@ -28,7 +28,7 @@ final class MenuPublicoTest extends BaseDatos {
     public function testElMenuMarcaLaOpcionCorrecta(string $pantalla, ?string $esperada): void {
         $x = Html::xpath(Pantallas::render($this->db, $pantalla));
         $enlaces = $x->query("//*[@id='navP']//ul[contains(@class,'navbar-nav')]//a");
-        $this->assertSame(["Inicio", "Catálogo", "Secciones", "Quiénes somos", "Contacto"], array_map(fn($a) => trim($a->textContent), iterator_to_array($enlaces)), $pantalla);
+        $this->assertSame(["Inicio", "Catálogo", "Quiénes somos", "Contacto"], array_map(fn($a) => trim($a->textContent), iterator_to_array($enlaces)), $pantalla);
         $activas = [];
         foreach ($enlaces as $a) {
             $marcada = str_contains(" " . $a->getAttribute("class") . " ", " active ");
@@ -56,12 +56,11 @@ final class MenuPublicoTest extends BaseDatos {
         $this->assertStringNotContainsString("esHome", $header);
     }
 
-    public function testLosEnlacesDeLaPortadaSonAnclasQueExisten(): void {
-        $x = Html::xpath(Pantallas::render($this->db, "home"));
-        foreach (["secciones", "nosotros", "contacto"] as $ancla) {
-            $this->assertSame(1, Html::contar($x, "//*[@id='navP']//a[substring(@href, string-length(@href) - " . (strlen($ancla)) . ")='#$ancla']"), "enlace a #$ancla");
-            $this->assertSame(1, Html::contar($x, "//*[@id='$ancla']"), "destino #$ancla");
-        }
+    #[DataProvider("activas")]
+    public function testQuienesSomosYContactoSonPaginasConSuPropiaUrl(string $pantalla): void {
+        $x = Html::xpath(Pantallas::render($this->db, $pantalla));
+        $this->assertSame(APP_URL . "/?action=nosotros", $x->query("//*[@id='navP']//a[normalize-space()='Quiénes somos']/@href")->item(0)->nodeValue, $pantalla);
+        $this->assertSame(APP_URL . "/?action=contacto", $x->query("//*[@id='navP']//a[normalize-space()='Contacto']/@href")->item(0)->nodeValue, $pantalla);
     }
 
     public function testNingunaFilaDeLaTiendaTieneUnGutterMayorQueElDelContenedor(): void {
@@ -76,7 +75,7 @@ final class MenuPublicoTest extends BaseDatos {
             }
         }
         $this->assertSame([], $malas, "Filas con gutter horizontal de 3rem en todos los anchos: " . implode("; ", $malas));
-        foreach (["home", "detalle", "compra", "compra_confirmar"] as $v) {
+        foreach (["nosotros", "detalle", "compra", "compra_confirmar"] as $v) {
             $this->assertMatchesRegularExpression('/class="row [^"]*\bg-4\b[^"]*\bgx-xl-5\b/', (string)file_get_contents(BASE_PATH . "/app/Views/public/$v.php"), $v);
         }
     }

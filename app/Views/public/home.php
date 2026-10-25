@@ -111,26 +111,4 @@
   </div>
 </section>
 
-<!-- QUIÉNES SOMOS -->
-<section id="nosotros" class="about-section py-5">
-  <div class="container-xl">
-    <div class="row align-items-center g-4 gx-xl-5">
-      <div class="col-md-5">
-        <img src="<?=htmlspecialchars(Marca::url("nosotros.imagen"))?>" class="img-fluid rounded-3" alt="<?=Marca::h("nombre")?>" onerror="this.style.display='none'" style="border:1px solid var(--border);width:100%">
-      </div>
-      <div class="col-md-7">
-        <h2 class="fw-bold text-white mb-3"><?=Marca::h("nosotros.titulo")?> <span class="text-warning"><?=Marca::h("nosotros.titulo_resalte")?></span></h2>
-        <?php foreach(Marca::get("nosotros.parrafos",[]) as $i=>$parrafo): ?>
-        <p class="text-secondary <?=$i===count(Marca::get("nosotros.parrafos",[]))-1?"mb-4":"mb-3"?>"><?=htmlspecialchars($parrafo)?></p>
-        <?php endforeach; ?>
-        <div class="row g-3">
-          <?php foreach(Marca::get("nosotros.destacados",[]) as $d): ?>
-          <div class="col-6"><div class="d-flex align-items-center gap-2"><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($d["icono"]??"check-circle")?> text-warning fs-4"></i><div><div class="text-white small fw-semibold"><?=htmlspecialchars($d["titulo"]??"")?></div><div class="text-secondary" style="font-size:.75rem"><?=htmlspecialchars($d["texto"]??"")?></div></div></div></div>
-          <?php endforeach; ?>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <?php include BASE_PATH."/app/Views/layouts/public_footer.php"; ?>

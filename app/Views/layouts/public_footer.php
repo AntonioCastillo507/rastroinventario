@@ -1,5 +1,5 @@
 </main>
-<footer class="public-footer pt-5 pb-4 mt-5" id="contacto">
+<footer class="public-footer pt-5 pb-4 mt-5">
   <div class="container-xl">
     <div class="row g-4">
       <div class="col-md-4">

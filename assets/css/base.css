@@ -235,7 +235,7 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .star-rate input:focus-visible + label { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
 /* Las anclas de la portada no quedan tapadas por la barra fija */
-#inicio, #secciones, #nosotros, #contacto { scroll-margin-top: 5rem; }
+#inicio, #secciones { scroll-margin-top: 5rem; }
 
 /* El texto solo para lectores (visually-hidden) es absoluto: dentro de una tabla con scroll lateral tiene que
    quedar contenido en su caja, o ensancha la página entera */
@@ -252,3 +252,18 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 /* Buscador del menú público: más estrecho entre 992 y 1199 px para que las acciones no salten de línea */
 .input-group > .nav-search { min-width: 160px; }
 @media (min-width: 992px) and (max-width: 1199.98px) { .input-group > .nav-search { min-width: 0; width: 6rem; flex: 0 1 6rem; } }
+
+/* Páginas propias (Quiénes somos y Contacto): tarjeta de información, insignia de confianza y banda de llamada a la acción de DESIGN.md */
+.pagina-foto { border: 1px solid var(--hairline); border-radius: var(--rounded-xl); }
+.info-card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); padding: var(--spacing-lg); }
+.cta-band { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); padding: var(--spacing-xl) var(--spacing-md); }
+@media (min-width: 768px) { .cta-band { padding: var(--spacing-xxl); } }
+.trust-badge { display: flex; align-items: center; gap: var(--spacing-sm); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-lg); padding: var(--spacing-md) 20px; }
+.trust-badge > .bi { flex-shrink: 0; font-size: 1.5rem; color: var(--link); }
+.trust-badge-titulo { font-size: var(--type-title-sm-size); font-weight: var(--type-title-sm-weight); line-height: var(--type-title-sm-line-height); color: var(--text-strong); }
+.trust-badge-texto { font-size: var(--type-body-sm-size); color: var(--text-muted); }
+.contacto-lista li { display: flex; align-items: flex-start; gap: var(--spacing-sm); padding: var(--spacing-xs) 0; }
+.contacto-lista .bi { flex-shrink: 0; margin-top: 2px; font-size: 1.25rem; color: var(--link); }
+.contacto-etiqueta { font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text-muted); }
+.contacto-enlace { display: inline-flex; align-items: center; min-height: 44px; color: var(--link); }
+.contacto-enlace:hover { color: var(--link-hover); }

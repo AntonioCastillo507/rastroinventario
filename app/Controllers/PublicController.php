@@ -29,6 +29,9 @@ class PublicController extends BaseController {
         }
     }
 
+    public function nosotros(): void { $this->view("public/nosotros"); }
+    public function contacto(): void { $this->view("public/contacto"); }
+
     public function detalle(): void {
         $id=Sanitizer::get("id","int"); $parte=$this->pam->findById($id);
         if (!$parte||!$parte["activo"]) $this->redirect(APP_URL."/","Parte no encontrada.","danger");
