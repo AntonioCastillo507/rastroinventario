@@ -60,7 +60,8 @@ final class FotoBaldosaVistasTest extends BaseDatos {
         $x = $this->html(fn() => (new \PublicController())->home(), ["ver" => "catalogo", "q" => "Pieza con foto"]);
         $this->assertTodasEnBaldosa($x, "catalogo");
         $this->assertSame(1, Html::contar($x, "//img[contains(@src,'/uploads/thumbnails/')]"));
-        $this->assertSame("Pieza con foto", $this->fotosDePiezas($x)->item(0)->getAttribute("alt"), "en la tarjeta la foto lleva el nombre de la pieza");
+        $this->assertSame("", $this->fotosDePiezas($x)->item(0)->getAttribute("alt"), "en la tarjeta el nombre ya está en el enlace: la foto es decorativa");
+        $this->assertSame(1, Html::contar($x, "//article[contains(@class,'tarjeta-pieza')]//h3/a[normalize-space()='Pieza con foto']"));
     }
 
     public function testDetalleUsaLaDerivadaDe1200EnLaBaldosa(): void {

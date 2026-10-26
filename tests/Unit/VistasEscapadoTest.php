@@ -30,6 +30,7 @@ final class VistasEscapadoTest extends TestCase {
         "totalStockBajo", "totalVentas", "sz", "i", "n", "ic",
         "c", "e", "m", "a", "ML",
         "pMin", "pMax", // precios del filtro; PublicController los convierte a float
+        "tpId", "tpClase", "tpTexto", "total", // tarjeta de pieza: id entero, clase y texto de stock elegidos entre literales, y total entero del Paginador
         "rol",          // role del aviso (alert o status), calculado en el encabezado a partir de un tipo literal
         "logoSvg",      // SVG del logo reconstruido por Logo::sanear con lista blanca (LogoSaneadoTest comprueba que solo sale de Logo::enLinea)
     ];

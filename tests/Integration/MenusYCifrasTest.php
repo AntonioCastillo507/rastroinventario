@@ -134,7 +134,7 @@ final class MenusYCifrasTest extends BaseDatos {
             if ($todos !== $conNum) $sin[] = basename($f->getPathname()) . ": $conNum de $todos";
         }
         $this->assertSame([], $sin, "Precios sin class num en el código: " . implode("; ", $sin));
-        $this->assertMatchesRegularExpression('/\.num, \.pub-price,/', self::base(), "base.css pone .num en la fuente numérica");
+        $this->assertMatchesRegularExpression('/\.num, \.precio,/', self::base(), "base.css pone .num en la fuente numérica");
     }
 
     public function testLasCantidadesDelDetalleYDelPanelTambienLlevanNum(): void {

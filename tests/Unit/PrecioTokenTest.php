@@ -66,10 +66,11 @@ final class PrecioTokenTest extends TestCase {
 
     public function testTarjetaYDetalleMidenVeintePixelesAPesoSeiscientosConElToken(): void {
         $style = self::css("style.css");
-        foreach ([".pub-price", ".detail-price"] as $sel) {
-            $r = self::regla($style, $sel);
+        // el precio de la tarjeta (.precio, en base.css) y el del detalle (.detail-price, en style.css)
+        foreach ([["base.css", ".precio", '20px'], ["style.css", ".detail-price", '1\.25rem']] as [$archivo, $sel, $tam]) {
+            $r = self::regla(self::css($archivo), $sel);
             $this->assertNotSame("", $r, "no encuentro la regla $sel");
-            $this->assertMatchesRegularExpression('/font-size:\s*1\.25rem/', $r, "$sel: 20 px (1,25 rem)");
+            $this->assertMatchesRegularExpression('/font-size:\s*' . $tam . '/', $r, "$sel: 20 px");
             $this->assertMatchesRegularExpression('/font-weight:\s*600\b/', $r, "$sel: peso 600");
             $this->assertMatchesRegularExpression('/color:\s*var\(--precio\)/', $r, "$sel: color del token");
             $this->assertStringNotContainsString("success", $r, "$sel: sin verde");

@@ -46,7 +46,7 @@ final class BaseVisualTest extends TestCase {
         $this->assertStringContainsString("animation-duration: 0.01ms !important", $m);
         $this->assertStringContainsString("transition-duration: 0.01ms !important", $m);
         $this->assertStringContainsString("scroll-behavior: auto !important", $m);
-        $this->assertStringContainsString(".pub-card:hover", $m);
+        $this->assertStringContainsString(".tarjeta-pieza:hover", $m);
         $this->assertStringContainsString("transform: none !important", $m);
     }
 
@@ -73,7 +73,7 @@ final class BaseVisualTest extends TestCase {
 
     public function testLasCifrasUsanLaFuenteNumericaConCifrasTabulares(): void {
         $css = self::base();
-        $this->assertMatchesRegularExpression('/\.pub-price[^{]*\{\s*font-family:\s*var\(--font-numeric\);\s*font-variant-numeric:\s*tabular-nums;/', $css);
+        $this->assertMatchesRegularExpression('/\.precio[^{]*\{\s*font-family:\s*var\(--font-numeric\);\s*font-variant-numeric:\s*tabular-nums;/', $css);
         foreach ([".detail-price", ".stat-val", ".stat-pill-num", ".cart-count", 'input[type="number"]', ".num"] as $s) $this->assertStringContainsString($s, substr($css, 0, (int)strpos($css, "font-variant-numeric")), $s);
     }
 

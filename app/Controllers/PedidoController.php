@@ -103,21 +103,56 @@ class PedidoController extends BaseController {
     }
 
     // ── Carrito ───────────────────────────────────────────────────
+    /** Responde JSON y termina (solo para "Añadir al carrito" hecho con fetch) */
+    private function json(array $datos, int $codigo = 200): never {
+        http_response_code($codigo);
+        header("Content-Type: application/json; charset=utf-8");
+        header("Cache-Control: no-store");
+        echo json_encode($datos, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
+    /**
+     * Dirección interna a la que volver tras añadir sin JavaScript: debe ser una ruta de esta misma tienda (empieza con el
+     * camino de APP_URL), sin esquema, sin dobles barras ni saltos de línea. Si no, se vuelve al detalle de la pieza.
+     */
+    public static function rutaDeRegreso(?string $volver, int $id): string {
+        $detalle = APP_URL."/?action=detalle&id=".$id;
+        $volver = (string)$volver;
+        $base = rtrim((string)parse_url(APP_URL, PHP_URL_PATH), "/");
+        if ($volver === "" || $volver[0] !== "/" || str_starts_with($volver, "//") || preg_match('/[\x00-\x1f\x7f\\\\]/', $volver)) return $detalle;
+        if ($volver !== $base && !str_starts_with($volver, $base."/") && !str_starts_with($volver, $base."?")) return $detalle;
+        $partes = parse_url($volver);
+        if ($partes === false || isset($partes["scheme"]) || isset($partes["host"])) return $detalle;
+        $origen = parse_url(APP_URL, PHP_URL_SCHEME)."://".parse_url(APP_URL, PHP_URL_HOST).(parse_url(APP_URL, PHP_URL_PORT) ? ":".parse_url(APP_URL, PHP_URL_PORT) : "");
+        return $origen.preg_replace('/#.*/', "", $volver)."#parte-".$id; // vuelve a la misma tarjeta
+    }
+
     public function agregarCarrito(): void {
         $id=$pId=Sanitizer::get("id","int");
+        $ajax = ($_SERVER["HTTP_X_REQUESTED_WITH"] ?? "") === "fetch";
         if (!$this->isPost()) $this->redirect(APP_URL."/?action=detalle&id=".$id); // cambia el carrito: solo POST
-        CsrfToken::verify();
+        if ($ajax) {
+            if (!CsrfToken::check()) $this->json(["ok"=>false,"msg"=>"La página caducó. Recárgala e inténtalo de nuevo.","csrf"=>CsrfToken::generate()], 403);
+        } else CsrfToken::verify();
         $parte=$this->pam->findById($id);
-        if (!$parte||!$parte["activo"]||$parte["cantidad"]<=0){ $this->flash("Parte no disponible.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$id); }
+        if (!$parte||!$parte["activo"]||$parte["cantidad"]<=0){
+            if ($ajax) $this->json(["ok"=>false,"msg"=>"Esa pieza ya no está disponible.","csrf"=>CsrfToken::generate()], 409);
+            $this->flash("Parte no disponible.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$id);
+        }
         if (!isset($_SESSION["cart"])) $_SESSION["cart"]=[];
+        $yaEstaba = $_SESSION["cart"][$id]["cantidad"] ?? 0;
         if (isset($_SESSION["cart"][$id])){
             $nq=$_SESSION["cart"][$id]["cantidad"]+1;
             $_SESSION["cart"][$id]["cantidad"]=min($nq,$parte["cantidad"]);
         } else {
             $_SESSION["cart"][$id]=["parte_id"=>$id,"nombre"=>$parte["nombre"],"precio"=>(float)$parte["precio"],"cantidad"=>1,"max"=>$parte["cantidad"],"thumbnail"=>$parte["thumbnail"],"marca"=>($parte["marca"]??"")." ".($parte["modelo"]??"")];
         }
-        $this->flash("¡Pieza añadida al carrito!","success");
-        $this->redirect(APP_URL."/?action=detalle&id=".$id);
+        $enTope = $yaEstaba >= $parte["cantidad"];
+        $msg = $enTope ? "Ya tienes en el carrito todas las unidades disponibles de «".$parte["nombre"]."»." : "Añadida al carrito: «".$parte["nombre"]."».";
+        if ($ajax) $this->json(["ok"=>true,"msg"=>$msg,"alerta"=>$enTope,"count"=>count($_SESSION["cart"]),"cantidad"=>(int)$_SESSION["cart"][$id]["cantidad"],"carrito"=>APP_URL."/?action=carrito","csrf"=>CsrfToken::generate()]);
+        $this->flash($enTope ? $msg : "¡Pieza añadida al carrito!", $enTope ? "warning" : "success");
+        $this->redirect(self::rutaDeRegreso($_POST["volver"] ?? null, $id));
     }
 
     public function quitarCarrito(): void {

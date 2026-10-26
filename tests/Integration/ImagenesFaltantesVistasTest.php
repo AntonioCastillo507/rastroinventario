@@ -58,7 +58,7 @@ final class ImagenesFaltantesVistasTest extends BaseDatos {
         [, , $hay]   = $this->pieza("Marcador con archivo", true);
         foreach ([["ver" => "catalogo", "q" => "Marcador"]] as $get) {
             $x = $this->html(fn() => (new \PublicController())->home(), $get);
-            $this->assertSame(2, Html::contar($x, "//div[@class='pub-card']"), "las dos piezas se listan");
+            $this->assertSame(2, Html::contar($x, "//article[contains(@class,'tarjeta-pieza')]"), "las dos piezas se listan");
             $this->assertSame(0, $this->imagenes($x, $falta), "sin archivo, sin <img>");
             $this->assertSame(1, $this->imagenes($x, $hay), "con archivo, con <img>");
         }

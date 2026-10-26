@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", function () {
     cantInput.addEventListener("input", recalc); recalc();
   }
 
-  // Auto-submit filtros al cambiar selects
-  document.querySelectorAll("#frmFiltro select, #fAdm select").forEach(function(sel){
+  // Los filtros del panel se aplican al cambiar el select; los del catálogo de la tienda llevan botón "Aplicar" (WCAG 3.2.2)
+  document.querySelectorAll("#fAdm select").forEach(function(sel){
     sel.addEventListener("change", function(){ this.closest("form").submit(); });
   });
 

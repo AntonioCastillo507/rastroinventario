@@ -79,26 +79,9 @@
     <?php if(empty($partesDestacadas)): ?>
     <p class="text-secondary text-center py-4">No hay piezas disponibles aún.</p>
     <?php else: ?>
-    <div class="partes-grid">
-      <?php foreach($partesDestacadas as $p): ?>
-      <div class="pub-card">
-        <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="pub-card-img-wrap">
-          <?php $fotoParte=$p; $fotoTam="thumbnails"; $fotoClase="foto-ancha"; $fotoAlt=$p["nombre"]; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?>
-          <span class="pub-card-badge <?=$p["cantidad"]>5?"badge-stock-ok":($p["cantidad"]>0?"badge-stock-low":"badge-stock-out")?>">
-            <?=$p["cantidad"]>0?$p["cantidad"]." en stock":"Agotado"?>
-          </span>
-        </a>
-        <div class="pub-card-body">
-          <h3 class="h6 pub-card-title"><?=htmlspecialchars($p["nombre"])?></h3>
-          <?php if($p["marca"]??""): ?><p class="pub-card-meta"><i aria-hidden="true" class="bi bi-car-front me-1"></i><?=htmlspecialchars($p["marca"]." ".$p["modelo"])?></p><?php endif; ?>
-          <?php if($p["seccion"]??""): ?><p class="pub-card-meta"><i aria-hidden="true" class="bi bi-archive me-1"></i><?=htmlspecialchars($p["seccion"])?></p><?php endif; ?>
-          <div class="pub-card-footer">
-            <span class="pub-price num">$<?=number_format($p["precio"],2)?></span>
-            <a href="<?=APP_URL?>/?action=detalle&id=<?=$p["id"]?>" class="btn btn-gold btn-sm">Ver</a>
-          </div>
-        </div>
-      </div>
-      <?php endforeach; ?>
+    <?php $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? ""; ?>
+    <div class="rejilla-piezas">
+      <?php foreach($partesDestacadas as $p): $tarjetaParte=$p; include BASE_PATH."/app/Views/layouts/tarjeta_pieza.php"; endforeach; ?>
     </div>
     <div class="text-center mt-4">
       <a href="<?=APP_URL?>/?ver=catalogo" class="btn btn-outline-warning px-5 py-2">

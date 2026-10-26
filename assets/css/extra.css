@@ -1,13 +1,8 @@
 /* ════ EXTRA.CSS v3 ═══════════════════════════════════════════════ */
 
 /* ── Grid de partes ────────────────────────────────────────────── */
-.partes-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
-@media(max-width:1100px){ .partes-grid{ grid-template-columns:repeat(3,1fr); } }
-@media(max-width:768px) { .partes-grid{ grid-template-columns:repeat(2,1fr); } }
-@media(max-width:480px) { .partes-grid{ grid-template-columns:repeat(2,1fr); gap:.6rem; } }
 
 /* ── Carta de pieza ─────────────────────────────────────────────── */
-.pub-card-img-wrap { position:relative; display:block; overflow:hidden; } /* la proporción la fija la baldosa .foto-baldosa (base.css) */
 
 /* ── Input file — tema oscuro (no más botón blanco) ────────────── */
 input[type="file"].form-control::file-selector-button {
@@ -36,10 +31,7 @@ input[type="file"].form-control { color:var(--text-2)!important; }
 .review-empty  { text-align:center;padding:2.5rem 1rem;color:var(--text-3);font-size:.95rem; }
 
 /* ── Filtros catálogo ───────────────────────────────────────────── */
-.filter-bar { background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem; }
 .filter-label { color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.4rem; }
-.sec-pill { display:inline-block;background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);border-radius:20px;padding:.3rem .9rem;font-size:.8rem;cursor:pointer;text-decoration:none;transition:all .15s; }
-.sec-pill:hover,.sec-pill.active { background:var(--accent);border-color:var(--accent);color:#000;text-decoration:none; }
 
 /* ── Sección card (landing) ─────────────────────────────────────── */
 .sec-card { background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:border-color .2s,transform .2s;display:block;text-decoration:none; }

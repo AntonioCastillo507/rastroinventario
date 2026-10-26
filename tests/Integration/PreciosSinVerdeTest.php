@@ -65,8 +65,8 @@ final class PreciosSinVerdeTest extends BaseDatos {
     /** @return array<string,array{0:string,1:string}> pantalla → clase que debe llevar el precio principal */
     public static function conClasePrecio(): array {
         return [
-            "tarjetas de la portada" => ["home", "pub-price"],
-            "tarjetas del catálogo" => ["catalogo", "pub-price"],
+            "tarjetas de la portada" => ["home", "precio"],
+            "tarjetas del catálogo" => ["catalogo", "precio"],
             "detalle" => ["detalle_invitado", "detail-price"],
             "carrito (total)" => ["carrito_invitado", "text-precio"],
             "carrito del cliente (total)" => ["carrito_cliente", "text-precio"],
@@ -99,6 +99,6 @@ final class PreciosSinVerdeTest extends BaseDatos {
         $this->assertGreaterThan(0, $x->query("//*[contains(@class,'alert-success')]")->length);
         $css = (string)file_get_contents(BASE_PATH . "/assets/css/style.css");
         $this->assertMatchesRegularExpression('/\.estado-entregado\s*\{\s*color:\s*var\(--success\)/', $css);
-        $this->assertMatchesRegularExpression('/\.badge-stock-ok/', (string)file_get_contents(BASE_PATH . "/assets/css/base.css"));
+        $this->assertMatchesRegularExpression('/\.stock-ok\s*\{\s*color:\s*var\(--success-text\)/', (string)file_get_contents(BASE_PATH . "/assets/css/base.css"));
     }
 }

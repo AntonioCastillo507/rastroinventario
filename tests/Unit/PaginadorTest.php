@@ -100,7 +100,7 @@ final class PaginadorTest extends TestCase {
     }
 
     public function testLosTamanosDeLaAplicacion(): void {
-        $this->assertSame(12, \Paginador::CATALOGO);
+        $this->assertSame(24, \Paginador::CATALOGO);
         $this->assertSame(20, \Paginador::PANEL);
     }
 

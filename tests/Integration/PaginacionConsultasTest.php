@@ -44,7 +44,7 @@ final class PaginacionConsultasTest extends BaseDatos {
     }
 
     public static function tamanos(): array {
-        return ["12 (catálogo)" => [12], "20 (panel)" => [20], "7 (más fronteras)" => [7]];
+        return ["24 (catálogo)" => [24], "12 (catálogo anterior)" => [12], "20 (panel)" => [20], "7 (más fronteras)" => [7]];
     }
 
     // ── Panel: partes ───────────────────────────────────────────────────────

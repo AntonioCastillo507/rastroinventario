@@ -10,7 +10,7 @@ use PDO;
  * Dentro de una prueba se deshace con el rollback; para verlo en el navegador: composer test:volumen.
  */
 final class Volumen {
-    public const PARTES = 55;
+    public const PARTES = 150;
     public const OTROS  = 45; // usuarios, pedidos, comentarios y ventas
 
     /** @return array{autos:list<int>,secciones:list<int>} ids creados */

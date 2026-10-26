@@ -47,7 +47,9 @@
     </div>
   </div>
 </footer>
+<div id="avisos-carrito" class="avisos-carrito" role="status" aria-live="polite" aria-atomic="true"></div>
 <script src="<?=APP_URL?>/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="<?=Assets::url("js/main.js")?>"></script>
+<script src="<?=Assets::url("js/carrito.js")?>"></script>
 <script src="<?=Assets::url("js/envio.js")?>"></script>
 </body></html>

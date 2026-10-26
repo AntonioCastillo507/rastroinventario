@@ -6,7 +6,7 @@
  * si no, filas con el mismo valor pueden repetirse o saltarse entre una página y otra.
  */
 final class Paginador {
-    public const CATALOGO = 12; // piezas por página en la tienda
+    public const CATALOGO = 24; // piezas por página en la tienda
     public const PANEL    = 20; // filas por página en el panel
 
     private function __construct(

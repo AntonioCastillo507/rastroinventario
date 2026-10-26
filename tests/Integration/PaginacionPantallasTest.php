@@ -106,7 +106,7 @@ final class PaginacionPantallasTest extends BaseDatos {
     }
 
     public function testSiCabeEnUnaPaginaNoHayBarra(): void {
-        $x = $this->pantalla(fn() => (new \ParteController())->index(), ["filtro" => "agotado"]);
+        $x = $this->pantalla(fn() => (new \ParteController())->index(), ["filtro" => "agotado", "q" => "Pieza Volumen 3"]);
         $this->assertSame([], Html::enlacesDePaginacion($x));
         $this->assertSame("", Html::resumen($x));
         $this->assertGreaterThan(0, $this->filas($x));
@@ -114,20 +114,20 @@ final class PaginacionPantallasTest extends BaseDatos {
 
     // ── Catálogo y portada ──────────────────────────────────────────────────
 
-    private function tarjetas(\DOMXPath $x): int { return Html::contar($x, "//div[@class='pub-card']"); }
+    private function tarjetas(\DOMXPath $x): int { return Html::contar($x, "//article[contains(@class,'tarjeta-pieza')]"); }
 
     private function catalogo(array $get = []): \DOMXPath {
         return $this->pantalla(fn() => (new \PublicController())->home(), ["ver" => "catalogo"] + $get);
     }
 
-    public function testCatalogoDe12EnPagina(): void {
+    public function testCatalogoDe24EnPagina(): void {
         $total = (new \ParteModel())->contarPublic();
-        $ultima = (int)ceil($total / 12);
-        $this->assertSame(12, $this->tarjetas($this->catalogo()));
-        $this->assertSame(12, $this->tarjetas($this->catalogo(["page" => "2"])));
+        $ultima = (int)ceil($total / 24);
+        $this->assertSame(24, $this->tarjetas($this->catalogo()));
+        $this->assertSame(24, $this->tarjetas($this->catalogo(["page" => "2"])));
         $x = $this->catalogo(["page" => (string)$ultima]);
-        $this->assertSame($total - 12 * ($ultima - 1), $this->tarjetas($x));
-        $this->assertSame("Mostrando " . (12 * ($ultima - 1) + 1) . "–$total de $total", Html::resumen($x));
+        $this->assertSame($total - 24 * ($ultima - 1), $this->tarjetas($x));
+        $this->assertSame("Mostrando " . (24 * ($ultima - 1) + 1) . "–$total de $total", Html::resumen($x));
     }
 
     public function testCatalogoConPaginasRaras(): void {
@@ -136,8 +136,8 @@ final class PaginacionPantallasTest extends BaseDatos {
             $this->assertSame($primera, $this->tarjetas($this->catalogo(["page" => $raro])), json_encode($raro));
         }
         $total = (new \ParteModel())->contarPublic();
-        $ultima = (int)ceil($total / 12);
-        $this->assertSame($total - 12 * ($ultima - 1), $this->tarjetas($this->catalogo(["page" => "99999"])));
+        $ultima = (int)ceil($total / 24);
+        $this->assertSame($total - 24 * ($ultima - 1), $this->tarjetas($this->catalogo(["page" => "99999"])));
     }
 
     public function testCatalogoConservaLosFiltrosEnLosEnlaces(): void {
@@ -145,11 +145,11 @@ final class PaginacionPantallasTest extends BaseDatos {
                 "precio_min" => "10", "precio_max" => "50", "orden" => "precio_desc"];
         $pm = new \ParteModel();
         $total = $pm->contarPublic("Pieza Volumen", $this->ids["secciones"][2], "Volumen Gamma", 10, 50);
-        $this->assertGreaterThan(12, $total, "para que haya segunda página");
+        $this->assertGreaterThan(24, $total, "para que haya segunda página");
         $x = $this->catalogo($get);
-        $this->assertSame(min(12, $total), $this->tarjetas($x));
+        $this->assertSame(min(24, $total), $this->tarjetas($x));
         $enlaces = Html::enlacesDePaginacion($x);
-        if ($total > 12) {
+        if ($total > 24) {
             $this->assertNotSame([], $enlaces);
             foreach ($enlaces as $href) {
                 parse_str((string)parse_url($href, PHP_URL_QUERY), $q);
