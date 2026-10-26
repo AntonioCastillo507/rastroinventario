@@ -16,6 +16,9 @@ return [
     "telefono"    => "+507 6542-0519",
     "correo"      => "chapimaster507@gmail.com",
     "direccion"   => "Panamá, República de Panamá",
+    // Enlace del pie a Google Maps. De EJEMPLO (búsqueda genérica de Panamá): reemplazar por la dirección real antes de publicar.
+    // Vacío = búsqueda de Google Maps con el texto de "direccion".
+    "mapa"        => "https://www.google.com/maps/search/?api=1&query=Panam%C3%A1%2C+Rep%C3%BAblica+de+Panam%C3%A1",
     "ciudad"      => "Ciudad de Panamá, República de Panamá",
     "pais"        => "Panamá",
     "horario"     => [

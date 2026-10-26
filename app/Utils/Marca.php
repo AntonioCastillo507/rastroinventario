@@ -111,6 +111,16 @@ final class Marca {
     }
 
     /**
+     * Enlace de Google Maps de la dirección del pie: la clave "mapa" de marca.php si es una dirección http(s); si no, una
+     * búsqueda de Google Maps con el texto de "direccion".
+     */
+    public static function mapa(): string {
+        $url = trim((string)self::get("mapa", ""));
+        if (preg_match('~^https?://~i', $url)) return $url;
+        return "https://www.google.com/maps/search/?api=1&query=" . rawurlencode((string)self::get("direccion", ""));
+    }
+
+    /**
      * Elementos de la franja de confianza de la portada: máximo 4 y solo los que tienen título. Vacío = la franja no se pinta.
      * @return list<array{icono:string,titulo:string,texto:string}>
      */

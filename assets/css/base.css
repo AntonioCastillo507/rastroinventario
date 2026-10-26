@@ -393,14 +393,13 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .pie-lista li + li { margin-top: var(--spacing-xs); }
 .pie-lista a { display: inline-block; padding: 2px 0; color: var(--text-muted); text-decoration: none; }
 .pie-lista a:hover { color: var(--link); text-decoration: underline; }
-.pie-contacto { display: grid; gap: var(--spacing-xs) var(--spacing-md); }
-@media (min-width: 576px) { .pie-contacto { grid-template-columns: repeat(2, minmax(0, auto)); justify-content: start; column-gap: var(--spacing-lg); } }
+.pie-descripcion { margin-bottom: var(--spacing-md); max-width: 36em; }
+.pie-contacto { display: grid; gap: var(--spacing-sm); }
 .pie-lista.pie-contacto li + li { margin-top: 0; }
-.pie-contacto li { display: flex; align-items: flex-start; gap: var(--spacing-sm); min-height: 32px; }
-.pie-contacto li > :not(.pie-icono) { padding-top: 5px; line-height: 1.4; min-width: 0; overflow-wrap: anywhere; }
-.pie-contacto li > a { padding-top: 5px; padding-bottom: 0; }
-.pie-icono { flex: 0 0 32px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--rounded-md); color: var(--link); background: color-mix(in srgb, var(--link) 14%, transparent); font-size: 16px; }
-.pie-contacto li:has(.pie-horario) { grid-column: 1 / -1; width: 0; min-width: 100%; } /* no ensancha las dos columnas */
+.pie-contacto li { display: flex; align-items: center; gap: var(--spacing-sm); min-height: 32px; }
+.pie-contacto li > :not(.pie-icono) { line-height: 1.4; min-width: 0; overflow-wrap: anywhere; }
+.pie-contacto li > a { padding: 0; }
+.pie-icono { flex: 0 0 32px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--rounded-md); color: var(--link); background: color-mix(in srgb, var(--link) 14%, transparent); font-size: 16px; line-height: 1; }
 .pie-horario { display: flex; flex-wrap: wrap; gap: 2px var(--spacing-md); }
 .pie-horario-fila { white-space: nowrap; }
 .pie-barra { border-top: 1px solid var(--border); padding: var(--spacing-sm) 0; }
