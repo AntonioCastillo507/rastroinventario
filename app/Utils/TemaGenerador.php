@@ -69,7 +69,7 @@ final class TemaGenerador {
             "surface-strong" => "surface-card-dark",
             "text" => "body", "text-strong" => "on-dark", "text-muted" => "muted-strong",
             "hairline" => "hairline-on-dark", "border-strong" => "muted", "input-border" => "input-border-dark",
-            "link" => "primary-text-on-dark", "precio" => "primary-text-on-dark", "logo" => "primary", "link-hover" => "on-dark", "success-text" => "success", "danger-text" => "danger",
+            "link" => "primary-text-on-dark", "precio" => "primary-text-on-dark", "logo" => "primary", "hero-capa" => "canvas-dark", "link-hover" => "on-dark", "success-text" => "success", "danger-text" => "danger",
             "danger-text-elevated" => "danger-on-elevated", "warning-text" => "warning",
             "focus-ring" => "focus-ring-dark",
             "btn-primary-bg" => "primary", "btn-primary-bg-active" => "primary-active", "btn-primary-fg" => "on-primary",
@@ -83,7 +83,7 @@ final class TemaGenerador {
             "surface-strong" => "surface-strong-light",
             "text" => "body-on-light", "text-strong" => "ink", "text-muted" => "muted-on-light",
             "hairline" => "hairline-on-light", "border-strong" => "border-strong", "input-border" => "input-border-light",
-            "link" => "link-on-light", "precio" => "link-on-light", "logo" => "primary", "link-hover" => "ink", "success-text" => "success-on-light", "danger-text" => "danger-on-light",
+            "link" => "link-on-light", "precio" => "link-on-light", "logo" => "primary", "hero-capa" => "surface-strong-light", "link-hover" => "ink", "success-text" => "success-on-light", "danger-text" => "danger-on-light",
             "danger-text-elevated" => "danger-on-light", "warning-text" => "warning-on-light",
             "focus-ring" => "focus-ring-light",
             "btn-primary-bg" => "primary", "btn-primary-bg-active" => "primary-active", "btn-primary-fg" => "on-primary",
@@ -93,6 +93,9 @@ final class TemaGenerador {
             "btn-success-bg" => "success-on-light", "btn-success-fg" => "on-dark",
         ],
     ];
+
+    /** Opacidad de la capa del hero con foto, por modo: da 4,5:1 con el píxel más claro (oscuro) o más oscuro (claro) de cualquier foto, con margen */
+    public const HERO_CAPA_ALFA = ["dark" => 0.76, "light" => 0.90];
 
     /**
      * Pares de contraste que se vigilan en cada modo: [texto o componente, fondo, mínimo, tipo].
@@ -313,6 +316,8 @@ final class TemaGenerador {
         $o = "";
         $o .= "  color-scheme: $modo;\n";
         foreach (self::MODOS[$modo] as $nombre => $clave) $o .= "  --$nombre: var(--color-$clave);\n";
+        $o .= "  --hero-capa-alfa: " . self::HERO_CAPA_ALFA[$modo] . ";
+";
         $o .= "\n  /* Avisos (alert): fondo de tarjeta, texto normal y el estado en el borde */\n";
         foreach (["success", "danger", "warning", "info", "primary"] as $a) {
             $o .= "  --alert-$a-text: {$v["alert-$a-text"]};\n  --alert-$a-bg: {$v["alert-$a-bg"]};\n  --alert-$a-border: {$v["alert-$a-border"]};\n";

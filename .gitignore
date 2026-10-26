@@ -5,3 +5,6 @@ backup.sql
 logs/*.log
 .phpunit.cache/
 .phpunit.result.cache
+
+# Fotos de portada de Rastro del Istmo: no entran en la plantilla (copia en C:\wamp64espaldo_rastro\portada\)
+/assets/img/portada/

@@ -1,11 +1,20 @@
 <?php
 $title=Marca::get("portada.titulo_pagina"); $navActivo="inicio"; include BASE_PATH."/app/Views/layouts/public_header.php";
 $confianza=Marca::confianza();
+// Fotos del hero: solo si el archivo está en disco (la plantilla no las trae y usa el hero tipográfico)
+$fotoEscritorio=Marca::urlSiExiste("portada.foto"); $fotoMovil=Marca::urlSiExiste("portada.foto_movil");
+$conFoto=$fotoEscritorio!==""||$fotoMovil!=="";
+if($fotoEscritorio==="") $fotoEscritorio=$fotoMovil;
+if($fotoMovil==="") $fotoMovil=$fotoEscritorio;
 $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
 ?>
 
 <?php /* HERO: título, subtítulo y buscador en una columna. Con foto (portada.foto en marca.php) lleva la capa por modo; sin ella es tipográfico */ ?>
-<section id="inicio" class="portada-hero" aria-labelledby="hero-titulo">
+<section id="inicio" class="portada-hero<?=$conFoto?" portada-hero--foto":""?>" aria-labelledby="hero-titulo">
+  <?php if($conFoto): ?>
+  <picture class="hero-fondo" aria-hidden="true"><source media="(min-width: 768px)" srcset="<?=htmlspecialchars($fotoEscritorio)?>"><img src="<?=htmlspecialchars($fotoMovil)?>" alt="" decoding="async" fetchpriority="high"></picture>
+  <div class="hero-capa" aria-hidden="true"></div>
+  <?php endif; ?>
   <div class="container-xl hero-texto">
     <h1 id="hero-titulo" class="hero-titulo"><?=Marca::h("portada.titulo")?> <span class="hero-resalte"><?=Marca::h("portada.titulo_resalte")?></span></h1>
     <p class="hero-sub"><?=Marca::h("portada.subtitulo")?></p>

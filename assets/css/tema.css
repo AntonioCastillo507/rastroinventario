@@ -179,6 +179,7 @@
   --link: var(--color-primary-text-on-dark);
   --precio: var(--color-primary-text-on-dark);
   --logo: var(--color-primary);
+  --hero-capa: var(--color-canvas-dark);
   --link-hover: var(--color-on-dark);
   --success-text: var(--color-success);
   --danger-text: var(--color-danger);
@@ -198,6 +199,7 @@
   --btn-danger-fg: var(--color-ink);
   --btn-success-bg: var(--color-success);
   --btn-success-fg: var(--color-ink);
+  --hero-capa-alfa: 0.76;
 
   /* Avisos (alert): fondo de tarjeta, texto normal y el estado en el borde */
   --alert-success-text: #eaecef;
@@ -291,6 +293,7 @@
   --link: var(--color-link-on-light);
   --precio: var(--color-link-on-light);
   --logo: var(--color-primary);
+  --hero-capa: var(--color-surface-strong-light);
   --link-hover: var(--color-ink);
   --success-text: var(--color-success-on-light);
   --danger-text: var(--color-danger-on-light);
@@ -310,6 +313,7 @@
   --btn-danger-fg: var(--color-on-dark);
   --btn-success-bg: var(--color-success-on-light);
   --btn-success-fg: var(--color-on-dark);
+  --hero-capa-alfa: 0.9;
 
   /* Avisos (alert): fondo de tarjeta, texto normal y el estado en el borde */
   --alert-success-text: #181a20;

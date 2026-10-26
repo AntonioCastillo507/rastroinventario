@@ -271,6 +271,12 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 
 /* ── Portada (P6): hero de una columna, categorías, «Recién llegadas», «Compra por marca» y banda final. Solo tokens de tema.css. ── */
 .portada-hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--hairline); }
+/* Hero con foto: la foto cubre el hero y encima va una capa plana del color del modo (--hero-capa, tema.css) con su opacidad
+   (--hero-capa-alfa), que da 4,5:1 al título y al subtítulo con el píxel más claro u oscuro de la foto (HeroFotoTest). Sin degradados. */
+.hero-fondo { position: absolute; inset: 0; z-index: -2; }
+.hero-fondo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
+.hero-capa { position: absolute; inset: 0; z-index: -1; background: var(--hero-capa); opacity: var(--hero-capa-alfa); }
+.portada-hero--foto .hero-resalte { color: inherit; } /* el acento amarillo no llega a 4,5:1 sobre la foto */
 .hero-texto { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
 .hero-titulo { max-width: 14em; margin: 0 0 var(--spacing-xs); font-size: var(--type-hero-display-mobile-size); font-weight: 700; line-height: var(--type-hero-display-mobile-line-height); letter-spacing: var(--type-hero-display-mobile-letter-spacing); color: var(--text-strong); text-wrap: balance; }
 .hero-resalte { color: var(--link); }
