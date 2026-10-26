@@ -66,7 +66,7 @@ return [
             "Somos un rastro de autos especializado en la comercialización de partes y repuestos de calidad para vehículos de las principales marcas del mercado panameño.",
             "Nuestro inventario se actualiza constantemente, garantizando que encuentres la pieza que necesitas al mejor precio.",
         ],
-        "imagen"         => "", // foto opcional de Quiénes somos (ruta en assets/img/); vacía = el texto ocupa el ancho
+        "imagen"         => "assets/img/nosotros/equipo.jpg", // foto del equipo (fuera de git). Vacía = el texto ocupa el ancho; al empaquetar la plantilla se deja vacía
         // Las insignias de "destacados" son de ejemplo y no están verificadas: no se publican mientras esto sea false.
         "destacados_visibles" => false,
         "destacados"     => [
