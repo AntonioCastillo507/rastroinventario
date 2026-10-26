@@ -59,7 +59,7 @@ window.medirPantallas = async (pantallas, anchos, temas) => {
         if (cs.display === 'none' || cs.visibility === 'hidden') continue;
         const caja = el.getBoundingClientRect();
         if (caja.width === 0 || caja.height === 0) continue;
-        if (el.closest('.hero-section')) { enFoto++; continue; }
+        if (el.closest('.portada-hero--foto')) { enFoto++; continue; }
         if (el.closest('.disabled,[disabled]')) continue;   // los controles deshabilitados están exentos
         // fondo: el primer ancestro opaco, componiendo los translúcidos que haya por el camino
         const capas = [];

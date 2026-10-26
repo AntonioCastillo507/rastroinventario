@@ -73,8 +73,12 @@ final class MarcaEncabezadoTest extends BaseDatos {
     }
 
     public function testSinSvgElBloqueUsaElPngSinFiltros(): void {
-        \Marca::usarParaPruebas(["nombre" => "Sin Svg", "eslogan" => "Lema", "logo" => "assets/img/carro1.jpg"]); // no existe carro1.svg
-        $x = Html::xpath(Pantallas::render($this->db, "home"));
+        $png = BASE_PATH . "/assets/img/logo-sin-svg-" . bin2hex(random_bytes(3)) . ".png"; // un PNG que no tiene su .svg al lado
+        copy(BASE_PATH . "/assets/img/logo.png", $png);
+        try {
+            \Marca::usarParaPruebas(["nombre" => "Sin Svg", "eslogan" => "Lema", "logo" => "assets/img/" . basename($png)]);
+            $x = Html::xpath(Pantallas::render($this->db, "home"));
+        } finally { @unlink($png); }
         $a = $x->query("//nav//a[contains(@class,'marca')]")->item(0);
         $q = new \DOMXPath($a->ownerDocument);
         $this->assertSame(0, $q->query(".//svg", $a)->length);

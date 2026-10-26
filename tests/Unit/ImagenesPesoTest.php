@@ -47,9 +47,16 @@ final class ImagenesPesoTest extends TestCase {
         $this->assertSame(127, $alfa, "el logo conserva la transparencia");
     }
 
-    public function testLaFotoDeMovilEsMasChicaQueLaDeEscritorio(): void {
-        $this->assertLessThan(filesize(BASE_PATH . "/assets/img/hero-bg.jpg"), filesize(BASE_PATH . "/assets/img/hero-bg-800.jpg"));
-        $this->assertLessThanOrEqual(800, getimagesize(BASE_PATH . "/assets/img/hero-bg-800.jpg")[0]);
+    public function testLasFotosRetiradasNoEstanNiLasCitaNadaDelProyecto(): void {
+        $codigo = "";
+        foreach (["/app", "/assets/css", "/assets/js", "/tests"] as $dir) {
+            $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(BASE_PATH . $dir, \FilesystemIterator::SKIP_DOTS));
+            foreach ($it as $f) if (in_array($f->getExtension(), ["php", "css", "js"], true) && $f->getFilename() !== "config.php" && $f->getFilename() !== "rsa_secret.php" && $f->getFilename() !== "ImagenesPesoTest.php") $codigo .= file_get_contents($f->getPathname());
+        }
+        foreach (["hero-bg.jpg", "hero-bg-800.jpg", "hero-bgg.jpg", "carro1.jpg"] as $retirada) {
+            $this->assertFileDoesNotExist(BASE_PATH . "/assets/img/$retirada", "$retirada ya no va en el proyecto (copia en la carpeta de respaldos)");
+            $this->assertStringNotContainsString($retirada, $codigo, "nada cita $retirada");
+        }
     }
 
     /** Foto sintética con detalle (degradados y formas), grande como una foto de teléfono recortada */

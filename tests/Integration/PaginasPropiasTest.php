@@ -111,7 +111,7 @@ final class PaginasPropiasTest extends BaseDatos {
     public function testQuienesSomosMuestraLosTextosDeLaMarca(): void {
         $m = \Marca::todo();
         $m["nosotros"] = [
-            "titulo" => "Titulo nosotros", "titulo_resalte" => "resalte nosotros", "imagen" => "assets/img/carro1.jpg",
+            "titulo" => "Titulo nosotros", "titulo_resalte" => "resalte nosotros", "imagen" => "",
             "parrafos" => ["Primer parrafo cambiado.", "Segundo parrafo cambiado."],
             "destacados" => [["icono" => "star", "titulo" => "Destacado Uno", "texto" => "Texto Uno"]], "destacados_visibles" => true,
         ];

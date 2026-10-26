@@ -128,9 +128,10 @@ final class ContactoYNosotrosTest extends BaseDatos {
     }
 
     public function testLaFotoSoloSalePorSuArchivoYSinOnerror(): void {
+        $this->marca(["nosotros" => ["imagen" => "assets/img/logo.png"]]); // un archivo que existe
         $x = $this->x("nosotros");
         $img = $x->query("//main//img[contains(@class,'pagina-foto')]");
-        $this->assertSame(1, $img->length, "carro1.jpg existe");
+        $this->assertSame(1, $img->length, "el archivo existe");
         $this->assertSame("", $img->item(0)->getAttribute("alt"), "decorativa");
         $this->assertSame(0, $x->query("//main//*[@onerror]")->length, "sin onerror en línea");
         $this->marca(["nosotros" => ["imagen" => "assets/img/no-existe-" . bin2hex(random_bytes(3)) . ".jpg"]]);
