@@ -54,7 +54,6 @@ hr      { border-color: var(--border); opacity: 1; }
 .breadcrumb-item+.breadcrumb-item::before { color:var(--text-3); }
 .badge { font-size:.72em; }
 .btn-close { filter:invert(1)grayscale(1)brightness(.8); }
-.navbar-toggler-icon { filter:invert(.7); }
 .form-text { color:var(--text-2)!important; }
 .input-group-text { background:var(--bg-2)!important; border-color:var(--border)!important; color:var(--text-2)!important; }
 small,.small { color:var(--text-2); }

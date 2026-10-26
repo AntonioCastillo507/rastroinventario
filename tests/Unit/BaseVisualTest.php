@@ -130,7 +130,7 @@ final class BaseVisualTest extends TestCase {
     public function testElModoClaroDesactivaLosFiltrosYSombrasDelModoOscuro(): void {
         $css = self::base();
         $this->assertStringContainsString('[data-theme="light"] .btn-close { filter: none; }', $css);
-        $this->assertStringContainsString('[data-theme="light"] .navbar-toggler-icon { filter: none; }', $css);
+        $this->assertStringNotContainsString('.navbar-toggler-icon { filter', $css, "la hamburguesa ya no usa filtros");
         $this->assertStringContainsString('[data-theme="light"] { --shadow: none; }', $css);
     }
 

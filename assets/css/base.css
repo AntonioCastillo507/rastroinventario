@@ -213,7 +213,12 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 
 /* Icono de cerrar y del menú plegable según el modo */
 [data-theme="light"] .btn-close { filter: none; }
-[data-theme="light"] .navbar-toggler-icon { filter: none; }
+/* Hamburguesa: tres barras del color de los titulares (--text-strong) en los dos modos, sin filtros: el icono de Bootstrap trae un trazo oscuro fijo y casi no se veía en oscuro */
+.navbar-toggler { color: var(--text-strong); }
+.navbar-toggler .navbar-toggler-icon { position: relative; display: inline-block; width: 1.5em; height: 2px; background: currentColor; border-radius: 1px; }
+.navbar-toggler .navbar-toggler-icon::before, .navbar-toggler .navbar-toggler-icon::after { content: ""; position: absolute; left: 0; width: 100%; height: 2px; background: currentColor; border-radius: 1px; }
+.navbar-toggler .navbar-toggler-icon::before { top: -7px; }
+.navbar-toggler .navbar-toggler-icon::after { top: 7px; }
 
 /* Modo claro: superficies planas, sin sombras pesadas (DESIGN.md, Elevación) */
 [data-theme="light"] { --shadow: none; }
