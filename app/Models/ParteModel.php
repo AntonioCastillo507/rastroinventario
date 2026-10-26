@@ -57,6 +57,24 @@ class ParteModel extends BaseModel {
         elseif ($limit>0) $sql .= " LIMIT ".(int)$limit;
         return $this->query($sql, $params);
     }
+    /**
+     * Piezas relacionadas con la de $id: de la misma sección o del mismo auto, activas y con stock, sin la propia.
+     * Primero las que coinciden en las dos cosas, y a igualdad las más recientes (desempate por id). Máximo $limite.
+     * Sin sección ni auto no hay relación que buscar: lista vacía.
+     */
+    public function findRelacionadas(int $id, ?int $seccionId, ?int $autoId, int $limite = 4): array {
+        $cond = []; $params = []; $puntos = [];
+        if ($autoId)    { $cond[] = "p.auto_id=?";    $puntos[] = "(p.auto_id=?)*2";    $params[] = $autoId; }
+        if ($seccionId) { $cond[] = "p.seccion_id=?"; $puntos[] = "(p.seccion_id=?)";   $params[] = $seccionId; }
+        if (!$cond) return [];
+        $sql = "SELECT p.*,a.marca,a.modelo,a.anio,s.nombre AS seccion,(".implode("+", $puntos).") AS relacion ".self::FROM_PUBLIC
+             ." WHERE p.activo=1 AND p.cantidad>0 AND p.id<>? AND (".implode(" OR ", $cond).")"
+             ." ORDER BY relacion DESC, p.id DESC LIMIT ".max(1, min($limite, 12));
+        $s = $this->db->prepare($sql);
+        // los marcadores van en el orden en que salen en la consulta: puntos (SELECT), id propio y condiciones (WHERE)
+        $s->execute(array_merge($params, [$id], $params));
+        return $s->fetchAll();
+    }
     public function findFeatured(int $limit=8): array { return $this->findPublic("",0,$limit,"",0,0,"stock"); }
     public function search(string $q): array { return $this->findPublic($q); }
     /** Lee la pieza con bloqueo de fila (dentro de una transacción): activo y stock no cambian hasta el commit */

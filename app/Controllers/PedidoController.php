@@ -5,6 +5,13 @@ class PedidoController extends BaseController {
     public function __construct() { $this->pm=new PedidoModel(); $this->pam=new ParteModel(); }
 
     // ── Formulario de compra ──────────────────────────────────────
+    /** "Comprar ahora" del detalle manda ?cantidad=N: es el valor inicial del campo si no hay datos guardados de un intento anterior */
+    private static function conCantidadInicial(array $viejo, array $parte): array {
+        $c = $_GET["cantidad"] ?? null;
+        if (!isset($viejo["cantidad"]) && is_string($c) && ctype_digit($c)) $viejo["cantidad"] = max(1, min((int)$c, (int)$parte["cantidad"]));
+        return $viejo;
+    }
+
     public function formCompra(): void {
         $id    = Sanitizer::get("id","int");
         $parte = $this->pam->findById($id);
@@ -14,11 +21,11 @@ class PedidoController extends BaseController {
             // Cliente logueado → confirmación con sus datos
             $um=new UserModel();
             $userInfo=$um->findById($_SESSION["user"]["id"]);
-            $viejo=FormViejo::tomar("compra_conf");
+            $viejo=self::conCantidadInicial(FormViejo::tomar("compra_conf"),$parte);
             $this->view("public/compra_confirmar",compact("parte","userInfo","viejo"));
         } else {
             $err=$_SESSION["compra_error"]??""; unset($_SESSION["compra_error"]);
-            $viejo=FormViejo::tomar("compra");
+            $viejo=self::conCantidadInicial(FormViejo::tomar("compra"),$parte);
             $this->view("public/compra",compact("parte","err","viejo"));
         }
     }
@@ -141,15 +148,23 @@ class PedidoController extends BaseController {
             $this->flash("Parte no disponible.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$id);
         }
         if (!isset($_SESSION["cart"])) $_SESSION["cart"]=[];
-        $yaEstaba = $_SESSION["cart"][$id]["cantidad"] ?? 0;
+        // cantidad pedida (el detalle la manda; las tarjetas no): entre 1 y el stock; lo que no cabe no se añade
+        $pedida = $_POST["cantidad"] ?? 1;
+        $cant = is_string($pedida) && ctype_digit($pedida) ? max(1, min((int)$pedida, (int)$parte["cantidad"])) : 1;
+        $yaEstaba = (int)($_SESSION["cart"][$id]["cantidad"] ?? 0);
+        $nueva = min($yaEstaba + $cant, (int)$parte["cantidad"]);
+        $anadidas = $nueva - $yaEstaba;
         if (isset($_SESSION["cart"][$id])){
-            $nq=$_SESSION["cart"][$id]["cantidad"]+1;
-            $_SESSION["cart"][$id]["cantidad"]=min($nq,$parte["cantidad"]);
+            $_SESSION["cart"][$id]["cantidad"]=$nueva;
+            $_SESSION["cart"][$id]["max"]=$parte["cantidad"];
         } else {
-            $_SESSION["cart"][$id]=["parte_id"=>$id,"nombre"=>$parte["nombre"],"precio"=>(float)$parte["precio"],"cantidad"=>1,"max"=>$parte["cantidad"],"thumbnail"=>$parte["thumbnail"],"marca"=>($parte["marca"]??"")." ".($parte["modelo"]??"")];
+            $_SESSION["cart"][$id]=["parte_id"=>$id,"nombre"=>$parte["nombre"],"precio"=>(float)$parte["precio"],"cantidad"=>$nueva,"max"=>$parte["cantidad"],"thumbnail"=>$parte["thumbnail"],"marca"=>($parte["marca"]??"")." ".($parte["modelo"]??"")];
         }
-        $enTope = $yaEstaba >= $parte["cantidad"];
-        $msg = $enTope ? "Ya tienes en el carrito todas las unidades disponibles de «".$parte["nombre"]."»." : "Añadida al carrito: «".$parte["nombre"]."».";
+        $enTope = $anadidas < $cant;
+        if ($anadidas <= 0)  $msg = "Ya tienes en el carrito todas las unidades disponibles de «".$parte["nombre"]."».";
+        elseif ($enTope)     $msg = "Solo se añadieron ".$anadidas." de «".$parte["nombre"]."»: no hay más unidades disponibles.";
+        elseif ($anadidas>1) $msg = "Añadidas ".$anadidas." al carrito: «".$parte["nombre"]."».";
+        else                 $msg = "Añadida al carrito: «".$parte["nombre"]."».";
         if ($ajax) $this->json(["ok"=>true,"msg"=>$msg,"alerta"=>$enTope,"count"=>count($_SESSION["cart"]),"cantidad"=>(int)$_SESSION["cart"][$id]["cantidad"],"carrito"=>APP_URL."/?action=carrito","csrf"=>CsrfToken::generate()]);
         $this->flash($enTope ? $msg : "¡Pieza añadida al carrito!", $enTope ? "warning" : "success");
         $this->redirect(self::rutaDeRegreso($_POST["volver"] ?? null, $id));

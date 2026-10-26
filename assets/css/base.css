@@ -427,3 +427,40 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .aviso-carrito .aviso-texto { flex: 1; min-width: 0; }
 .aviso-carrito a { color: var(--link); font-weight: 600; white-space: nowrap; }
 .aviso-carrito button { min-width: 44px; min-height: 44px; background: transparent; border: 0; color: var(--text-muted); }
+
+/* ── Detalle de pieza (estructura A): galería 1:1 + cuadro de compra; barra de compra fija en teléfono ── */
+.detalle-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-lg); margin-bottom: var(--spacing-xl); }
+@media (min-width: 768px) { .detalle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-xl); align-items: start; } }
+.galeria { margin: 0; max-width: 560px; }
+.galeria-principal { position: relative; }
+.galeria-ampliar { position: absolute; right: var(--spacing-xs); bottom: var(--spacing-xs); width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: var(--surface); color: var(--text-strong); border: 1px solid var(--border-strong); border-radius: var(--rounded-md); }
+.galeria-ampliar:disabled { opacity: .6; cursor: not-allowed; }
+.galeria-miniaturas { list-style: none; display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin: var(--spacing-sm) 0 0; padding: 0; }
+.galeria-miniaturas[hidden] { display: none; }
+.galeria-miniaturas button { padding: 0; background: transparent; border: 2px solid transparent; border-radius: var(--rounded-lg); }
+.galeria-miniaturas button[aria-current="true"] { border-color: var(--link); }
+.detalle-info { min-width: 0; max-width: 560px; }
+.detalle-seccion { display: inline-flex; margin-bottom: var(--spacing-xs); }
+.detalle-titulo { margin: 0 0 var(--spacing-xxs); font-size: var(--type-title-lg-size); font-weight: 600; line-height: 1.3; color: var(--text-strong); }
+.detalle-compat { margin: 0 0 var(--spacing-xs); color: var(--text); }
+.detalle-precio { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-sm); margin-top: var(--spacing-xs); }
+.detalle-compra { display: flex; flex-direction: column; gap: var(--spacing-sm); margin: var(--spacing-md) 0 var(--spacing-lg); }
+.detalle-agregar-form { margin: 0; }
+.detalle-agregar, .detalle-comprar { width: 100%; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: var(--type-button-size); }
+.detalle-subtitulo { margin: var(--spacing-lg) 0 var(--spacing-xs); font-size: var(--type-title-md-size); font-weight: 600; line-height: 1.35; color: var(--text-strong); }
+.detalle-relacionadas { margin: 0 0 var(--spacing-xl); }
+.detalle-relacionadas .detalle-subtitulo { margin-top: 0; margin-bottom: var(--spacing-md); }
+.cantidad-fila { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); }
+.cantidad-control { display: inline-flex; align-items: stretch; border: 1px solid var(--input-border); border-radius: var(--rounded-md); background: var(--surface); }
+.cantidad-control button { width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: var(--text-strong); }
+.cantidad-control button:disabled { opacity: .4; }
+.cantidad-campo { width: 56px; min-height: 44px; padding: 0; text-align: center; font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: 16px; color: var(--text-strong); background: transparent; border: 0; border-inline: 1px solid var(--border); -moz-appearance: textfield; appearance: textfield; }
+.cantidad-campo::-webkit-outer-spin-button, .cantidad-campo::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.barra-compra { display: none; }
+@media (max-width: 767.98px) {
+  .detalle-agregar { display: none; } /* en teléfono el botón principal es el de la barra fija; es el mismo formulario */
+  .barra-compra { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); padding: var(--spacing-xs) var(--spacing-md); background: var(--surface); border-top: 1px solid var(--border); }
+  .barra-compra-boton { min-width: 180px; min-height: 48px; }
+  body:has(.barra-compra) { padding-bottom: 72px; }
+  body:has(.barra-compra) .avisos-carrito { bottom: 80px; }
+}

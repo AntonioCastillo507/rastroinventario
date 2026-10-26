@@ -50,7 +50,8 @@ class PublicController extends BaseController {
                 $this->redirect(APP_URL."/?action=detalle&id=".$id);
             } $error=$v->first();
         }
-        $this->view("public/detalle",compact("parte","comentarios","promedio","totalRating","isCliente","error"));
+        $relacionadas=$this->pam->findRelacionadas($id,$parte["seccion_id"]?(int)$parte["seccion_id"]:null,$parte["auto_id"]?(int)$parte["auto_id"]:null,4);
+        $this->view("public/detalle",compact("parte","comentarios","promedio","totalRating","isCliente","error","relacionadas"));
     }
 
     public function comprar():         void { $this->pc->formCompra(); }

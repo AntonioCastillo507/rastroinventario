@@ -75,7 +75,7 @@ final class MenuPublicoTest extends BaseDatos {
             }
         }
         $this->assertSame([], $malas, "Filas con gutter horizontal de 3rem en todos los anchos: " . implode("; ", $malas));
-        foreach (["nosotros", "detalle", "compra", "compra_confirmar"] as $v) {
+        foreach (["nosotros", "compra", "compra_confirmar"] as $v) { // el detalle ya no usa .row: su rejilla es .detalle-grid, sin gutter negativo
             $this->assertMatchesRegularExpression('/class="row [^"]*\bg-4\b[^"]*\bgx-xl-5\b/', (string)file_get_contents(BASE_PATH . "/app/Views/public/$v.php"), $v);
         }
     }

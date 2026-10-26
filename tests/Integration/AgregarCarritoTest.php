@@ -97,6 +97,33 @@ final class AgregarCarritoTest extends TestCase {
         $this->assertSame(2, $r["sesion"]["cart"][$id]["cantidad"]);
     }
 
+    public function testLaCantidadPedidaSeSumaYSeLimitaAlStock(): void {
+        $id = $this->parte(5);
+        $d = $this->json($this->agregar($id, true, true, [], ["cantidad" => "3"]));
+        $this->assertSame(3, $d["cantidad"]);
+        $this->assertSame(1, $d["count"], "una pieza distinta, tres unidades");
+        $this->assertStringContainsString("Añadidas 3", $d["msg"]);
+        $this->assertFalse($d["alerta"]);
+        $sesion = ["cart" => [$id => ["parte_id" => $id, "nombre" => "Faro de prueba", "precio" => 15.0, "cantidad" => 3, "max" => 5, "thumbnail" => null, "marca" => " "]]];
+        $d = $this->json($this->agregar($id, true, true, $sesion, ["cantidad" => "4"]));
+        $this->assertSame(5, $d["cantidad"], "no pasa del stock");
+        $this->assertTrue($d["alerta"]);
+        $this->assertStringContainsString("Solo se añadieron 2", $d["msg"]);
+        $d = $this->json($this->agregar($id, true, true, [], ["cantidad" => "99"]));
+        $this->assertSame(5, $d["cantidad"], "una cantidad enorme se corrige al stock");
+        $this->assertFalse($d["alerta"], "pidió más de lo que hay y se le dio todo: sin sobresalto");
+    }
+
+    public function testUnaCantidadRaraVale1(): void {
+        $id = $this->parte(5);
+        foreach (["abc", "-2", "2.5", "0", "", " 3", "1e1"] as $rara) {
+            $d = $this->json($this->agregar($id, true, true, [], ["cantidad" => $rara]));
+            $this->assertSame(1, $d["cantidad"], "cantidad «{$rara}»");
+        }
+        $d = $this->json($this->agregar($id, true, true, [], ["cantidad" => ["3"]]));
+        $this->assertSame(1, $d["cantidad"], "un arreglo no es una cantidad");
+    }
+
     public function testSinTokenResponde403ConUnTokenNuevoYNoTocaElCarrito(): void {
         $id = $this->parte(5);
         $r = $this->agregar($id, true, false);

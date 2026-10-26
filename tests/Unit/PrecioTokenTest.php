@@ -75,6 +75,10 @@ final class PrecioTokenTest extends TestCase {
             $this->assertMatchesRegularExpression('/color:\s*var\(--precio\)/', $r, "$sel: color del token");
             $this->assertStringNotContainsString("success", $r, "$sel: sin verde");
         }
+        // ninguna regla (ni una de móvil) cambia el tamaño del precio del detalle: 20 px en todos los anchos
+        foreach (["style.css", "extra.css", "base.css"] as $archivo) {
+            $this->assertSame(1 - (int)($archivo !== "style.css"), preg_match_all('/\.detail-price\s*\{[^}]*font-size/', self::css($archivo)), "$archivo: .detail-price solo fija su tamaño una vez, en style.css");
+        }
         $this->assertMatchesRegularExpression('/\.text-precio\s*\{\s*color:\s*var\(--precio\)\s*!important/', self::css("base.css"));
         $this->assertMatchesRegularExpression('/\.stat-val\.precio\s*\{\s*color:\s*var\(--precio\)/', $style);
         $this->assertStringContainsString("font-family: var(--font-numeric)", self::css("base.css"), "las cifras van en la fuente numérica");

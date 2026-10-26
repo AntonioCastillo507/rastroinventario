@@ -139,7 +139,8 @@ final class MenusYCifrasTest extends BaseDatos {
 
     public function testLasCantidadesDelDetalleYDelPanelTambienLlevanNum(): void {
         $x = Html::xpath(Pantallas::render($this->db, "detalle_invitado"));
-        $this->assertGreaterThan(0, Html::contar($x, "//span[contains(@class,'num')][following-sibling::text()[contains(.,'uds.')]]"));
+        $this->assertGreaterThan(0, Html::contar($x, "//input[contains(@class,'cantidad-campo')]"), "la cantidad del detalle");
+        $this->assertMatchesRegularExpression('/\.cantidad-campo \{[^}]*font-family: var\(--font-numeric\)/', (string)file_get_contents(BASE_PATH . "/assets/css/base.css"));
         $v = Html::xpath(Pantallas::render($this->db, "admin_ventas"));
         $this->assertGreaterThan(0, Html::contar($v, "//td[contains(@class,'num')]"));
         $p = Html::xpath(Pantallas::render($this->db, "admin_pedido_detalle"));

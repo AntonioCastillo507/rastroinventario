@@ -96,7 +96,7 @@ final class FotoBaldosaVistasTest extends BaseDatos {
         $this->db->prepare("UPDATE partes SET thumbnail = NULL, imagen_grande = NULL WHERE id = ?")->execute([$this->pieza]);
         $x = $this->html(fn() => (new \PublicController())->detalle(), ["id" => (string)$this->pieza]);
         $this->assertSame(0, $this->fotosDePiezas($x)->length);
-        $this->assertSame(1, Html::contar($x, "//span[contains(@class,'foto-baldosa')]/i[@aria-hidden='true']"));
+        $this->assertSame(1, Html::contar($x, "//div[contains(@class,'galeria-principal')]/span[contains(@class,'foto-baldosa')]/i[@aria-hidden='true']"));
     }
 
     public function testElAltDeLaFotoSeEscapa(): void {

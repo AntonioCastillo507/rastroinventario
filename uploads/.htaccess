@@ -9,7 +9,7 @@ RemoveType .php .php3 .php4 .php5 .phtml .phar .shtml
 
 # Solo se sirven imágenes; todo lo demás (svg, html, js, php...) queda negado
 Require all denied
-<FilesMatch "^[A-Za-z0-9][A-Za-z0-9_-]*(\.[0-9]+(_th)?)?\.(jpe?g|png|gif|webp)$">
+<FilesMatch "^[A-Za-z0-9][A-Za-z0-9_-]*(\.[0-9]+)?(_th|_1200|_2400)?\.(jpe?g|png|gif|webp)$">
     Require all granted
 </FilesMatch>
 

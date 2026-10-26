@@ -19,40 +19,77 @@ function starsHtml(float $n,int $sz=16): string {
     <li class="breadcrumb-item active text-secondary" aria-current="page"><?=htmlspecialchars($parte["nombre"])?></li>
   </ol></nav>
 
-  <!-- FICHA PRODUCTO -->
-  <div class="row g-4 gx-xl-5 mb-5">
-    <div class="col-md-5">
-      <?php $fotoParte=$parte; $fotoTam="medium"; $fotoClase="foto-ancha foto-detalle"; $fotoAlt=$parte["nombre"]; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?>
-    </div>
-    <div class="col-md-7">
-      <?php if($parte["seccion"]??""): ?><span class="chip-warning mb-2 d-inline-flex"><i aria-hidden="true" class="bi bi-archive me-1"></i><?=htmlspecialchars($parte["seccion"])?></span><?php endif; ?>
-      <h1 class="h2 fw-bold text-white mt-2 mb-1"><?=htmlspecialchars($parte["nombre"])?></h1>
-      <?php if($parte["marca"]??""): ?><p class="text-secondary mb-1"><i aria-hidden="true" class="bi bi-car-front-fill me-1 text-warning"></i><?=htmlspecialchars($parte["marca"]." ".$parte["modelo"]." (".$parte["anio"].")")?></p><?php endif; ?>
-      <?php if($totalRating>0): ?>
-<div class="d-flex align-items-center gap-2 mb-2"><?=starsHtml($promedio,16)?><span class="text-warning fw-bold"><?=number_format($promedio,1)?></span><span class="text-secondary small">(<?=$totalRating?> reseña<?=$totalRating !== 1 ? "s" : ""?>)</span></div>
-      <?php endif; ?>
-      <?php if($parte["descripcion"]): ?><p class="text-secondary lh-relaxed mt-2"><?=nl2br(htmlspecialchars($parte["descripcion"]))?></p><?php endif; ?>
-      <hr style="border-color:var(--border)">
-      <div class="d-flex align-items-end gap-4 my-3">
-        <div><div class="detail-price num">$<?=number_format($parte["precio"],2)?></div><div class="text-secondary small">Precio por unidad</div></div>
-        <div><?php if($parte["cantidad"]>0): ?><span class="chip-success"><i aria-hidden="true" class="bi bi-check-circle me-1"></i>Disponible</span><div class="text-secondary small mt-1"><span class="num"><?=$parte["cantidad"]?></span> uds.</div><?php else: ?><span class="chip-danger">Agotado</span><?php endif; ?></div>
+  <!-- FICHA PRODUCTO: galería (esqueleto reservado, sin zoom ni varias fotos todavía) y cuadro de compra -->
+  <?php
+    $cant = (int)$parte["cantidad"];
+    [$stClase, $stTexto] = $cant <= 0 ? ["stock-out", "Agotado"] : ($cant <= 5 ? ["stock-low", "Quedan ".$cant] : ["stock-ok", "Disponible"]);
+    $compat = trim(($parte["marca"] ?? "")." ".($parte["modelo"] ?? ""));
+    if ($compat !== "" && !empty($parte["anio"])) $compat .= " · ".$parte["anio"];
+    $volver = $_SERVER["REQUEST_URI"] ?? "";
+    $fotosGaleria = [$parte]; // hoy una foto por pieza; la galería múltiple es otra sesión
+  ?>
+  <div class="detalle-grid">
+    <figure class="galeria" data-galeria>
+      <div class="galeria-principal">
+        <?php $fotoParte=$parte; $fotoTam="medium"; $fotoClase="foto-ancha"; $fotoAlt=$parte["nombre"]; $fotoLazy=false; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?>
+        <button type="button" class="galeria-ampliar" aria-label="Ampliar la imagen (todavía no disponible)" title="Ampliar (próximamente)" disabled><i aria-hidden="true" class="bi bi-arrows-fullscreen"></i></button>
       </div>
-      <?php if($parte["firma_digital"]): ?><div class="firma-badge mb-3"><i aria-hidden="true" class="bi bi-shield-check text-success"></i>Verificado con firma digital HMAC-SHA256</div><?php endif; ?>
-      <!-- Botones de acción -->
-      <?php if($parte["cantidad"]>0): ?>
-      <div class="d-flex gap-3 flex-wrap mt-3">
-        <a href="<?=APP_URL?>/?action=comprar&id=<?=$parte["id"]?>" class="btn btn-gold fw-bold px-5 py-2" style="font-size:1.05rem"><i aria-hidden="true" class="bi bi-bag-plus me-2"></i>Comprar Ahora</a>
-        <form method="POST" action="<?=APP_URL?>/?action=agregar_carrito&id=<?=$parte["id"]?>" class="d-inline">
+      <ul class="galeria-miniaturas" role="list"<?=count($fotosGaleria)<2?" hidden":""?>>
+        <?php foreach($fotosGaleria as $i=>$f): ?>
+        <li><button type="button" aria-label="Ver imagen <?=$i+1?> de <?=count($fotosGaleria)?>"<?=$i===0?' aria-current="true"':''?>><?php $fotoParte=$f; $fotoTam="thumbnails"; $fotoClase="foto-64"; $fotoAlt=""; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?></button></li>
+        <?php endforeach; ?>
+      </ul>
+    </figure>
+
+    <div class="detalle-info">
+      <?php if($parte["seccion"]??""): ?><span class="chip-warning detalle-seccion"><?=htmlspecialchars($parte["seccion"])?></span><?php endif; ?>
+      <h1 class="detalle-titulo"><?=htmlspecialchars($parte["nombre"])?></h1>
+      <?php if($compat!==""): ?><p class="detalle-compat"><?=htmlspecialchars($compat)?> <span class="text-secondary">(compatible)</span></p><?php endif; ?>
+      <?php if($totalRating>0): ?>
+      <div class="d-flex align-items-center gap-2 mb-2"><?=starsHtml($promedio,16)?><span class="fw-bold num"><?=number_format($promedio,1)?></span><span class="text-secondary small">(<?=$totalRating?> reseña<?=$totalRating !== 1 ? "s" : ""?>)</span></div>
+      <?php endif; ?>
+      <div class="detalle-precio">
+        <span class="detail-price num">$<?=number_format($parte["precio"],2)?></span>
+        <span class="stock-insignia <?=$stClase?>"><?=$stTexto?></span>
+      </div>
+      <p class="text-secondary small mb-3">Precio por unidad</p>
+
+      <?php if($cant>0): ?>
+      <div class="detalle-compra">
+        <?php if($cant>1): ?>
+        <div class="cantidad-fila" data-cantidad data-max="<?=$cant?>">
+          <label for="f-cantidad" class="form-label-dark mb-0">Cantidad</label>
+          <div class="cantidad-control">
+            <button type="button" class="cantidad-menos" aria-label="Disminuir cantidad" data-cantidad-menos><i aria-hidden="true" class="bi bi-dash-lg"></i></button>
+            <input id="f-cantidad" form="form-agregar" type="number" name="cantidad" class="cantidad-campo" value="1" min="1" max="<?=$cant?>" step="1" inputmode="numeric" data-cantidad-campo>
+            <button type="button" class="cantidad-mas" aria-label="Aumentar cantidad" data-cantidad-mas><i aria-hidden="true" class="bi bi-plus-lg"></i></button>
+          </div>
+        </div>
+        <?php endif; ?>
+        <form id="form-agregar" method="POST" action="<?=APP_URL?>/?action=agregar_carrito&id=<?=(int)$parte["id"]?>" class="detalle-agregar-form" data-agregar-carrito data-nombre="<?=htmlspecialchars($parte["nombre"])?>">
           <?=CsrfToken::field()?>
-          <button type="submit" class="btn btn-outline-warning py-2 px-4"><i aria-hidden="true" class="bi bi-cart-plus me-1"></i>Añadir al carrito</button>
+          <input type="hidden" name="volver" value="<?=htmlspecialchars($volver)?>">
+          <button type="submit" class="btn btn-gold btn-lg detalle-agregar">Añadir al carrito</button>
         </form>
-        <a href="<?=APP_URL?>/?ver=catalogo" class="btn btn-outline-secondary py-2"><i aria-hidden="true" class="bi bi-grid me-1"></i>Catálogo</a>
+        <a href="<?=APP_URL?>/?action=comprar&id=<?=(int)$parte["id"]?>" class="btn btn-outline-secondary btn-lg detalle-comprar" data-comprar-ahora>Comprar ahora</a>
       </div>
       <?php else: ?>
-      <div role="alert" class="alert alert-danger mt-3"><i aria-hidden="true" class="bi bi-x-circle me-2"></i>Pieza agotada. <a href="<?=APP_URL?>/?ver=catalogo" class="text-white">Ver más piezas</a></div>
+      <div role="alert" class="alert alert-danger mt-3">Pieza agotada. <a href="<?=APP_URL?>/?ver=catalogo" class="alert-link">Ver más piezas</a></div>
       <?php endif; ?>
+
+      <?php if($parte["descripcion"]): ?><h2 class="detalle-subtitulo">Descripción</h2><p class="text-secondary lh-relaxed"><?=nl2br(htmlspecialchars($parte["descripcion"]))?></p><?php endif; ?>
+      <?php if($parte["firma_digital"]): ?><div class="firma-badge"><i aria-hidden="true" class="bi bi-shield-check text-success"></i>Verificado con firma digital HMAC-SHA256</div><?php endif; ?>
     </div>
   </div>
+
+  <?php if(!empty($relacionadas)): ?>
+  <section class="detalle-relacionadas" aria-labelledby="relacionadas-titulo">
+    <h2 id="relacionadas-titulo" class="detalle-subtitulo">Piezas relacionadas</h2>
+    <div class="rejilla-piezas">
+      <?php $tarjetaVolver=$volver; foreach($relacionadas as $r): $tarjetaParte=$r; include BASE_PATH."/app/Views/layouts/tarjeta_pieza.php"; endforeach; ?>
+    </div>
+  </section>
+  <?php endif; ?>
 
   <!-- ════ RESEÑAS Y COMENTARIOS ════════════════════════════════════ -->
   <hr style="border-color:var(--border)" class="mb-5">
@@ -127,4 +164,11 @@ function starsHtml(float $n,int $sz=16): string {
     <?php endif; ?>
   </div>
 </div>
+<?php if(($parte["cantidad"]??0)>0): ?>
+<div class="barra-compra" role="region" aria-label="Comprar esta pieza">
+  <span class="precio num" aria-hidden="true">$<?=number_format($parte["precio"],2)?></span>
+  <button type="submit" form="form-agregar" class="btn btn-gold barra-compra-boton">Añadir al carrito</button>
+</div>
+<?php endif; ?>
+<script src="<?=Assets::url("js/detalle.js")?>"></script>
 <?php include BASE_PATH."/app/Views/layouts/public_footer.php"; ?>

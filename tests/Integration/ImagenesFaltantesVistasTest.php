@@ -76,11 +76,11 @@ final class ImagenesFaltantesVistasTest extends BaseDatos {
         // Sin la de 1200 px cae al original; sin original, a la miniatura
         unlink(UPLOAD_PATH . "medium/" . \ImageHelper::derivada($orig, "medium"));
         $x = $this->html(fn() => (new \PublicController())->detalle(), ["id" => (string)$id]);
-        $this->assertSame(1, $this->imagenes($x, "/uploads/parts/$orig"), "sin la derivada usa el original");
+        $this->assertSame(1, Html::contar($x, "//div[contains(@class,'galeria-principal')]//img[contains(@src,'/uploads/parts/$orig')]"), "sin la derivada usa el original");
         unlink(UPLOAD_PATH . "parts/$orig");
         $x = $this->html(fn() => (new \PublicController())->detalle(), ["id" => (string)$id]);
         $this->assertSame(0, $this->imagenes($x, "/uploads/parts/"));
-        $this->assertSame(1, $this->imagenes($x, "/uploads/thumbnails/"));
+        $this->assertSame(1, Html::contar($x, "//div[contains(@class,'galeria-principal')]//img[contains(@src,'/uploads/thumbnails/')]"));
     }
 
     public function testPanelDeInventario(): void {

@@ -301,7 +301,6 @@ small,.small { color:var(--text-2); }
 /* Responsive */
 @media(max-width:576px) {
   .stat-val { font-size:1.5rem; }
-  .detail-price { font-size:1.9rem; }
   .login-card { padding:1.75rem 1.25rem; }
   .hero-title { font-size:2rem; }
 }
