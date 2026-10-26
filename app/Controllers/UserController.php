@@ -18,6 +18,7 @@ class UserController extends BaseController {
                 if ($v->isValid()) {
                     $this->um->updatePassword($_SESSION["user"]["id"], password_hash($nueva, PASSWORD_BCRYPT));
                     $success = "Contraseña actualizada correctamente.";
+                    CsrfToken::rotar();
                 } else {
                     $error = $v->first();
                 }

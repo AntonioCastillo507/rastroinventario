@@ -43,6 +43,7 @@ class AuthController extends BaseController {
         $um->resetIntentos($user["id"]);
         $log->registrar(["usuario_id" => $user["id"], "email" => $email, "ip" => $ip, "exitoso" => true]);
         session_regenerate_id(true); // nuevo ID al autenticar (anti fijación de sesión)
+        CsrfToken::rotar();
         $_SESSION["user"] = ["id" => $user["id"], "nombre" => $user["nombre"], "email" => $user["email"]];
         $_SESSION["last_activity"] = time();
         $roles = array_column($um->getRoles($user["id"]), "nombre");
@@ -117,6 +118,7 @@ class AuthController extends BaseController {
         $_SESSION["user"] = ["id" => $uid, "nombre" => $nombre, "email" => $email];
         $_SESSION["user_roles"] = ["Cliente"];
         session_regenerate_id(true);
+        CsrfToken::rotar();
         $this->redirect(APP_URL . "/", "¡Cuenta creada! Bienvenido/a.", "success");
     }
 }

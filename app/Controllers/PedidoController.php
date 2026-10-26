@@ -32,7 +32,6 @@ class PedidoController extends BaseController {
 
     // ── Procesar compra (invitado — cuenta OBLIGATORIA) ───────────
     public function procesarCompra(): void {
-        CsrfToken::verify();
         $parteId  = Sanitizer::post("parte_id","int");
         $cantidad = Sanitizer::post("cantidad","int");
         $nombre   = Sanitizer::post("cliente_nombre");
@@ -43,6 +42,7 @@ class PedidoController extends BaseController {
         $notas    = Sanitizer::post("cliente_notas");
         // Si vuelve con error, la persona recupera lo escrito (la contraseña nunca se guarda)
         $conservar=fn()=>FormViejo::guardar("compra",$_POST,["cliente_nombre","cliente_telefono","cliente_email","cliente_direccion","cliente_notas","cantidad"]);
+        CsrfToken::verify(APP_URL."/?action=comprar&id=".$parteId,$conservar); // sin token válido vuelve al formulario con lo escrito
 
         $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass,$email,$nombre)->numeric("cantidad",$cantidad,1);
         if (!$v->isValid()){ $conservar(); $_SESSION["compra_error"]=$v->first(); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
@@ -76,7 +76,7 @@ class PedidoController extends BaseController {
         $u2=$um->findById($usuarioId);
         $_SESSION["user"]=["id"=>$usuarioId,"nombre"=>$u2["nombre"],"email"=>$u2["email"]];
         $_SESSION["user_roles"]=["Cliente"];
-        session_regenerate_id(true);
+        session_regenerate_id(true); CsrfToken::rotar();
 
         $_SESSION["pedido_exitoso"]=$pedidoId;
         $this->redirect(APP_URL."/?action=compra_exitosa");
@@ -84,13 +84,13 @@ class PedidoController extends BaseController {
 
     // ── Confirmar compra (cliente ya logueado) ────────────────────
     public function confirmarCompra(): void {
-        CsrfToken::verify();
         if (empty($_SESSION["user"])) $this->redirect(APP_URL."/login.php");
         $parteId  = Sanitizer::post("parte_id","int");
         $cantidad = Sanitizer::post("cantidad","int");
         $dir      = Sanitizer::post("direccion_entrega");
         $notas    = Sanitizer::post("cliente_notas");
         $conservar=fn()=>FormViejo::guardar("compra_conf",$_POST,["direccion_entrega","cliente_notas","cantidad"]);
+        CsrfToken::verify(APP_URL."/?action=comprar&id=".$parteId,$conservar);
 
         $parte=$this->pam->findById($parteId);
         if (!(new Validator())->numeric("cantidad",$cantidad,1)->isValid()){ $conservar(); $this->flash("La cantidad debe ser al menos 1.","danger"); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
@@ -141,7 +141,7 @@ class PedidoController extends BaseController {
         if (!$this->isPost()) $this->redirect(APP_URL."/?action=detalle&id=".$id); // cambia el carrito: solo POST
         if ($ajax) {
             if (!CsrfToken::check()) $this->json(["ok"=>false,"msg"=>"La página caducó. Recárgala e inténtalo de nuevo.","csrf"=>CsrfToken::generate()], 403);
-        } else CsrfToken::verify();
+        } else CsrfToken::verify(self::rutaDeRegreso($_POST["volver"] ?? null, $id));
         $parte=$this->pam->findById($id);
         if (!$parte||!$parte["activo"]||$parte["cantidad"]<=0){
             if ($ajax) $this->json(["ok"=>false,"msg"=>"Esa pieza ya no está disponible.","csrf"=>CsrfToken::generate()], 409);
@@ -235,7 +235,6 @@ class PedidoController extends BaseController {
     }
 
     public function procesarCarrito(): void {
-        CsrfToken::verify();
         $cart=$_SESSION["cart"]??[];
         if (empty($cart)){ $this->redirect(APP_URL."/?action=carrito"); }
 
@@ -243,6 +242,7 @@ class PedidoController extends BaseController {
         $dir  =Sanitizer::post("cliente_direccion");
         // Si vuelve con error, la persona recupera lo escrito (la contraseña nunca se guarda)
         $conservar=fn()=>FormViejo::guardar("carrito",$_POST,["cliente_nombre","cliente_telefono","cliente_email","cliente_direccion","cliente_notas"]);
+        CsrfToken::verify(APP_URL."/?action=carrito",$conservar);
 
         // Verificar las piezas ANTES de tocar cuentas: nada se crea ni se descuenta si el carrito no vale
         // El precio sale de la BD, no de la sesión
@@ -288,7 +288,7 @@ class PedidoController extends BaseController {
         }
         if ($cuentaNueva){
             $_SESSION["user"]=["id"=>$usuarioId,"nombre"=>$nombre,"email"=>$email];
-            $_SESSION["user_roles"]=["Cliente"]; session_regenerate_id(true);
+            $_SESSION["user_roles"]=["Cliente"]; session_regenerate_id(true); CsrfToken::rotar();
             EmailJsService::get()->enviarBienvenida($email,$nombre);
         }
         EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$this->totalPedido($pedidoId));
@@ -322,7 +322,7 @@ class PedidoController extends BaseController {
                 elseif ($nueva!==$conf) { $error="La nueva contraseña y su confirmación no coinciden."; }
                 else {
                     $vp=(new Validator())->password("nueva",$nueva,$user["email"],$user["nombre"]);
-                    if ($vp->isValid()) { $um->updatePassword($_SESSION["user"]["id"],password_hash($nueva,PASSWORD_BCRYPT)); $success="Contraseña actualizada correctamente."; }
+                    if ($vp->isValid()) { $um->updatePassword($_SESSION["user"]["id"],password_hash($nueva,PASSWORD_BCRYPT)); $success="Contraseña actualizada correctamente."; CsrfToken::rotar(); }
                     else { $error=$vp->first(); }
                 }
                 $this->view("public/mi_perfil",compact("user","error","success")); return;

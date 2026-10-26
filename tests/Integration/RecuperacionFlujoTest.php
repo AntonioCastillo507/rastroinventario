@@ -71,7 +71,8 @@ final class RecuperacionFlujoTest extends TestCase {
     }
 
     private function solicitar(string $email, ?string $ip = null, string $correo = "ok", array $extra = [], bool $csrf = true): array {
-        return Proceso::accion($extra + ["clase" => "PasswordResetController", "accion" => "procesarOlvide", "csrf" => $csrf,
+        // token fijo en la sesión: el token ya no se gasta y un valor aleatorio distinto por proceso rompería las comparaciones entre respuestas
+        return Proceso::accion($extra + ["sesion" => ["csrf_token" => str_repeat("c", 64)], "clase" => "PasswordResetController", "accion" => "procesarOlvide", "csrf" => $csrf,
             "ip" => $ip ?? $this->ip, "post" => ["email" => $email], "correo" => $correo, "dir_logs" => $this->logs]);
     }
 
@@ -387,6 +388,15 @@ final class RecuperacionFlujoTest extends TestCase {
         $this->assertSame(\PasswordResetController::MSG_ENLACE, $otra["sesion"]["reset_error"]);
         $this->assertArrayNotHasKey("login_ok", $otra["sesion"]);
         $this->assertTrue(password_verify(self::CLAVE_NUEVA, $this->clave($this->uid)), "la clave sigue siendo la del primer canje");
+    }
+
+    public function testCambiarLaClaveRenuevaElTokenCsrf(): void {
+        [, $sesion] = $this->enlaceAbierto();
+        $viejo = str_repeat("d", 64);
+        $r = $this->cambiar(array_merge($sesion, ["csrf_token" => $viejo]), self::CLAVE_NUEVA, self::CLAVE_NUEVA);
+        $this->assertArrayHasKey("login_ok", $r["sesion"]);
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $r["sesion"]["csrf_token"]);
+        $this->assertNotSame($viejo, $r["sesion"]["csrf_token"], "el token cambia con la clave");
     }
 
     public function testUnaClaveFlojaNoGastaElEnlaceYSePuedeReintentar(): void {

@@ -10,7 +10,7 @@ use Tests\Support\Proceso;
 
 /**
  * "Añadir al carrito" (N6): con fetch (cabecera X-Requested-With: fetch) responde JSON y no redirige; sin JavaScript vuelve a la
- * página de origen, solo si la ruta es interna. El token CSRF es de un solo uso: cada respuesta JSON trae el siguiente.
+ * página de origen, solo si la ruta es interna. El token CSRF es por sesión: cada respuesta JSON trae el vigente.
  * PedidoController real en un proceso aparte (termina en exit); usa commits y borra lo suyo por id al final.
  */
 final class AgregarCarritoTest extends TestCase {

@@ -2,8 +2,8 @@
 // "Añadir al carrito" sin recargar la página ni mover al usuario (N6): se manda el formulario con fetch, el contador del
 // carrito del encabezado cambia y sale un aviso con "Ver carrito" en una región aria-live. El foco se queda en el botón.
 // Sin JavaScript o si la petición falla, el formulario se envía normal y vuelve a la misma página (campo "volver").
-// El token CSRF es de un solo uso: cada respuesta trae el siguiente y se pone en todos los formularios de la página;
-// las peticiones van de una en una para que no compitan por el mismo token.
+// El token CSRF es por sesión (no se gasta); la respuesta aun así trae el vigente y se pone en todos los formularios de la
+// página (también si se renovó al iniciar sesión en otra pestaña). Las peticiones van de una en una.
 (function () {
   var cola = Promise.resolve();
   var region = null;

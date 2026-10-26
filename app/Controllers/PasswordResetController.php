@@ -125,6 +125,7 @@ class PasswordResetController extends BaseController {
         }
         unset($_SESSION["reset_hash"]);
         session_regenerate_id(true); // no inicia sesión sola: la persona entra con su clave nueva
+        CsrfToken::rotar();
         $_SESSION["login_ok"] = "Contraseña actualizada. Ya puedes iniciar sesión.";
         $this->redirect(APP_URL . "/login.php");
     }

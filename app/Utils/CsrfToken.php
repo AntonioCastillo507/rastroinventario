@@ -1,7 +1,9 @@
 <?php
 /**
  * CsrfToken — Protección CSRF en todos los formularios POST.
- * Toda petición POST valida un token CSRF de sesión (OWASP).
+ * Un token por sesión (patrón "synchronizer token"): no se gasta al usarlo, así varias pestañas y las
+ * acciones sin recarga del carrito siguen valiendo. Se renueva al iniciar sesión, al registrarse y al
+ * cambiar la contraseña (rotar()), y desaparece con la sesión.
  */
 class CsrfToken {
     public static function generate(): string {
@@ -9,21 +11,32 @@ class CsrfToken {
             $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
         return $_SESSION["csrf_token"];
     }
+    /** Token nuevo para esta sesión (el anterior deja de valer) */
+    public static function rotar(): string {
+        $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+        return $_SESSION["csrf_token"];
+    }
     public static function field(): string {
         return "<input type=\"hidden\" name=\"csrf_token\" value=\"" . self::generate() . "\">";
     }
-    /** Comprueba el token del POST sin cortar la petición; si vale, lo consume */
+    /** Comprueba el token del POST sin cortar la petición */
     public static function check(): bool {
         $token = $_POST["csrf_token"] ?? "";
         // Token vacío nunca vale (sin token en sesión, "" == "" pasaba la comparación)
-        if (!is_string($token) || $token === "" || !hash_equals($_SESSION["csrf_token"] ?? "", $token)) return false;
-        unset($_SESSION["csrf_token"]);
-        return true;
+        return is_string($token) && $token !== "" && hash_equals($_SESSION["csrf_token"] ?? "", $token);
     }
-    public static function verify(): void {
-        if (!self::check()) {
-            http_response_code(403);
-            die("Token CSRF inválido. <a href=\"javascript:history.back()\">Volver</a>");
+    /**
+     * Corta con 403 si el token no vale. Con $volverA (rutas de compra) no deja una página en blanco:
+     * guarda lo escrito con $conservar, avisa que la página caducó y devuelve a esa dirección.
+     */
+    public static function verify(?string $volverA = null, ?callable $conservar = null): void {
+        if (self::check()) return;
+        if ($volverA !== null) {
+            if ($conservar) $conservar();
+            $_SESSION["flash"] = ["msg" => "La página caducó. Revisa tus datos e inténtalo de nuevo.", "type" => "warning"];
+            header("Location: " . $volverA); exit;
         }
+        http_response_code(403);
+        die("Token CSRF inválido. <a href=\"javascript:history.back()\">Volver</a>");
     }
 }
