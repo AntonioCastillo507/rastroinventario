@@ -54,6 +54,8 @@ return [
             "Nuestro inventario se actualiza constantemente, garantizando que encuentres la pieza que necesitas al mejor precio.",
         ],
         "imagen"         => "assets/img/carro1.jpg",
+        // Las insignias de "destacados" son de ejemplo y no están verificadas: no se publican mientras esto sea false.
+        "destacados_visibles" => false,
         "destacados"     => [
             ["icono" => "shield-check", "titulo" => "Calidad garantizada",  "texto" => "Piezas revisadas"],
             ["icono" => "truck",        "titulo" => "Entrega segura",       "texto" => "A todo el país"],

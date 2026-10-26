@@ -20,7 +20,7 @@ final class ClienteHttp {
         ]);
     }
 
-    /** @return array{codigo:int,ubicacion:?string,cuerpo:string} */
+    /** @return array{codigo:int,ubicacion:?string,cuerpo:string,cabeceras:string} */
     public function get(string $ruta): array {
         curl_setopt_array($this->curl, [CURLOPT_URL => $this->base . $ruta, CURLOPT_HTTPGET => true]);
         return $this->ejecutar();
@@ -62,7 +62,7 @@ final class ClienteHttp {
             foreach ($c as [, $n, $v]) { if ($v === "" || $v === "deleted") unset($this->cookies[$n]); else $this->cookies[$n] = $v; }
         }
         $ubicacion = preg_match('/^Location:\s*(\S+)/mi', $cabeceras, $m) ? $m[1] : null;
-        return ["codigo" => (int)curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE), "ubicacion" => $ubicacion, "cuerpo" => substr($r, $cab)];
+        return ["codigo" => (int)curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE), "ubicacion" => $ubicacion, "cuerpo" => substr($r, $cab), "cabeceras" => $cabeceras];
     }
 
     /** Ruta (con consulta) de una URL absoluta de Location, para pedirla tal cual */

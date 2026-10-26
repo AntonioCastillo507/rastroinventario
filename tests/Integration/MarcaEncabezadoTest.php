@@ -244,7 +244,10 @@ final class MarcaEncabezadoTest extends BaseDatos {
         $html = Pantallas::render($this->db, $n);
         $x = Html::xpath($html);
         $this->assertSame(1, $x->query("//main//div[contains(@class,'marca-acceso')]//svg[contains(@class,'marca-logo')]")->length, "$n: logo de acceso");
-        $this->assertSame("true", $x->query("//div[contains(@class,'marca-acceso')]")->item(0)->getAttribute("aria-hidden"));
+        $enlace = $x->query("//main//div[contains(@class,'marca-acceso')]/a[contains(@class,'marca-acceso-enlace')]")->item(0);
+        $this->assertNotNull($enlace, "$n: el bloque de marca es un enlace al inicio");
+        $this->assertSame(APP_URL . "/", $enlace->getAttribute("href"));
+        $this->assertSame(\Marca::get("nombre"), trim($x->query(".//*[contains(@class,'marca-nombre')]", $enlace)->item(0)->textContent), "$n: con el nombre visible");
         $this->assertSame(0, $x->query("//*[contains(@class,'login-icon')]")->length, "$n: ya no hay icono genérico");
         $this->assertSame(0, $x->query("//*[contains(@class,'bi-tools')]")->length);
     }

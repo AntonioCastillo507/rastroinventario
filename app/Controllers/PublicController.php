@@ -34,7 +34,7 @@ class PublicController extends BaseController {
 
     public function detalle(): void {
         $id=Sanitizer::get("id","int"); $parte=$this->pam->findById($id);
-        if (!$parte||!$parte["activo"]) $this->redirect(APP_URL."/","Parte no encontrada.","danger");
+        if (!$parte||!$parte["activo"]) PaginaError::mostrar(404, "Esa pieza no existe o ya no está disponible. Busca otra en el catálogo.", null, "Pieza no encontrada");
         $comentarios=$this->cm->findByParte($id); $promedio=$this->cm->promedioRating($id); $totalRating=$this->cm->countRating($id);
         $isCliente=!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]??[]);
         $error="";

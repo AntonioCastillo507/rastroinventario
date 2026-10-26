@@ -226,7 +226,8 @@ final class CsrfPorSesionTest extends TestCase {
         [$uid, $email] = $this->clienteConClave();
         $r = $this->accion("UserController", "miClave", ["actual" => self::CLAVE, "nueva" => "Frase-nueva-del-panel-2026", "confirmar" => "Frase-nueva-del-panel-2026"], $this->sesionDe($uid, $email), false);
         $this->assertSame(403, $r["codigo"]);
-        $this->assertStringContainsString("Token CSRF inválido", $r["salida"]);
+        $this->assertStringContainsString("La página caducó", $r["salida"], "página temática, sin texto interno");
+        $this->assertStringNotContainsString("CSRF", $r["salida"]);
     }
 
     public function testElCambioDeClaveDelPanelRenuevaElToken(): void {

@@ -110,4 +110,32 @@ final class MarcaTest extends TestCase {
         \Marca::usarParaPruebas(["nombre" => "Otra Tienda Distinta"]);
         $this->assertTrue($acepta("tallercambiadozeta2026"), "ya no es el nombre de la marca");
     }
+
+    public function testWhatsappEsLaEntradaDeRedesConEseIconoYUnaDireccionHttp(): void {
+        \Marca::usarParaPruebas(["redes" => [["nombre" => "Instagram", "url" => "https://instagram.com/x", "icono" => "instagram"], ["nombre" => "WhatsApp", "url" => "https://wa.me/50760000000", "icono" => "whatsapp"]]]);
+        $this->assertSame("https://wa.me/50760000000", \Marca::whatsapp());
+    }
+
+    public function testWhatsappVacioSiNoHayEntradaDireccionVaciaOEsquemaPeligroso(): void {
+        foreach ([[], [["nombre" => "WhatsApp", "url" => "", "icono" => "whatsapp"]], [["nombre" => "WhatsApp", "url" => "javascript:alert(1)", "icono" => "whatsapp"]],
+                  [["nombre" => "WhatsApp", "url" => "ftp://x", "icono" => "whatsapp"]], [["nombre" => "Otra", "url" => "https://wa.me/1", "icono" => "chat"]]] as $redes) {
+            \Marca::usarParaPruebas(["redes" => $redes]);
+            $this->assertSame("", \Marca::whatsapp(), json_encode($redes));
+        }
+    }
+
+    public function testUrlSiExisteSoloDevuelveArchivosQueEstanEnDisco(): void {
+        \Marca::usarParaPruebas(["logo" => "assets/img/logo.svg", "nosotros" => ["imagen" => "assets/img/no-esta.jpg"], "x" => ["a" => "assets/../README.md", "b" => "/assets/img/logo.svg", "c" => ""]]);
+        $this->assertSame(APP_URL . "/assets/img/logo.svg", \Marca::urlSiExiste("logo"));
+        $this->assertSame(APP_URL . "/assets/img/logo.svg", \Marca::urlSiExiste("x.b"), "con barra inicial también");
+        $this->assertSame("", \Marca::urlSiExiste("nosotros.imagen"));
+        $this->assertSame("", \Marca::urlSiExiste("x.a"), "sin subir de carpeta");
+        $this->assertSame("", \Marca::urlSiExiste("x.c"));
+        $this->assertSame("", \Marca::urlSiExiste("no.existe.la.clave"));
+    }
+
+    public function testLasInsigniasSinConfirmarEstanOcultasEnElArchivoReal(): void {
+        \Marca::usarParaPruebas(null);
+        $this->assertSame(false, \Marca::get("nosotros.destacados_visibles", true));
+    }
 }

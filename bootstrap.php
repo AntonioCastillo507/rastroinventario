@@ -24,20 +24,32 @@ function registrarError(\Throwable $e, string $donde = ""): string {
     return $ref;
 }
 
-// Página genérica, sin base de datos ni vistas, para que funcione aunque MySQL esté caído
+// Página neutra de último recurso: HTML fijo, sin base de datos, sin vistas, sin clases. Solo sale si la temática no se pudo armar
+function paginaErrorNeutra(string $ref, int $codigo = 500): string {
+    $volver = defined("APP_URL") ? '<p><a href="' . htmlspecialchars(APP_URL) . '/">Volver al inicio</a></p>' : "";
+    $aviso = $ref !== "" ? 'Ocurrió un error interno. Intenta de nuevo; si sigue, indica el código de referencia <b>' . htmlspecialchars($ref) . '</b>.' : 'No se pudo mostrar la página. Intenta de nuevo en unos minutos.';
+    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Algo salió mal</title>'
+         . '<meta name="viewport" content="width=device-width, initial-scale=1"></head>'
+         . '<body style="font-family:sans-serif;max-width:32rem;margin:4rem auto;padding:0 1rem">'
+         . '<h1>Algo salió mal</h1><p>' . $aviso . '</p>' . $volver . '</body></html>';
+}
+
+// Página de error para el visitante: la temática (PaginaError, con la marca y los estilos) y, si esa falla por lo que sea
+// (sin autoload, sin configuración, sin marca), la neutra. Siempre solo con el código de referencia, nunca el error real.
 function paginaError(string $ref, int $codigo = 500): void {
     if (!headers_sent()) {
         http_response_code($codigo);
         header("Content-Type: text/html; charset=UTF-8");
         header("Cache-Control: no-store");
+        header("X-Robots-Tag: noindex");
     }
-    $volver = defined("APP_URL") ? '<p><a href="' . htmlspecialchars(APP_URL) . '/">Volver al inicio</a></p>' : "";
-    echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Algo salió mal</title>'
-       . '<meta name="viewport" content="width=device-width, initial-scale=1"></head>'
-       . '<body style="font-family:sans-serif;max-width:32rem;margin:4rem auto;padding:0 1rem">'
-       . '<h1>Algo salió mal</h1>'
-       . '<p>Ocurrió un error interno. Intenta de nuevo; si sigue, indica el código de referencia <b>'
-       . htmlspecialchars($ref) . '</b>.</p>' . $volver . '</body></html>';
+    try {
+        if (!class_exists("PaginaError") || !defined("APP_URL")) throw new \RuntimeException("sin página temática");
+        $html = PaginaError::html($codigo, null, $ref);
+    } catch (\Throwable) {
+        $html = paginaErrorNeutra($ref, $codigo);
+    }
+    echo $html;
     exit;
 }
 

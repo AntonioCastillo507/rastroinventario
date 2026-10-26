@@ -4,13 +4,14 @@
 <title>Recuperar contraseña — <?=Marca::h("nombre")?></title>
 <?php require __DIR__ . "/../layouts/recursos_head.php"; ?>
 <link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
+<link rel="stylesheet" href="<?=Assets::url("css/extra.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/base.css")?>">
 </head>
 <body class="login-body d-flex align-items-center justify-content-center min-vh-100 p-3">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 <main class="login-card" id="contenido" tabindex="-1">
   <div class="text-center mb-4">
-    <?php include __DIR__ . "/../layouts/marca_logo.php"; ?>
+    <?php include __DIR__ . "/../layouts/acceso_marca.php"; ?>
     <h1 class="h3 fw-bold text-white mb-0">Recuperar contraseña</h1>
     <p class="text-secondary small mt-1">Te enviaremos un enlace para elegir una nueva</p>
   </div>
@@ -23,17 +24,14 @@
   <form action="<?=APP_URL?>/olvide.php" method="POST">
     <?=CsrfToken::field()?>
     <div class="mb-4">
-      <label for="f-email" class="form-label-dark">Correo Electrónico</label>
-      <div class="input-group">
-        <span class="input-group-text"><i aria-hidden="true" class="bi bi-envelope text-warning"></i></span>
-        <input id="f-email" type="email" name="email" class="form-control dark-input" required maxlength="150" placeholder="tu@correo.com" autocomplete="email">
-      </div>
+      <label for="f-email" class="form-label-dark">Correo electrónico</label>
+      <input id="f-email" type="email" name="email" class="form-control dark-input" required maxlength="150" placeholder="tu@correo.com" autocomplete="email">
     </div>
-    <button type="submit" class="btn btn-gold w-100 fw-bold py-2"><i aria-hidden="true" class="bi bi-send me-2"></i>Enviar enlace</button>
+    <button type="submit" class="btn btn-gold w-100 fw-bold py-2">Enviar enlace</button>
   </form>
   <?php endif; ?>
   <div class="text-center mt-3">
-    <a href="<?=APP_URL?>/login.php" class="text-warning small fw-semibold"><i aria-hidden="true" class="bi bi-box-arrow-in-right me-1"></i>Volver a iniciar sesión</a>
+    <a href="<?=APP_URL?>/login.php" class="acceso-enlace text-warning small fw-semibold">Volver a iniciar sesión</a>
   </div>
 </main>
 <script src="<?=Assets::url("js/envio.js")?>"></script>

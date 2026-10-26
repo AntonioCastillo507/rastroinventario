@@ -4,11 +4,20 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
 $telefono = (string)Marca::get("telefono");
 $correo   = (string)Marca::get("correo");
 $horario  = Marca::get("horario", []);
-$redes    = Marca::get("redes", []);
+$whatsapp = Marca::whatsapp();
+// "Síguenos" lista las demás redes; WhatsApp ya es una acción de la página
+$redes    = array_values(array_filter(Marca::redes(), fn($r) => $r["icono"] !== "whatsapp"));
 ?>
 <div class="container-xl py-5">
   <h1 class="h2 fw-bold text-white mb-2"><?=Marca::h("contacto.titulo")?></h1>
-  <?php if(Marca::get("contacto.intro")!==""): ?><p class="text-secondary mb-4"><?=Marca::h("contacto.intro")?></p><?php endif; ?>
+  <?php if(Marca::get("contacto.intro")!==""): ?><p class="text-secondary mb-4 pagina-texto"><?=Marca::h("contacto.intro")?></p><?php endif; ?>
+
+  <?php if($telefono!==""||$whatsapp!==""): ?>
+  <div class="contacto-acciones">
+    <?php if($telefono!==""): ?><a class="btn btn-gold fw-bold" href="tel:<?=htmlspecialchars(preg_replace('/[^\d+]/','',$telefono))?>">Llamar<span class="visually-hidden"> al <?=Marca::h("telefono")?></span></a><?php endif; ?>
+    <?php if($whatsapp!==""): ?><a class="btn btn-outline-secondary fw-bold" href="<?=htmlspecialchars($whatsapp)?>" target="_blank" rel="noopener noreferrer">WhatsApp<span class="visually-hidden"> (se abre en otra pestaña)</span></a><?php endif; ?>
+  </div>
+  <?php endif; ?>
 
   <div class="row g-4">
     <div class="col-md-6">
@@ -47,8 +56,8 @@ $redes    = Marca::get("redes", []);
   <section class="info-card mt-4" aria-labelledby="c-redes">
     <h2 id="c-redes" class="h5 fw-semibold text-white mb-3">Síguenos</h2>
     <ul class="list-inline mb-0">
-      <?php foreach($redes as $r): if(empty($r["url"])||!preg_match('~^https?://~i',$r["url"])) continue; ?>
-      <li class="list-inline-item me-3"><a class="contacto-enlace" href="<?=htmlspecialchars($r["url"])?>" target="_blank" rel="noopener noreferrer"><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($r["icono"]??"link-45deg")?> me-2"></i><?=htmlspecialchars($r["nombre"]??"")?><span class="visually-hidden"> (se abre en otra pestaña)</span></a></li>
+      <?php foreach($redes as $r): ?>
+      <li class="list-inline-item me-3"><a class="contacto-enlace" href="<?=htmlspecialchars($r["url"])?>" target="_blank" rel="noopener noreferrer"><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($r["icono"])?> me-2"></i><?=htmlspecialchars($r["nombre"])?><span class="visually-hidden"> (se abre en otra pestaña)</span></a></li>
       <?php endforeach; ?>
     </ul>
   </section>

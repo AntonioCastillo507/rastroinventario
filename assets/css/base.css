@@ -541,3 +541,18 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
   .carrito-resumen.offcanvas-bottom .resumen-lineas { max-height: none; overflow: visible; }
   .carrito-resumen.offcanvas-bottom .resumen-tarjeta { background: none; border: 0; padding: 0; }
 }
+
+/* ── P7: acceso con marca, páginas informativas con acciones y páginas de error (solo tokens) ── */
+.marca-acceso-enlace { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; text-decoration: none; }
+.acceso-enlace { display: inline-flex; align-items: center; min-height: 44px; }
+.pagina-texto { max-width: 65ch; }
+.contacto-acciones { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); }
+.contacto-acciones .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+@media (max-width: 575.98px) { .contacto-acciones .btn { flex: 1 1 100%; } }
+.error-pagina { max-width: 480px; }
+.error-codigo { margin-top: var(--spacing-md); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text-muted); }
+.error-buscador { margin-bottom: var(--spacing-md); }
+.error-buscador .btn { min-height: 44px; }
+.error-acciones { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+.error-acciones .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+@media (min-width: 576px) { .error-acciones { flex-direction: row; justify-content: center; } }

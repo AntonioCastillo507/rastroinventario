@@ -118,11 +118,11 @@ final class LogoSaneadoTest extends TestCase {
             $this->assertNotEmpty($m[1], basename($f->getPathname()) . ": \$logoSvg sin asignación");
             foreach ($m[1] as $origen) $this->assertStringStartsWith("Logo::enLinea(", trim($origen), basename($f->getPathname()) . ": \$logoSvg no sale de Logo::enLinea");
         }
-        $this->assertGreaterThanOrEqual(2, $hallados);
+        $this->assertGreaterThanOrEqual(1, $hallados); // desde P7 el único que imprime el logo es marca_bloque.php (acceso, encabezado, pie y errores lo incluyen)
     }
 
     public function testNoQuedaElFiltroCssQueTenia_ElLogo(): void {
-        foreach (["app/Views/layouts/public_header.php", "app/Views/layouts/admin_header.php", "app/Views/layouts/public_footer.php", "app/Views/layouts/marca_bloque.php", "app/Views/layouts/marca_logo.php"] as $f) {
+        foreach (["app/Views/layouts/public_header.php", "app/Views/layouts/admin_header.php", "app/Views/layouts/public_footer.php", "app/Views/layouts/marca_bloque.php", "app/Views/layouts/acceso_marca.php", "app/Views/public/error.php"] as $f) {
             $this->assertDoesNotMatchRegularExpression('/filter\s*:/i', (string)file_get_contents(BASE_PATH . "/$f"), "$f: filtro en línea sobre el logo");
         }
         foreach (["base.css", "extra.css", "style.css"] as $css) {

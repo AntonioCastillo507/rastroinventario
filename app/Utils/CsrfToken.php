@@ -36,7 +36,6 @@ class CsrfToken {
             $_SESSION["flash"] = ["msg" => "La página caducó. Revisa tus datos e inténtalo de nuevo.", "type" => "warning"];
             header("Location: " . $volverA); exit;
         }
-        http_response_code(403);
-        die("Token CSRF inválido. <a href=\"javascript:history.back()\">Volver</a>");
+        PaginaError::mostrar(403, "La página caducó o no se pudo comprobar. Vuelve a la página anterior, revisa tus datos e inténtalo de nuevo.", null, "La página caducó");
     }
 }

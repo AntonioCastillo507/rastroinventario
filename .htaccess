@@ -5,5 +5,11 @@ Options -Indexes
     Require all denied
 </FilesMatch>
 
+# Páginas de error con la marca (error.php): solo 403 y 404, que los genera Apache. Las rutas llevan la carpeta del proyecto
+# igual que la regla de abajo: si el sitio queda en la raíz de un dominio hay que quitar "/rastroinventario".
+# El 500 de Apache (PHP caído) no se puede resolver con PHP: ver "Antes de publicar" en ESTADO.md.
+ErrorDocument 403 /rastroinventario/error.php?codigo=403
+ErrorDocument 404 /rastroinventario/error.php?codigo=404
+
 # Carpetas internas completas
 RedirectMatch 403 ^/rastroinventario/(vendor|docs|bin|\.git|\.claude)(/|$)

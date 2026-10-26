@@ -13,7 +13,7 @@ class FacturaController extends BaseController {
         if (!file_exists($path)) {
             error_log("[RASTRO] TCPDF no instalado: falta vendor/ (ejecutar composer install, ver INSTRUCCIONES.md)");
             http_response_code(503);
-            die("El servicio de facturas no está disponible por ahora.");
+            PaginaError::mostrar(503, "El servicio de facturas no está disponible por ahora.");
         }
         require_once BASE_PATH."/vendor/autoload.php";
     }
@@ -23,7 +23,7 @@ class FacturaController extends BaseController {
         $this->requirePermission("pedidos");
         $id = Sanitizer::get("id","int");
         $pedido = (new PedidoModel())->findWithItems($id);
-        if (!$pedido) { http_response_code(404); die("Pedido no encontrado."); }
+        if (!$pedido) PaginaError::mostrar(404, "No encontramos ese pedido.", null, "Pedido no encontrado");
         $this->generarPDF($pedido);
     }
 
@@ -33,7 +33,7 @@ class FacturaController extends BaseController {
         $id = Sanitizer::get("pedido","int");
         $pedido = (new PedidoModel())->findWithItems($id);
         // Mismo mensaje si no existe o no es suyo, para no revelar qué pedidos hay
-        if (!$pedido || !$this->puedeVerPedido($pedido)) { http_response_code(404); die("Pedido no encontrado."); }
+        if (!$pedido || !$this->puedeVerPedido($pedido)) PaginaError::mostrar(404, "No encontramos ese pedido.", null, "Pedido no encontrado");
         $this->generarPDF($pedido);
     }
 

@@ -93,7 +93,8 @@ final class MarcaPantallasTest extends BaseDatos {
             $this->assertMatchesRegularExpression('~<title>[^<]*— Taller Cambiado Zeta</title>~', $html, $n);
         }
         $x = Html::xpath(Pantallas::render($this->db, "login"));
-        $this->assertSame("Taller Cambiado Zeta", trim($x->query("//h1")->item(0)->textContent));
+        $this->assertSame("Taller Cambiado Zeta", trim($x->query("//main//*[contains(@class,'marca-nombre')]")->item(0)->textContent), "el nombre sale en el bloque de marca");
+        $this->assertSame("Iniciar sesión", trim($x->query("//h1")->item(0)->textContent), "el h1 es el propósito de la pantalla");
     }
 
     public function testElPanelUsaLaMarcaEnLaCabeceraYElPie(): void {

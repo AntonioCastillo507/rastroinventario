@@ -11,7 +11,7 @@ class AuthController extends BaseController {
     private const HASH_RELLENO = '$2y$10$k6FjGhsouwIYf5OYupl1U.N7/DI7eFOzdhwCFRMTsyEVwg58CLeM.';
 
     public function showLogin(): void {
-        if (!empty($_SESSION["user"])) $this->redirect(APP_URL . "/admin/");
+        if (!empty($_SESSION["user"])) $this->redirect($this->destinoTrasLogin((int)$_SESSION["user"]["id"])); // el personal al panel, un cliente a la tienda
         $this->view("auth/login");
     }
     public function doLogin(): void {

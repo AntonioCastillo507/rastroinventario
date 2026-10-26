@@ -15,7 +15,7 @@ final class Marca {
             "secciones_titulo" => "", "secciones_resalte" => "", "secciones_subtitulo" => "",
             "destacadas_titulo" => "", "destacadas_resalte" => "", "destacadas_subtitulo" => "",
         ],
-        "nosotros" => ["titulo" => "", "titulo_resalte" => "", "parrafos" => [], "imagen" => "", "destacados" => []],
+        "nosotros" => ["titulo" => "", "titulo_resalte" => "", "parrafos" => [], "imagen" => "", "destacados" => [], "destacados_visibles" => false],
         "contacto" => ["titulo" => "Contacto", "intro" => ""],
         "impuesto" => ["nombre" => "Impuesto", "tasa" => 0.0, "descripcion" => ""],
         "pie" => "© {anio} {nombre}",
@@ -56,6 +56,19 @@ final class Marca {
     public static function url(string $clave): string {
         $ruta = ltrim((string)self::get($clave), "/");
         return $ruta === "" ? "" : APP_URL . "/" . $ruta;
+    }
+
+    /** Como url(), pero "" también si el archivo no está en disco (así la vista no pinta una imagen rota ni necesita onerror) */
+    public static function urlSiExiste(string $clave): string {
+        $ruta = ltrim((string)self::get($clave), "/");
+        if ($ruta === "" || str_contains($ruta, "..") || !is_file(BASE_PATH . "/" . $ruta)) return "";
+        return APP_URL . "/" . $ruta;
+    }
+
+    /** Dirección de WhatsApp: la de la entrada de "redes" con el icono "whatsapp" y una dirección http(s) válida; "" si no hay */
+    public static function whatsapp(): string {
+        foreach (self::redes() as $r) if ($r["icono"] === "whatsapp") return $r["url"];
+        return "";
     }
 
     public static function impuestoTasa(): float {

@@ -113,7 +113,7 @@ final class PaginasPropiasTest extends BaseDatos {
         $m["nosotros"] = [
             "titulo" => "Titulo nosotros", "titulo_resalte" => "resalte nosotros", "imagen" => "assets/img/carro1.jpg",
             "parrafos" => ["Primer parrafo cambiado.", "Segundo parrafo cambiado."],
-            "destacados" => [["icono" => "star", "titulo" => "Destacado Uno", "texto" => "Texto Uno"]],
+            "destacados" => [["icono" => "star", "titulo" => "Destacado Uno", "texto" => "Texto Uno"]], "destacados_visibles" => true,
         ];
         \Marca::usarParaPruebas($m);
         $x = Html::xpath(Pantallas::render($this->db, "nosotros"));

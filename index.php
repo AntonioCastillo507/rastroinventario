@@ -24,7 +24,8 @@ try {
         "actualizar_carrito" => $ctrl->actualizarCarrito(),
         "procesar_carrito"   => $ctrl->procesarCarrito(),
         "factura"            => (new FacturaController())->generarPublico(),
-        default              => $ctrl->home(),
+        "home"               => $ctrl->home(),
+        default              => PaginaError::mostrar(404), // una acción que no existe ya no se disfraza de portada con código 200
     };
 } catch (\Throwable $e) {
     // Si falla la propia portada, redirigir a ella sería un bucle
