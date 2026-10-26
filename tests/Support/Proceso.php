@@ -8,12 +8,33 @@ final class Proceso {
      * @return array{cabeceras:list<string>,codigo:int,sesion:array,salida:string}
      */
     public static function accion(array $entrada): array {
+        return self::recoger(self::lanzar($entrada));
+    }
+
+    /**
+     * Lanza varias acciones a la vez (procesos hijos simultáneos) y devuelve sus resultados en el mismo orden.
+     * Sirve para las carreras: dos compras de la última unidad al mismo tiempo.
+     * @param list<array> $entradas
+     * @return list<array>
+     */
+    public static function paralelo(array $entradas): array {
+        $lanzados = array_map([self::class, "lanzar"], $entradas);
+        return array_map([self::class, "recoger"], $lanzados);
+    }
+
+    /** @return array{0:resource,1:array,2:string} */
+    private static function lanzar(array $entrada): array {
         $json = RASTRO_TEST_TMP . DIRECTORY_SEPARATOR . "entrada_" . uniqid() . ".json";
         file_put_contents($json, json_encode($entrada));
         $env = array_merge(getenv(), ["RASTRO_DB_NAME" => "rastroinventario_test", "XDEBUG_MODE" => self::veCabeceras() ? "develop" : "off"]);
         $p = proc_open([PHP_BINARY, BASE_PATH . "/tests/Support/ejecutar_accion.php", $json],
             [1 => ["pipe", "w"], 2 => ["pipe", "w"]], $pipes, null, $env);
         if (!is_resource($p)) throw new \RuntimeException("No pude lanzar el proceso hijo.");
+        return [$p, $pipes, $json];
+    }
+
+    private static function recoger(array $lanzado): array {
+        [$p, $pipes, $json] = $lanzado;
         $salida = stream_get_contents($pipes[1]);
         $err    = stream_get_contents($pipes[2]);
         fclose($pipes[1]); fclose($pipes[2]);

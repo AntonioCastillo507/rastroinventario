@@ -179,22 +179,23 @@ class PedidoController extends BaseController {
      * El carrito tal como se muestra y se cobra: nombre, precio y stock de CADA línea salen de la base (una consulta),
      * nunca de la sesión. Lo que ya no se puede vender (inactiva, agotada, sin precio) se quita y lo que pasa del stock se
      * recorta, y cada caso queda en "avisos" para que la persona lo vea. Los totales salen de Itbms, igual que el pedido.
+     * Con $ajustar = false calcula lo mismo pero NO toca la sesión (para comparar lo que se vio con lo que hay ahora).
      * @return array{lineas:list<array>,avisos:list<string>,subtotal:float,itbms:float,total:float,piezas:int}
      */
-    public function detallarCarrito(): array {
+    public function detallarCarrito(bool $ajustar = true): array {
         $cart = Carrito::leer();
         $partes = $cart ? $this->pam->findByIds(array_keys($cart)) : [];
         $lineas = []; $avisos = [];
         foreach ($cart as $id => $cant) {
             $p = $partes[$id] ?? null;
             if (!$p || !$p["activo"] || (int)$p["cantidad"] <= 0 || (float)$p["precio"] < 0.01) {
-                Carrito::quitar($id);
+                if ($ajustar) Carrito::quitar($id);
                 $avisos[] = ($p ? "«".$p["nombre"]."»" : "Una pieza")." ya no está disponible y se quitó de tu carrito.";
                 continue;
             }
             $max = (int)$p["cantidad"];
             if ($cant > $max) {
-                $cant = $max; Carrito::poner($id, $cant);
+                $cant = $max; if ($ajustar) Carrito::poner($id, $cant);
                 $avisos[] = "Solo quedan ".$max." de «".$p["nombre"]."»: ajustamos la cantidad.";
             }
             $precio = (float)$p["precio"];
@@ -293,7 +294,8 @@ class PedidoController extends BaseController {
         $err = $_SESSION["carrito_error"] ?? ""; unset($_SESSION["carrito_error"]);
         $isCliente = !empty($_SESSION["user"]) && in_array("Cliente", $_SESSION["user_roles"] ?? []);
         $userInfo = $isCliente ? (new UserModel())->findById((int)$_SESSION["user"]["id"]) : null;
-        $this->view("public/carrito_datos", compact("d","viejo","err","isCliente","userInfo"));
+        $huella = Carrito::huella($d["lineas"]); // lo que se ve en esta pantalla; viaja en el formulario solo para detectar cambios
+        $this->view("public/carrito_datos", compact("d","viejo","err","isCliente","userInfo","huella"));
     }
 
     /** Total con ITBMS tal como quedó guardado en el pedido (el que ve el cliente en todas partes) */
@@ -339,6 +341,13 @@ class PedidoController extends BaseController {
         $conservar=fn()=>FormViejo::guardar("carrito",$_POST,["cliente_nombre","cliente_telefono","cliente_email","cliente_direccion","cliente_notas"]);
         $datos=APP_URL."/?action=carrito_datos"; // paso 2: errores del formulario
         CsrfToken::verify($datos,$conservar);
+
+        // Lo que la persona vio en el paso 2 tiene que ser lo que se va a cobrar: si cambió algo (precio, stock, otra pestaña) o falta
+        // la huella, no se crea nada y vuelve al paso 2 con el resumen al día. La huella solo detecta cambios; el pedido se calcula de la base.
+        $vista=$_POST["resumen_visto"]??"";
+        if (!is_string($vista)||!hash_equals(Carrito::huella($this->detallarCarrito(false)["lineas"]),$vista)){
+            $conservar(); $this->flash("Tu pedido cambió mientras llenabas tus datos. Revisa el resumen y confirma de nuevo.","warning"); $this->redirect($datos);
+        }
 
         // Verificar las piezas ANTES de tocar cuentas: nada se crea ni se descuenta si el carrito no vale
         // Nombre y precio salen de la BD, no de la sesión

@@ -195,4 +195,65 @@ final class CarritoPantallasTest extends BaseDatos {
             $this->assertSame($this->texto($p1, "//*[@data-resumen='$k']"), $this->texto($p2, "//*[@data-resumen='$k']"), $k);
         }
     }
+
+    // ── Paso 2: resumen_visto, barra inferior y hoja del resumen ──
+
+    public function testElFormularioLlevaLaHuellaDeLoQueSePinta(): void {
+        $id = Datos::parte($this->db, 9.99, 5, "Pieza de la huella");
+        $x = $this->carritoCon([$id => 2], "datosCarrito");
+        $h = $x->query("//form[@id='form-datos']//input[@type='hidden'][@name='resumen_visto']")->item(0);
+        $this->assertNotNull($h);
+        $this->assertSame(\Carrito::huella([["id" => $id, "cantidad" => 2, "precio" => 9.99]]), $h->getAttribute("value"));
+        $otra = $this->carritoCon([$id => 3], "datosCarrito")->query("//input[@name='resumen_visto']")->item(0)->getAttribute("value");
+        $this->assertNotSame($h->getAttribute("value"), $otra, "otra cantidad, otra huella");
+        $this->db->exec("UPDATE partes SET precio = 10.00 WHERE id = $id");
+        $precio = $this->carritoCon([$id => 2], "datosCarrito")->query("//input[@name='resumen_visto']")->item(0)->getAttribute("value");
+        $this->assertNotSame($h->getAttribute("value"), $precio, "otro precio, otra huella");
+    }
+
+    public function testElResumenEsUnaHojaInferiorEnMovilYUnaBarraLateralEnEscritorioConUnSoloHtml(): void {
+        $x = $this->pantalla("carrito_datos_invitado");
+        $hoja = $x->query("//aside[@id='resumen-hoja']")->item(0);
+        $this->assertNotNull($hoja);
+        $clases = explode(" ", $hoja->getAttribute("class"));
+        foreach (["offcanvas-lg", "offcanvas-bottom"] as $c) $this->assertContains($c, $clases);
+        $this->assertSame("-1", $hoja->getAttribute("tabindex"));
+        $this->assertSame("resumen-titulo", $hoja->getAttribute("aria-labelledby"));
+        $this->assertSame(1, $x->query("//*[@id='resumen-titulo']")->length);
+        $this->assertSame(1, $x->query("//aside[@id='resumen-hoja']//*[@data-resumen='total']")->length, "los totales existen una sola vez");
+        $cerrar = $x->query(".//button[contains(@class,'btn-close')]", $hoja)->item(0);
+        $this->assertSame("offcanvas", $cerrar->getAttribute("data-bs-dismiss"));
+        $this->assertSame("Cerrar el resumen", $cerrar->getAttribute("aria-label"));
+    }
+
+    public function testLaBarraInferiorMuestraElTotalYAbreLaHojaConUnBotonSecundario(): void {
+        $x = $this->pantalla("carrito_datos_invitado");
+        $barra = $x->query("//div[contains(@class,'barra-resumen')]")->item(0);
+        $this->assertNotNull($barra);
+        $this->assertSame($this->texto($x, "//aside//*[@data-resumen='total']"), $this->texto($x, "//div[contains(@class,'barra-resumen')]//*[contains(@class,'precio')]"), "mismo total que el resumen");
+        $b = $x->query(".//button", $barra)->item(0);
+        $this->assertSame("button", $b->getAttribute("type"));
+        $this->assertSame("offcanvas", $b->getAttribute("data-bs-toggle"));
+        $this->assertSame("#resumen-hoja", $b->getAttribute("data-bs-target"));
+        $this->assertSame("resumen-hoja", $b->getAttribute("aria-controls"));
+        $this->assertSame("Ver resumen", trim($b->textContent));
+        $this->assertStringNotContainsString("btn-gold", $b->getAttribute("class"), "el botón principal es solo \"Confirmar pedido\"");
+    }
+
+    public function testConfirmarPedidoEsElUnicoBotonPrincipalYLlevaElTotal(): void {
+        $x = $this->pantalla("carrito_datos_invitado");
+        $this->assertSame(1, $x->query("//main//*[contains(@class,'btn-gold')]")->length);
+        $conf = $x->query("//form[@id='form-datos']//button[@type='submit']")->item(0);
+        $total = $this->texto($x, "//aside//*[@data-resumen='total']");
+        $this->assertStringContainsString("Confirmar pedido", $conf->textContent);
+        $this->assertStringContainsString($total, trim(preg_replace('/\s+/', " ", $conf->textContent)), "sin abrir la hoja igual se sabe cuánto se paga");
+        $this->assertSame(0, $x->query("//div[contains(@class,'barra-resumen')]//button[@type='submit']")->length, "la barra no envía el formulario");
+    }
+
+    public function testLosIdsDelPaso2NoSeRepiten(): void {
+        $x = $this->pantalla("carrito_datos_invitado");
+        $ids = [];
+        foreach ($x->query("//*[@id]") as $n) $ids[] = $n->getAttribute("id");
+        $this->assertSame(array_values(array_unique($ids)), $ids, "ids duplicados: " . implode(",", array_diff_assoc($ids, array_unique($ids))));
+    }
 }

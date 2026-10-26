@@ -99,6 +99,8 @@ final class ComprasAtomicasTest extends TestCase {
     }
 
     private function accion(string $metodo, array $post, array $sesion = []): array {
+        // el paso 2 manda la huella de lo que se vio; aquí es la del carrito con los precios de la base AHORA (como si se hubiera abierto justo antes)
+        if ($metodo === "procesarCarrito" && !array_key_exists("resumen_visto", $post)) $post["resumen_visto"] = Datos::huella($this->db, $sesion["cart"] ?? []);
         return Proceso::accion(["clase" => "PedidoController", "accion" => $metodo, "csrf" => true, "ip" => "203.0.113.77",
             "post" => $post, "sesion" => $sesion, "correo" => "ok", "dir_logs" => $this->logs]);
     }
@@ -238,9 +240,8 @@ final class ComprasAtomicasTest extends TestCase {
             $this->sesionDe($uid, $email) + ["cart" => $this->carrito([[$viva, 2], [$muerta, 1]])]);
         $this->assertSame([10, 10], [$this->stock($viva), $this->stock($muerta)], "ninguna pieza se descontó");
         $this->assertSame(0, $this->pedidosDe($email));
-        $this->assertStringContainsString("ya no está disponible", $this->mensaje($r));
-        $this->assertStringContainsString((string)$this->db->query("SELECT nombre FROM partes WHERE id = $muerta")->fetchColumn(), $this->mensaje($r), "el nombre sale de la base, no de la sesión");
-        $this->assertArrayHasKey("cart", $r["sesion"], "el carrito se conserva para que la persona lo corrija");
+        $this->assertStringContainsString("Tu pedido cambió", $this->mensaje($r), "lo que se vio ya no es lo que hay: no se cobra nada");
+        $this->assertCount(2, $r["sesion"]["cart"], "el carrito no se toca al enviar: lo ajusta el paso 2 al volver a pintarse");
     }
 
     public function testCarritoDeInvitadoConPiezaInactivaNoCreaCuenta(): void {
@@ -251,7 +252,7 @@ final class ComprasAtomicasTest extends TestCase {
         $this->assertSame(10, $this->stock($muerta));
         $this->assertFalse($this->existeCuenta($d["cliente_email"]), "el carrito se valida antes de crear cuentas");
         $this->assertArrayNotHasKey("user", $r["sesion"]);
-        $this->assertStringContainsString("ya no está disponible", $this->mensaje($r));
+        $this->assertStringContainsString("Tu pedido cambió", $this->mensaje($r));
     }
 
     public function testCarritoSiRegistrarFallaTodoElStockVuelve(): void {
@@ -293,7 +294,7 @@ final class ComprasAtomicasTest extends TestCase {
         $r = $this->accion("procesarCarrito", ["cliente_direccion" => "Calle 1", "cliente_notas" => ""],
             $this->sesionDe($uid, $email) + ["cart" => $this->carrito([[$a, 2], [$b, 5]])]);
         $this->assertSame([10, 1], [$this->stock($a), $this->stock($b)]);
-        $this->assertStringContainsString("Stock insuficiente", $this->mensaje($r));
+        $this->assertStringContainsString("Tu pedido cambió", $this->mensaje($r), "pidió 5 y hay 1: el resumen visto ya no vale");
         $this->assertSame(0, $this->pedidosDe($email));
     }
 

@@ -110,7 +110,7 @@ final class FormulariosConservanDatosTest extends TestCase {
     public function testElCarritoDeInvitadoConErrorConservaLosCampos(): void {
         $email = $this->correo("carrito");
         $this->web->postConToken("/index.php?action=detalle&id=$this->parteId", "/index.php?action=agregar_carrito&id=$this->parteId", []);
-        $r = $this->web->postConToken("/index.php?action=carrito_datos", "/index.php?action=procesar_carrito", [
+        $r = $this->web->confirmarPaso2([
             "cliente_nombre" => "Rosa Carrito", "cliente_telefono" => "6333-4444", "cliente_email" => $email,
             "cliente_direccion" => "Avenida Central 10", "cliente_notas" => "Dejar con el vigilante", "nueva_pass" => "corta",
         ]);

@@ -115,7 +115,7 @@ final class CarritoFlujoHttpTest extends TestCase {
         $this->assertEqualsWithDelta($esperado["total"], $totalVisto, 0.001, "paso 2");
 
         $datos = $this->datosInvitado("normal");
-        $r = $web->postConToken("/index.php?action=carrito_datos", "/index.php?action=procesar_carrito", $datos);
+        $r = $web->confirmarPaso2($datos);
         $this->assertSame(302, $r["codigo"]);
         $this->assertStringContainsString("action=compra_exitosa", (string)$r["ubicacion"]);
         $exito = $web->get(ClienteHttp::ruta($r["ubicacion"]))["cuerpo"];
@@ -154,31 +154,37 @@ final class CarritoFlujoHttpTest extends TestCase {
         $u = $this->parte(1, 50.00, "Única del flujo");
         $uno = $this->cliente(); $dos = $this->cliente();
         $this->anadir($uno, $u); $this->anadir($dos, $u);
-        $tokenDos = ClienteHttp::token($dos->get("/index.php?action=carrito_datos")["cuerpo"]); // el segundo ya abrió el paso 2 con la pieza
-        $this->assertStringContainsString("action=compra_exitosa", (string)$uno->postConToken("/index.php?action=carrito_datos", "/index.php?action=procesar_carrito", $d1 = $this->datosInvitado("uno"))["ubicacion"]);
-        $r2 = $dos->post("/index.php?action=procesar_carrito", ($d2 = $this->datosInvitado("dos")) + ["csrf_token" => $tokenDos]);
+        $paso2Dos = $dos->get("/index.php?action=carrito_datos")["cuerpo"]; // el segundo ya abrió el paso 2 con la pieza
+        $this->assertStringContainsString("action=compra_exitosa", (string)$uno->confirmarPaso2($d1 = $this->datosInvitado("uno"))["ubicacion"]);
+        $r2 = $dos->post("/index.php?action=procesar_carrito", ($d2 = $this->datosInvitado("dos")) + ["csrf_token" => ClienteHttp::token($paso2Dos), "resumen_visto" => ClienteHttp::oculto($paso2Dos, "resumen_visto")]);
         $this->assertSame(302, $r2["codigo"]);
         $this->assertStringNotContainsString("compra_exitosa", (string)$r2["ubicacion"]);
         $this->assertSame(1, $this->pedidosDe($d1["cliente_email"]));
         $this->assertSame(0, $this->pedidosDe($d2["cliente_email"]));
         $this->assertSame(0, (int)$this->db->query("SELECT COUNT(*) FROM usuarios WHERE email = " . $this->db->quote($d2["cliente_email"]))->fetchColumn(), "la cuenta del segundo no se crea");
         $this->assertSame(0, Datos::stock($this->db, $u), "ni sobrante ni negativo");
-        $pagina = $dos->get(ClienteHttp::ruta($r2["ubicacion"]))["cuerpo"];
-        $this->assertStringContainsString("Stock insuficiente: Única del flujo", $pagina, "el segundo ve por qué");
+        $this->assertStringContainsString("action=carrito_datos", (string)$r2["ubicacion"], "vuelve al paso 2 porque lo que vio ya no es lo que hay");
+        $sigue = $dos->get(ClienteHttp::ruta($r2["ubicacion"]));
+        $this->assertSame(302, $sigue["codigo"], "el paso 2 ya no tiene nada que pedir");
+        $this->assertStringContainsString("«Única del flujo» ya no está disponible", $dos->get(ClienteHttp::ruta($sigue["ubicacion"]))["cuerpo"], "el segundo ve por qué");
     }
 
     public function testUnaPiezaDesactivadaEntreLosPasosNoSeCompraYSeDiceCual(): void {
         $a = $this->parte(5, 10.00, "Pieza que sigue"); $b = $this->parte(5, 20.00, "Pieza que se apaga");
         $web = $this->cliente();
         $this->anadir($web, $a); $this->anadir($web, $b);
-        $token = ClienteHttp::token($web->get("/index.php?action=carrito_datos")["cuerpo"]); // ya abrió el paso 2 con las dos piezas
+        $abierto = $web->get("/index.php?action=carrito_datos")["cuerpo"]; // ya abrió el paso 2 con las dos piezas
         $this->db->exec("UPDATE partes SET activo = 0 WHERE id = $b");
         $datos = $this->datosInvitado("apagada");
-        $r = $web->post("/index.php?action=procesar_carrito", $datos + ["csrf_token" => $token]);
-        $this->assertStringNotContainsString("compra_exitosa", (string)$r["ubicacion"]);
+        $r = $web->post("/index.php?action=procesar_carrito", $datos + ["csrf_token" => ClienteHttp::token($abierto), "resumen_visto" => ClienteHttp::oculto($abierto, "resumen_visto")]);
+        $this->assertStringContainsString("action=carrito_datos", (string)$r["ubicacion"]);
         $this->assertSame(0, $this->pedidosDe($datos["cliente_email"]));
         $this->assertSame([5, 5], [Datos::stock($this->db, $a), Datos::stock($this->db, $b)], "no se descontó nada");
-        $this->assertStringContainsString("Pieza que se apaga", $web->get(ClienteHttp::ruta($r["ubicacion"]))["cuerpo"], "se dice cuál pieza");
+        $nuevo = $web->get(ClienteHttp::ruta($r["ubicacion"]));
+        $this->assertSame(200, $nuevo["codigo"], "el paso 2 se vuelve a pintar con lo que queda");
+        $this->assertStringContainsString("«Pieza que se apaga» ya no está disponible", $nuevo["cuerpo"], "se dice cuál pieza");
+        $this->assertEqualsWithDelta(\Itbms::calcular(10.00)["total"], $this->monto($nuevo["cuerpo"], "total"), 0.001, "el resumen ya solo suma la que sigue");
+        $this->assertStringContainsString("Tu pedido cambió", $nuevo["cuerpo"], "el aviso de qué pasó");
     }
 
     public function testElPrecioQueCambiaEntreElCarritoYElPedidoSeCobraConElDeLaBase(): void {
@@ -189,7 +195,7 @@ final class CarritoFlujoHttpTest extends TestCase {
         $p2 = $web->get("/index.php?action=carrito_datos")["cuerpo"];
         $this->assertEqualsWithDelta(\Itbms::calcular(30.00)["total"], $this->monto($p2, "total"), 0.001, "el paso 2 ya muestra el precio nuevo");
         $datos = $this->datosInvitado("precio");
-        $web->postConToken("/index.php?action=carrito_datos", "/index.php?action=procesar_carrito", $datos);
+        $web->confirmarPaso2($datos);
         $this->assertEqualsWithDelta(\Itbms::calcular(30.00)["total"], (float)$this->pedidoDe($datos["cliente_email"])["total"], 0.001);
     }
 
@@ -198,7 +204,7 @@ final class CarritoFlujoHttpTest extends TestCase {
         $web = $this->cliente();
         $this->anadir($web, $a, 2);
         $datos = $this->datosInvitado("error");
-        $r = $web->postConToken("/index.php?action=carrito_datos", "/index.php?action=procesar_carrito", ["nueva_pass" => "corta"] + $datos);
+        $r = $web->confirmarPaso2(["nueva_pass" => "corta"] + $datos);
         $this->assertStringContainsString("action=carrito_datos", (string)$r["ubicacion"]);
         $pagina = $web->get(ClienteHttp::ruta($r["ubicacion"]))["cuerpo"];
         $this->assertStringContainsString("La contraseña debe tener al menos", $pagina);

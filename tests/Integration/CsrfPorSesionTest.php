@@ -134,7 +134,7 @@ final class CsrfPorSesionTest extends TestCase {
         $parte = $this->parte(5);
         $email = "invitado." . bin2hex(random_bytes(4)) . "@example.invalid";
         $this->correos[] = $email;
-        $r = $this->accion("PedidoController", "procesarCarrito", ["cliente_nombre" => "Invitado Token", "cliente_telefono" => "555-0100", "cliente_email" => $email,
+        $r = $this->accion("PedidoController", "procesarCarrito", ["resumen_visto" => Datos::huella($this->db, [$parte => 1]), "cliente_nombre" => "Invitado Token", "cliente_telefono" => "555-0100", "cliente_email" => $email,
             "cliente_direccion" => "Calle Inventada 1", "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["csrf_token" => self::VIEJO, "cart" => [$parte => ["parte_id" => $parte, "nombre" => "x", "precio" => 10.0, "cantidad" => 1, "max" => 5, "thumbnail" => null, "marca" => ""]]]);
         $this->assertArrayHasKey("pedido_exitoso", $r["sesion"], json_encode($r["sesion"]));
         $this->esTokenNuevo($r);

@@ -42,6 +42,17 @@ final class ClienteHttp {
         return preg_match('/name="csrf_token" value="([0-9a-f]+)"/', $html, $m) ? $m[1] : "";
     }
 
+    /** value del input oculto con ese name (p. ej. resumen_visto), o "" si no está */
+    public static function oculto(string $html, string $name): string {
+        return preg_match('/name="' . preg_quote($name, "/") . '" value="([^"]*)"/', $html, $m) ? html_entity_decode($m[1]) : "";
+    }
+
+    /** Abre el paso 2 y lo envía como lo haría el navegador: con su token y su resumen_visto. Los $campos mandan sobre los de la página. */
+    public function confirmarPaso2(array $campos): array {
+        $html = $this->get("/index.php?action=carrito_datos")["cuerpo"];
+        return $this->post("/index.php?action=procesar_carrito", $campos + ["csrf_token" => self::token($html), "resumen_visto" => self::oculto($html, "resumen_visto")]);
+    }
+
     private function ejecutar(): array {
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->cookies ? ["Cookie: " . http_build_query($this->cookies, "", "; ")] : []);
         $r = (string)curl_exec($this->curl);

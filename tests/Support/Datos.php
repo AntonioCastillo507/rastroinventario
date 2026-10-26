@@ -23,6 +23,21 @@ final class Datos {
         return (int)$db->lastInsertId();
     }
 
+    /**
+     * Huella (resumen_visto) de un carrito [parte_id => cantidad] con los precios que hay AHORA en la base: lo que mandaría
+     * el formulario del paso 2 si se hubiera abierto en este momento. Las cantidades deben caber en el stock.
+     */
+    public static function huella(PDO $db, array $cart): string {
+        $lineas = [];
+        foreach ($cart as $id => $cant) {
+            $cant = is_array($cant) ? ($cant["cantidad"] ?? 0) : $cant;
+            $s = $db->prepare("SELECT precio FROM partes WHERE id = ?");
+            $s->execute([(int)$id]);
+            $lineas[] = ["id" => (int)$id, "cantidad" => (int)$cant, "precio" => (float)$s->fetchColumn()];
+        }
+        return \Carrito::huella($lineas);
+    }
+
     public static function stock(PDO $db, int $parteId): int {
         $s = $db->prepare("SELECT cantidad FROM partes WHERE id = ?");
         $s->execute([$parteId]);

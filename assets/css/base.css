@@ -523,3 +523,21 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .resumen-linea-nombre { min-width: 0; overflow-wrap: anywhere; color: var(--text); }
 .resumen-linea-cant { color: var(--text-muted); }
 .resumen-linea-monto { color: var(--text-strong); }
+
+/* ── Paso 2: resumen como hoja inferior por debajo de 992 px y barra fija "Total · Ver resumen" (DESIGN.md E8) ──
+   Con offcanvas-lg, Bootstrap deja el fondo del aside transparente desde 992 px: la tarjeta va en .resumen-tarjeta. */
+.carrito-resumen-compacto { background: none; border: 0; padding: 0; }
+.resumen-tarjeta { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rounded-xl); padding: var(--spacing-md); }
+.barra-resumen { display: none; }
+@media (max-width: 991.98px) {
+  .barra-resumen { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); padding: var(--spacing-xs) var(--spacing-md); background: var(--surface); border-top: 1px solid var(--border); }
+  .barra-resumen-total { margin: 0; display: flex; flex-direction: column; font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); color: var(--text-muted); line-height: 1.2; }
+  .barra-resumen-total .precio { font-size: 20px; }
+  .barra-resumen-boton { min-width: 140px; min-height: 48px; }
+  body:has(.barra-resumen) { padding-bottom: 72px; }
+  body:has(.barra-resumen) .avisos-carrito { bottom: 80px; }
+  .carrito-resumen.offcanvas-bottom { height: auto; max-height: 80vh; background: var(--surface-elevated); border-top: 1px solid var(--border-strong); border-radius: var(--rounded-xl) var(--rounded-xl) 0 0; }
+  .carrito-resumen.offcanvas-bottom .offcanvas-header { justify-content: flex-end; padding-bottom: 0; }
+  .carrito-resumen.offcanvas-bottom .resumen-lineas { max-height: none; overflow: visible; }
+  .carrito-resumen.offcanvas-bottom .resumen-tarjeta { background: none; border: 0; padding: 0; }
+}
