@@ -18,6 +18,10 @@ class ParteController extends BaseController {
         $this->view("admin/partes/index", compact("partes","q","filtro","orden","seccion","secciones","pag","pagParams"));
     }
 
+    /** Mensaje y tipo del aviso tras guardar: si la foto trae avisos (no bloqueos) se anotan y el aviso pasa a amarillo */
+    private static function mensajeConAvisos(string $msg, array $avisos): array {
+        return $avisos ? [$msg." Aviso de la foto: ".implode(" ",$avisos), "warning"] : [$msg, "success"];
+    }
     public function crear(): void {
         $this->requirePermission("partes","puede_crear");
         $autos=$this->am->findActive(); $secciones=$this->sm->findActive(); $error=""; $viejo=[];
@@ -34,7 +38,7 @@ class ParteController extends BaseController {
                 }
                 if ($error==="") {
                     $id=$this->pm->create(["nombre"=>$nombre,"descripcion"=>Sanitizer::post("descripcion"),"auto_id"=>Sanitizer::post("auto_id","int")?:null,"seccion_id"=>Sanitizer::post("seccion_id","int")?:null,"precio"=>$precio,"cantidad"=>$cant,"thumbnail"=>$imgData["thumbnail"],"imagen_grande"=>$imgData["original"],"creado_por"=>$_SESSION["user"]["id"]]);
-                    if ($id) { $p=$this->pm->findById($id); $this->pm->updateFirma($id,DigitalSignature::signParte($p)); $this->redirect(APP_URL."/admin/?mod=partes","Parte creada. ✔"); }
+                    if ($id) { $p=$this->pm->findById($id); $this->pm->updateFirma($id,DigitalSignature::signParte($p)); $this->redirect(APP_URL."/admin/?mod=partes",...self::mensajeConAvisos("Parte creada. ✔",$imgData["avisos"]??[])); }
                     $error="Error al guardar.";
                 }
             } else $error=$v->first();
@@ -61,7 +65,7 @@ class ParteController extends BaseController {
                     $this->pm->update($id,$upd); $nueva=$this->pm->findById($id);
                     if ($r) ImageHelper::delete($parte["imagen_grande"],$parte["thumbnail"]); // la anterior se borra ya guardada la nueva
                     $this->pm->updateFirma($id,DigitalSignature::signParte($nueva));
-                    $this->redirect(APP_URL."/admin/?mod=partes","Parte actualizada.");
+                    $this->redirect(APP_URL."/admin/?mod=partes",...self::mensajeConAvisos("Parte actualizada.",$r["avisos"]??[]));
                 }
             } else $error=$v->first();
             $parte=array_merge($parte,$upd); // conserva lo escrito

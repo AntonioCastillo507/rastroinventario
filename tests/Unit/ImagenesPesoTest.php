@@ -53,4 +53,30 @@ final class ImagenesPesoTest extends TestCase {
         $this->assertLessThan(filesize(BASE_PATH . "/assets/img/hero-bg.jpg"), filesize(BASE_PATH . "/assets/img/hero-bg-800.jpg"));
         $this->assertLessThanOrEqual(800, getimagesize(BASE_PATH . "/assets/img/hero-bg-800.jpg")[0]);
     }
+
+    /** Foto sintética con detalle (degradados y formas), grande como una foto de teléfono recortada */
+    private function fotoSintetica(int $w, int $h): string {
+        $im = imagecreatetruecolor($w, $h);
+        for ($y = 0; $y < $h; $y += 4) imagefilledrectangle($im, 0, $y, $w, $y + 3, imagecolorallocate($im, intdiv($y * 255, $h), 120, 255 - intdiv($y * 255, $h)));
+        for ($i = 0; $i < 400; $i++) imagefilledellipse($im, ($i * 97) % $w, ($i * 61) % $h, 30 + $i % 50, 20 + $i % 40, imagecolorallocate($im, ($i * 7) % 256, ($i * 13) % 256, ($i * 29) % 256));
+        $ruta = \Tests\Support\Imagenes::guardar("", "jpg");
+        imagejpeg($im, $ruta, 92);
+        return $ruta;
+    }
+
+    public function testLasDerivadasDeUnaFotoPesadaPesanPoco(): void {
+        \Tests\Support\Imagenes::limpiarGuardados();
+        $r = \ImageHelper::procesar($this->fotoSintetica(3200, 2400));
+        $this->assertNotNull($r, \ImageHelper::$error);
+        // 640 px de tarjeta: ~40 KB en una foto real; 1200 px de detalle: ~120 KB; 2400 px para ampliar: unos cientos de KB
+        $maximos = ["thumbnails" => [$r["thumbnail"], 120], "medium" => [\ImageHelper::derivada($r["original"], "medium"), 400], "large" => [\ImageHelper::derivada($r["original"], "large"), 1500]];
+        $kb = [];
+        foreach ($maximos as $sub => [$nombre, $max]) {
+            $kb[$sub] = filesize(UPLOAD_PATH . "$sub/$nombre") / 1024;
+            $this->assertLessThanOrEqual($max, $kb[$sub], sprintf("%s pesa %d KB (máximo %d)", $sub, $kb[$sub], $max));
+        }
+        $this->assertLessThan($kb["medium"], $kb["thumbnails"]);
+        $this->assertLessThan($kb["large"], $kb["medium"]);
+        \Tests\Support\Imagenes::limpiarGuardados();
+    }
 }

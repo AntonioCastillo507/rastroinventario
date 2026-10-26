@@ -110,7 +110,7 @@ final class Imagenes {
     /** Cuenta los archivos que dejó ImageHelper en las carpetas de subida de prueba */
     public static function archivosGuardados(): int {
         $n = 0;
-        foreach (["parts", "thumbnails"] as $sub) {
+        foreach (["parts", "thumbnails", "medium", "large"] as $sub) {
             $d = UPLOAD_PATH . $sub;
             if (is_dir($d)) $n += count(array_diff(scandir($d), [".", ".."]));
         }
@@ -118,7 +118,7 @@ final class Imagenes {
     }
 
     public static function limpiarGuardados(): void {
-        foreach (["parts", "thumbnails"] as $sub) {
+        foreach (["parts", "thumbnails", "medium", "large"] as $sub) {
             $d = UPLOAD_PATH . $sub;
             if (!is_dir($d)) continue;
             foreach (array_diff(scandir($d), [".", ".."]) as $f) @unlink($d . DIRECTORY_SEPARATOR . $f);

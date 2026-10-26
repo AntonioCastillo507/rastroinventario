@@ -38,8 +38,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
     <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;position:sticky;top:80px">
       <h2 class="h6 text-warning fw-bold mb-3"><i aria-hidden="true" class="bi bi-bag me-2"></i>Tu pedido</h2>
       <div class="d-flex gap-3 mb-3">
-        <?php if(ImageHelper::existe($parte["thumbnail"],"thumbnails")): ?><img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($parte["thumbnail"])?>" class="rounded-2" style="width:64px;height:64px;object-fit:cover;border:1px solid var(--border)" alt="">
-        <?php else: ?><div style="width:64px;height:64px;background:var(--bg-3);border-radius:8px;display:flex;align-items:center;justify-content:center"><i aria-hidden="true" class="bi bi-gear text-secondary"></i></div><?php endif; ?>
+        <?php $fotoParte=$parte; $fotoTam="thumbnails"; $fotoClase="foto-64"; $fotoAlt=""; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?>
         <div><div class="text-white fw-semibold small"><?=htmlspecialchars($parte["nombre"])?></div><?php if($parte["marca"]??""): ?><div class="text-secondary" style="font-size:.75rem"><?=htmlspecialchars($parte["marca"]." ".$parte["modelo"])?></div><?php endif; ?></div>
       </div>
       <hr style="border-color:var(--border)">

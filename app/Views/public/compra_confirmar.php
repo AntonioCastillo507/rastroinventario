@@ -40,7 +40,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
   <div class="col-lg-4">
     <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;position:sticky;top:80px">
       <h2 class="h6 text-warning fw-bold mb-3"><i aria-hidden="true" class="bi bi-bag me-2"></i>Resumen</h2>
-      <?php if(ImageHelper::existe($parte["thumbnail"],"thumbnails")): ?><img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($parte["thumbnail"])?>" class="img-fluid rounded mb-3" style="border:1px solid var(--border)" alt=""><?php endif; ?>
+      <div class="mb-3"><?php $fotoParte=$parte; $fotoTam="medium"; $fotoClase="foto-ancha"; $fotoAlt=""; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?></div>
       <div class="text-white fw-semibold mb-1"><?=htmlspecialchars($parte["nombre"])?></div>
       <?php if($parte["marca"]??""): ?><div class="text-secondary small mb-2"><?=htmlspecialchars($parte["marca"]." ".$parte["modelo"])?></div><?php endif; ?>
       <div class="text-precio fw-bold fs-4 num">$<?=number_format($parte["precio"],2)?></div>

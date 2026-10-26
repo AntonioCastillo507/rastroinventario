@@ -40,7 +40,7 @@
   <?php foreach($partes as $p): ?>
   <tr>
     <td class="small text-secondary"><?=$p["id"]?></td>
-    <td><?php if(ImageHelper::existe($p["thumbnail"],"thumbnails")): ?><img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($p["thumbnail"])?>" class="thumb-sm" alt=""><?php else: ?><div class="thumb-placeholder"><i aria-hidden="true" class="bi bi-gear"></i></div><?php endif; ?></td>
+    <td><?php $fotoParte=$p; $fotoTam="thumbnails"; $fotoClase="foto-48"; $fotoAlt=""; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?></td>
     <td class="fw-semibold text-white"><?=htmlspecialchars($p["nombre"])?></td>
     <td class="small text-secondary"><?=htmlspecialchars(($p["marca"]??"")." ".($p["modelo"]??""))?></td>
     <td class="small text-secondary"><?=htmlspecialchars($p["seccion"]??"—")?></td>

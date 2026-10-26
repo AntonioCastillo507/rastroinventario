@@ -71,9 +71,12 @@ final class ImagenesFaltantesVistasTest extends BaseDatos {
 
         [$id, $orig] = $this->pieza("Detalle con archivo", true);
         $x = $this->html(fn() => (new \PublicController())->detalle(), ["id" => (string)$id]);
-        $this->assertSame(1, $this->imagenes($x, "/uploads/parts/$orig"), "usa el original");
+        $this->assertSame(1, $this->imagenes($x, "/uploads/medium/" . \ImageHelper::derivada($orig, "medium")), "usa la derivada de 1200 px");
 
-        // Sin original en disco pero con miniatura: cae a la miniatura
+        // Sin la de 1200 px cae al original; sin original, a la miniatura
+        unlink(UPLOAD_PATH . "medium/" . \ImageHelper::derivada($orig, "medium"));
+        $x = $this->html(fn() => (new \PublicController())->detalle(), ["id" => (string)$id]);
+        $this->assertSame(1, $this->imagenes($x, "/uploads/parts/$orig"), "sin la derivada usa el original");
         unlink(UPLOAD_PATH . "parts/$orig");
         $x = $this->html(fn() => (new \PublicController())->detalle(), ["id" => (string)$id]);
         $this->assertSame(0, $this->imagenes($x, "/uploads/parts/"));
@@ -87,14 +90,14 @@ final class ImagenesFaltantesVistasTest extends BaseDatos {
         $this->assertSame(2, Html::contar($x, "//table//tbody/tr"));
         $this->assertSame(0, $this->imagenes($x, $falta));
         $this->assertSame(1, $this->imagenes($x, $hay));
-        $this->assertSame(1, Html::contar($x, "//div[@class='thumb-placeholder']"), "la pieza sin archivo muestra el marcador");
+        $this->assertSame(1, Html::contar($x, "//span[contains(@class,'foto-baldosa')][not(img)]/i[contains(@class,'bi-image')]"), "la pieza sin archivo muestra el marcador en la misma baldosa");
     }
 
     public function testFormularioDeEdicion(): void {
         [$idFalta, , $falta] = $this->pieza("Edición sin archivo", false);
         $x = $this->html(fn() => (new \ParteController())->editar(), ["id" => (string)$idFalta]);
         $this->assertSame(0, $this->imagenes($x, $falta));
-        $this->assertSame(0, Html::contar($x, "//img[@class='thumb-preview']"));
+        $this->assertSame(0, Html::contar($x, "//*[@data-foto-previa]//img"), "sin archivo, la vista previa muestra el marcador");
 
         [$id, , $hay] = $this->pieza("Edición con archivo", true);
         $x = $this->html(fn() => (new \ParteController())->editar(), ["id" => (string)$id]);

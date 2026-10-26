@@ -22,12 +22,7 @@ function starsHtml(float $n,int $sz=16): string {
   <!-- FICHA PRODUCTO -->
   <div class="row g-4 gx-xl-5 mb-5">
     <div class="col-md-5">
-      <div style="aspect-ratio:4/3;background:var(--bg-2) url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' fill=\'%23363C45\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0\'/%3E%3C/svg%3E') center/64px no-repeat;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)">
-        <?php $imgRuta = ImageHelper::existe($parte["imagen_grande"],"parts") ? "parts/".$parte["imagen_grande"] : (ImageHelper::existe($parte["thumbnail"],"thumbnails") ? "thumbnails/".$parte["thumbnail"] : ""); ?>
-        <?php if($imgRuta): ?>
-        <img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($imgRuta)?>" style="width:100%;height:100%;object-fit:contain" alt="<?=htmlspecialchars($parte["nombre"])?>">
-        <?php endif; ?>
-      </div>
+      <?php $fotoParte=$parte; $fotoTam="medium"; $fotoClase="foto-ancha foto-detalle"; $fotoAlt=$parte["nombre"]; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?>
     </div>
     <div class="col-md-7">
       <?php if($parte["seccion"]??""): ?><span class="chip-warning mb-2 d-inline-flex"><i aria-hidden="true" class="bi bi-archive me-1"></i><?=htmlspecialchars($parte["seccion"])?></span><?php endif; ?>

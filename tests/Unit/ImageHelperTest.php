@@ -47,9 +47,8 @@ final class ImageHelperTest extends TestCase {
         $this->assertSame([800, 600, $tipo], [$w, $h, $t], "el original conserva medidas y formato");
         [$tw, $th, $tt] = $this->medidas(UPLOAD_PATH . "thumbnails/" . $r["thumbnail"]);
         $this->assertSame(IMAGETYPE_JPEG, $tt);
-        $this->assertLessThanOrEqual(\ImageHelper::THUMB_W, $tw);
-        $this->assertLessThanOrEqual(\ImageHelper::THUMB_H, $th);
-        $this->assertSame(2, Imagenes::archivosGuardados());
+        $this->assertLessThanOrEqual(640, max($tw, $th));
+        $this->assertSame(4, Imagenes::archivosGuardados(), "original y tres derivadas");
     }
 
     public function testLaMiniaturaNoAgrandaUnaImagenChica(): void {
@@ -159,7 +158,7 @@ final class ImageHelperTest extends TestCase {
     public function testDeleteBorraLoPropioYNadaFueraDeSuCarpeta(): void {
         $canario = RASTRO_TEST_TMP . "/canario.jpg";
         file_put_contents($canario, "no me borres");
-        foreach (["parts", "thumbnails"] as $sub) if (!is_dir(UPLOAD_PATH . $sub)) mkdir(UPLOAD_PATH . $sub, 0777, true); // sin las carpetas, "../.." no se resuelve y la prueba no probaría nada
+        foreach (["parts", "thumbnails", "medium", "large"] as $sub) if (!is_dir(UPLOAD_PATH . $sub)) mkdir(UPLOAD_PATH . $sub, 0777, true); // sin las carpetas, "../.." no se resuelve y la prueba no probaría nada
 
         \ImageHelper::delete("../../canario.jpg", "../canario.jpg");
         \ImageHelper::delete($canario, $canario);
@@ -169,7 +168,7 @@ final class ImageHelperTest extends TestCase {
         $this->assertFileExists($canario);
 
         $r = \ImageHelper::procesar(Imagenes::jpeg());
-        $this->assertSame(2, Imagenes::archivosGuardados());
+        $this->assertSame(4, Imagenes::archivosGuardados(), "original y tres derivadas");
         \ImageHelper::delete($r["original"], $r["thumbnail"]);
         $this->assertSame(0, Imagenes::archivosGuardados());
     }

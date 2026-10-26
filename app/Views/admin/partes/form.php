@@ -48,12 +48,17 @@
     <div class="col-12">
       <label for="f-imagen" class="form-label-dark">Imagen de la Parte</label>
       <input id="f-imagen" type="file" name="imagen" class="form-control dark-input" accept="image/*">
-      <div class="text-secondary small mt-1">JPG / PNG / GIF / WebP — máximo 5 MB. Se vuelve a codificar y se genera la miniatura (420×315 px).</div>
-      <?php if(ImageHelper::existe($parte["thumbnail"]??null,"thumbnails")): ?>
-      <div class="mt-3 d-flex align-items-center gap-3">
-        <img src="<?=APP_URL?>/uploads/thumbnails/<?=htmlspecialchars($parte["thumbnail"])?>" class="thumb-preview" alt="Imagen actual">
-        <span class="text-secondary small">Imagen actual. Sube una nueva para reemplazarla.</span>
-      </div><?php endif; ?>
+      <div class="text-secondary small mt-1">JPG / PNG / GIF / WebP, máximo <?=htmlspecialchars(ImageHelper::limiteTexto())?>. Se vuelve a codificar y se generan las derivadas de 640, 1200 y 2400 px. La foto se muestra completa, sin recortar, en una baldosa blanca cuadrada.</div>
+      <div class="mt-3 d-flex align-items-start gap-3" data-foto-previa data-prop-min="<?=ImageHelper::PROPORCION_MIN?>" data-prop-max="<?=ImageHelper::PROPORCION_MAX?>" data-lado-bajo="<?=ImageHelper::LADO_BAJO?>">
+        <div>
+          <div class="text-secondary small mb-1" data-foto-titulo><?=!empty($parte)?"Imagen actual":"Vista previa"?></div>
+          <?php $fotoParte=$parte??[]; $fotoTam="thumbnails"; $fotoClase="foto-160"; $fotoAlt=!empty($parte)?"Imagen actual":""; $fotoLazy=false; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?>
+        </div>
+        <div class="small flex-fill">
+          <div class="text-secondary" data-foto-info><?=!empty($parte)?"Sube una nueva para reemplazarla.":"Aún no has elegido una foto."?></div>
+          <div class="mt-2" data-foto-avisos role="status" aria-live="polite"></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="mt-4 d-flex gap-3">
@@ -65,4 +70,5 @@
 </form>
 </div>
 </div>
+<script src="<?=Assets::url("js/parte_imagen.js")?>"></script>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>

@@ -8,8 +8,22 @@ class ImageHelper {
     const MAX_SIZE   = 5242880;   // 5 MB; el límite real es el menor entre este y upload_max_filesize
     const MAX_SIDE   = 6000;      // px por lado
     const MAX_PIXELS = 16000000;  // 16 MP: unos 64 MB en GD, cabe en memory_limit
-    const THUMB_W    = 420;
-    const THUMB_H    = 315;
+    /**
+     * Derivadas de cada foto, todas JPEG con el lado mayor al valor indicado (nunca se amplía), completas y sobre fondo
+     * blanco: la caja de la pantalla las muestra con object-fit: contain, así que no se estira ni se recorta nada.
+     * El original se conserva tal como se re-codificó al subirlo. La de 640 px es la "miniatura" que guarda la base.
+     * Carpeta dentro de uploads/ => [lado mayor, sufijo del nombre, calidad JPEG]
+     */
+    const DERIVADAS = [
+        "thumbnails" => [640,  "_th.jpg",   82],  // tarjetas, carrito, panel
+        "medium"     => [1200, "_1200.jpg", 85],  // imagen principal del detalle
+        "large"      => [2400, "_2400.jpg", 85],  // ampliar (zoom)
+    ];
+    /** Fuera de esta proporción (ancho/alto) la foto se muestra con bordes en la baldosa 1:1 */
+    const PROPORCION_MIN = 0.67;
+    const PROPORCION_MAX = 1.5;
+    /** Por debajo de este lado mayor la foto se ve borrosa al ampliar */
+    const LADO_BAJO = 800;
     const TYPES      = [
         IMAGETYPE_JPEG => ["image/jpeg", "jpg"],
         IMAGETYPE_PNG  => ["image/png",  "png"],
@@ -59,8 +73,8 @@ class ImageHelper {
     }
 
     /**
-     * Revisa el archivo por contenido, lo decodifica con GD y guarda original y miniatura nuevos.
-     * Devuelve ["original" => nombre, "thumbnail" => nombre] o null (motivo en self::$error).
+     * Revisa el archivo por contenido, lo decodifica con GD y guarda el original y las derivadas (640, 1200 y 2400 px).
+     * Devuelve ["original" => nombre, "thumbnail" => nombre, "avisos" => [...]] o null (motivo en self::$error).
      */
     public static function procesar(string $ruta, string $prefix = "parte"): ?array {
         self::$error = "";
@@ -89,12 +103,9 @@ class ImageHelper {
 
         $base      = preg_replace('/[^a-z0-9]/i', '', $prefix) . "_" . bin2hex(random_bytes(16));
         $origName  = $base . "." . $ext;
-        $thumbName = $base . "_th.jpg";
         $partsDir  = self::dir("parts");
-        $thumbDir  = self::dir("thumbnails");
-        foreach ([$partsDir, $thumbDir] as $d) if (!is_dir($d)) @mkdir($d, 0755, true);
+        if (!is_dir($partsDir)) @mkdir($partsDir, 0755, true);
         $destOrig  = $partsDir . $origName;
-        $destThumb = $thumbDir . $thumbName;
 
         // GD acepta JPEG y GIF cortados como si fueran imágenes enteras: se exige el final del archivo
         if (!self::estaCompleta($ruta, $tipo)) return self::fail("La imagen está incompleta o dañada.");
@@ -131,19 +142,13 @@ class ImageHelper {
             };
             if (!$guardado) throw new RuntimeException("no guarda el original");
 
-            // Miniatura JPEG
-            $r   = min(self::THUMB_W / $sw, self::THUMB_H / $sh, 1);
-            $nw  = max(1, (int)($sw * $r));
-            $nh  = max(1, (int)($sh * $r));
-            $dst = imagecreatetruecolor($nw, $nh);
-            imagefill($dst, 0, 0, imagecolorallocate($dst, 30, 32, 38));
-            imagealphablending($dst, true);
-            imagecopyresampled($dst, $img, 0, 0, 0, 0, $nw, $nh, $sw, $sh);
-            if (!imagejpeg($dst, $destThumb, 88)) throw new RuntimeException("no guarda la miniatura");
-            unset($img, $dst);
+            // Derivadas de 640, 1200 y 2400 px (si la foto es más chica, a su tamaño)
+            $derivadas = self::derivar($img, $base);
+            $avisos    = self::avisos($sw, $sh);
+            unset($img);
 
             // Lo escrito tiene que ser una imagen válida; si no, no se queda nada
-            foreach ([$destOrig, $destThumb] as $f) {
+            foreach (array_merge([$destOrig], array_values($derivadas)) as $f) {
                 if (filesize($f) <= 0 || !getimagesize($f)) throw new RuntimeException("salida inválida");
             }
             $ok = true;
@@ -154,11 +159,85 @@ class ImageHelper {
         }
         if (!$ok) {
             @unlink($destOrig);
-            @unlink($destThumb);
+            foreach (self::DERIVADAS as $sub => [, $sufijo]) @unlink(self::dir($sub) . $base . $sufijo);
             return self::fail("El archivo no es una imagen válida o está dañado.");
         }
 
-        return ["original" => $origName, "thumbnail" => $thumbName];
+        return ["original" => $origName, "thumbnail" => $base . self::DERIVADAS["thumbnails"][1], "avisos" => $avisos];
+    }
+
+    /**
+     * Escribe las derivadas de $img (recurso GD) con el nombre $base y devuelve sus rutas por carpeta.
+     * La imagen se reduce con el lado mayor en el tamaño pedido, sin recortar ni estirar, y se aplana sobre blanco
+     * (una foto con transparencia no queda sobre negro). Si falla una, borra las que ya escribió.
+     * @return array<string,string> carpeta => ruta
+     */
+    private static function derivar(\GdImage $img, string $base): array {
+        [$sw, $sh] = [imagesx($img), imagesy($img)];
+        $rutas = [];
+        try {
+            foreach (self::DERIVADAS as $sub => [$lado, $sufijo, $calidad]) {
+                $dir = self::dir($sub);
+                if (!is_dir($dir)) @mkdir($dir, 0755, true);
+                $r   = min($lado / max($sw, $sh), 1);
+                $nw  = max(1, (int)round($sw * $r));
+                $nh  = max(1, (int)round($sh * $r));
+                $dst = imagecreatetruecolor($nw, $nh);
+                imagefill($dst, 0, 0, imagecolorallocate($dst, 255, 255, 255));
+                imagealphablending($dst, true);
+                imagecopyresampled($dst, $img, 0, 0, 0, 0, $nw, $nh, $sw, $sh);
+                $ruta = $dir . $base . $sufijo;
+                if (!imagejpeg($dst, $ruta, $calidad)) throw new RuntimeException("no guarda la derivada $sub");
+                $rutas[$sub] = $ruta;
+                unset($dst);
+            }
+        } catch (\Throwable $e) {
+            foreach ($rutas as $f) @unlink($f);
+            throw $e;
+        }
+        return $rutas;
+    }
+
+    /** Avisos (no bloqueos) sobre una foto de $w x $h: proporción alargada y resolución baja. */
+    public static function avisos(int $w, int $h): array {
+        $avisos = [];
+        $prop = $w / max(1, $h);
+        if ($prop < self::PROPORCION_MIN || $prop > self::PROPORCION_MAX) $avisos[] = "Proporción muy alargada: se mostrará con bordes.";
+        if (max($w, $h) < self::LADO_BAJO) $avisos[] = "Resolución baja: se verá borrosa al ampliar.";
+        return $avisos;
+    }
+
+    /**
+     * Genera las derivadas de una foto ya guardada en parts/ (la original no se toca ni se mueve).
+     * Para las piezas anteriores a las derivadas. Devuelve las carpetas escritas o null si no se pudo.
+     * @return list<string>|null
+     */
+    public static function regenerar(string $original): ?array {
+        self::$error = "";
+        if (!self::nombreSeguro($original) || !is_file(self::dir("parts") . $original)) return self::fail("La original no existe.");
+        $ruta = self::dir("parts") . $original;
+        $info = @getimagesize($ruta);
+        if (!$info || !isset(self::TYPES[$info[2]])) return self::fail("La original no es una imagen válida.");
+        if (!self::cabeEnMemoria($info[0], $info[1], false)) return self::fail("La imagen es demasiado grande para procesarla.");
+        $img = @match($info[2]) {
+            IMAGETYPE_PNG  => imagecreatefrompng($ruta),
+            IMAGETYPE_GIF  => imagecreatefromgif($ruta),
+            IMAGETYPE_WEBP => imagecreatefromwebp($ruta),
+            default        => imagecreatefromjpeg($ruta),
+        };
+        if (!$img) return self::fail("La original no se pudo leer.");
+        try {
+            $rutas = self::derivar($img, pathinfo($original, PATHINFO_FILENAME));
+        } catch (\Throwable $e) {
+            return self::fail("No se pudieron escribir las derivadas.");
+        }
+        return array_keys($rutas);
+    }
+
+    /** Nombre de la derivada de una original ("parte_x.jpg" + "medium" => "parte_x_1200.jpg") o null si el nombre no vale */
+    public static function derivada(?string $original, string $sub): ?string {
+        if (!isset(self::DERIVADAS[$sub]) || !self::nombreSeguro($original)) return null;
+        return pathinfo((string)$original, PATHINFO_FILENAME) . self::DERIVADAS[$sub][1];
     }
 
     /** JPEG: EOI después del último SOS. GIF: termina en el trailer 0x3B. PNG y WebP ya fallan solos en GD. */
@@ -190,18 +269,38 @@ class ImageHelper {
     }
 
     /**
-     * ¿Hay en disco una imagen con ese nombre? $sub es "parts" (original) o "thumbnails" (miniatura).
+     * ¿Hay en disco una imagen con ese nombre? $sub es "parts" (original), "thumbnails" (640), "medium" (1200) o "large" (2400).
      * Las vistas la usan antes de imprimir un <img>: si el archivo falta (borrado a mano, pieza editada,
      * carrito viejo) se muestra el marcador de "sin imagen" en vez de una imagen rota.
      */
     public static function existe(?string $nombre, string $sub): bool {
-        return in_array($sub, ["parts", "thumbnails"], true)
+        return in_array($sub, ["parts", "thumbnails", "medium", "large"], true)
             && self::nombreSeguro($nombre)
             && is_file(self::dir($sub) . $nombre);
     }
 
+    /**
+     * Ruta (dentro de uploads/) de la mejor imagen que haya en disco para mostrar una pieza en el tamaño $tam
+     * ("thumbnails", "medium" o "large"): la derivada pedida; si falta, la siguiente que exista; "" si no hay ninguna.
+     * Así las piezas anteriores a las derivadas y las fotos borradas a mano no dejan una imagen rota.
+     */
+    public static function fuente(?string $original, ?string $thumb, string $tam = "thumbnails"): string {
+        $candidatas = match($tam) {
+            "large"  => [["large", self::derivada($original, "large")], ["medium", self::derivada($original, "medium")], ["parts", $original], ["thumbnails", $thumb]],
+            "medium" => [["medium", self::derivada($original, "medium")], ["parts", $original], ["thumbnails", $thumb]],
+            default  => [["thumbnails", $thumb], ["medium", self::derivada($original, "medium")], ["parts", $original]],
+        };
+        foreach ($candidatas as [$sub, $nombre]) if (self::existe($nombre, $sub)) return "$sub/$nombre";
+        return "";
+    }
+
+    /** Borra la original, la miniatura y las derivadas de esa foto (las de 1200 y 2400 salen del nombre de la original). */
     public static function delete(?string $orig, ?string $thumb): void {
         if (self::nombreSeguro($orig))  @unlink(self::dir("parts") . $orig);
         if (self::nombreSeguro($thumb)) @unlink(self::dir("thumbnails") . $thumb);
+        foreach (["medium", "large"] as $sub) {
+            $d = self::derivada($orig, $sub);
+            if ($d !== null) @unlink(self::dir($sub) . $d);
+        }
     }
 }
