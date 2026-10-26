@@ -110,12 +110,12 @@ final class FormulariosConservanDatosTest extends TestCase {
     public function testElCarritoDeInvitadoConErrorConservaLosCampos(): void {
         $email = $this->correo("carrito");
         $this->web->postConToken("/index.php?action=detalle&id=$this->parteId", "/index.php?action=agregar_carrito&id=$this->parteId", []);
-        $r = $this->web->postConToken("/index.php?action=carrito", "/index.php?action=procesar_carrito", [
+        $r = $this->web->postConToken("/index.php?action=carrito_datos", "/index.php?action=procesar_carrito", [
             "cliente_nombre" => "Rosa Carrito", "cliente_telefono" => "6333-4444", "cliente_email" => $email,
             "cliente_direccion" => "Avenida Central 10", "cliente_notas" => "Dejar con el vigilante", "nueva_pass" => "corta",
         ]);
         $this->assertSame(302, $r["codigo"]);
-        $pagina = $this->web->get("/index.php?action=carrito")["cuerpo"];
+        $pagina = $this->web->get("/index.php?action=carrito_datos")["cuerpo"];
         $this->assertStringContainsString("La contraseña debe tener al menos", $pagina);
         $this->assertSame("Rosa Carrito", $this->valor($pagina, "cliente_nombre"));
         $this->assertSame("6333-4444", $this->valor($pagina, "cliente_telefono"));

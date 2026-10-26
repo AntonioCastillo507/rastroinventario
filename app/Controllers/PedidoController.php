@@ -147,59 +147,153 @@ class PedidoController extends BaseController {
             if ($ajax) $this->json(["ok"=>false,"msg"=>"Esa pieza ya no está disponible.","csrf"=>CsrfToken::generate()], 409);
             $this->flash("Parte no disponible.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$id);
         }
-        if (!isset($_SESSION["cart"])) $_SESSION["cart"]=[];
         // cantidad pedida (el detalle la manda; las tarjetas no): entre 1 y el stock; lo que no cabe no se añade
         $pedida = $_POST["cantidad"] ?? 1;
         $cant = is_string($pedida) && ctype_digit($pedida) ? max(1, min((int)$pedida, (int)$parte["cantidad"])) : 1;
-        $yaEstaba = (int)($_SESSION["cart"][$id]["cantidad"] ?? 0);
+        $yaEstaba = Carrito::cantidad($id);
         $nueva = min($yaEstaba + $cant, (int)$parte["cantidad"]);
         $anadidas = $nueva - $yaEstaba;
-        if (isset($_SESSION["cart"][$id])){
-            $_SESSION["cart"][$id]["cantidad"]=$nueva;
-            $_SESSION["cart"][$id]["max"]=$parte["cantidad"];
-        } else {
-            $_SESSION["cart"][$id]=["parte_id"=>$id,"nombre"=>$parte["nombre"],"precio"=>(float)$parte["precio"],"cantidad"=>$nueva,"max"=>$parte["cantidad"],"thumbnail"=>$parte["thumbnail"],"marca"=>($parte["marca"]??"")." ".($parte["modelo"]??"")];
-        }
+        Carrito::poner($id, $nueva); // la sesión guarda solo pieza y cantidad; el precio se lee de la base cuando hace falta
         $enTope = $anadidas < $cant;
         if ($anadidas <= 0)  $msg = "Ya tienes en el carrito todas las unidades disponibles de «".$parte["nombre"]."».";
         elseif ($enTope)     $msg = "Solo se añadieron ".$anadidas." de «".$parte["nombre"]."»: no hay más unidades disponibles.";
         elseif ($anadidas>1) $msg = "Añadidas ".$anadidas." al carrito: «".$parte["nombre"]."».";
         else                 $msg = "Añadida al carrito: «".$parte["nombre"]."».";
-        if ($ajax) $this->json(["ok"=>true,"msg"=>$msg,"alerta"=>$enTope,"count"=>count($_SESSION["cart"]),"cantidad"=>(int)$_SESSION["cart"][$id]["cantidad"],"carrito"=>APP_URL."/?action=carrito","csrf"=>CsrfToken::generate()]);
+        if ($ajax) $this->json(["ok"=>true,"msg"=>$msg,"alerta"=>$enTope,"count"=>count(Carrito::leer()),"cantidad"=>$nueva,"carrito"=>APP_URL."/?action=carrito","csrf"=>CsrfToken::generate()]);
         $this->flash($enTope ? $msg : "¡Pieza añadida al carrito!", $enTope ? "warning" : "success");
         $this->redirect(self::rutaDeRegreso($_POST["volver"] ?? null, $id));
     }
 
+    // ── Carrito, paso 1: las acciones de la lista responden JSON con fetch y redirigen sin JavaScript ──
+
+    private static function dinero(float $x): string { return number_format($x, 2); }
+
+    /** Token vigente o corte: con fetch, JSON 403; sin JavaScript, vuelve al carrito con aviso */
+    private function csrfCarrito(bool $ajax): void {
+        if ($ajax) {
+            if (!CsrfToken::check()) $this->json(["ok"=>false,"msg"=>"La página caducó. Recárgala e inténtalo de nuevo.","csrf"=>CsrfToken::generate()], 403);
+        } else CsrfToken::verify(APP_URL."/?action=carrito");
+    }
+
+    /**
+     * El carrito tal como se muestra y se cobra: nombre, precio y stock de CADA línea salen de la base (una consulta),
+     * nunca de la sesión. Lo que ya no se puede vender (inactiva, agotada, sin precio) se quita y lo que pasa del stock se
+     * recorta, y cada caso queda en "avisos" para que la persona lo vea. Los totales salen de Itbms, igual que el pedido.
+     * @return array{lineas:list<array>,avisos:list<string>,subtotal:float,itbms:float,total:float,piezas:int}
+     */
+    public function detallarCarrito(): array {
+        $cart = Carrito::leer();
+        $partes = $cart ? $this->pam->findByIds(array_keys($cart)) : [];
+        $lineas = []; $avisos = [];
+        foreach ($cart as $id => $cant) {
+            $p = $partes[$id] ?? null;
+            if (!$p || !$p["activo"] || (int)$p["cantidad"] <= 0 || (float)$p["precio"] < 0.01) {
+                Carrito::quitar($id);
+                $avisos[] = ($p ? "«".$p["nombre"]."»" : "Una pieza")." ya no está disponible y se quitó de tu carrito.";
+                continue;
+            }
+            $max = (int)$p["cantidad"];
+            if ($cant > $max) {
+                $cant = $max; Carrito::poner($id, $cant);
+                $avisos[] = "Solo quedan ".$max." de «".$p["nombre"]."»: ajustamos la cantidad.";
+            }
+            $precio = (float)$p["precio"];
+            $lineas[] = ["id"=>$id,"nombre"=>$p["nombre"],"compat"=>trim(($p["marca"]??"")." ".($p["modelo"]??"")),"precio"=>$precio,"cantidad"=>$cant,"max"=>$max,
+                "subtotal"=>round($precio*$cant, 2),"imagen_grande"=>$p["imagen_grande"]??null,"thumbnail"=>$p["thumbnail"]??null];
+        }
+        $monto = Itbms::calcular(array_sum(array_map(fn($l)=>$l["precio"]*$l["cantidad"], $lineas)));
+        return ["lineas"=>$lineas,"avisos"=>$avisos,"piezas"=>array_sum(array_column($lineas,"cantidad"))] + $monto;
+    }
+
+    /** Respuesta JSON con TODO el estado del carrito ya formateado por el servidor (el JS no suma ni calcula dinero) */
+    private function estadoCarrito(array $d, string $msg = "", bool $alerta = false): array {
+        $lineas = [];
+        foreach ($d["lineas"] as $l) $lineas[] = ["id"=>$l["id"],"cantidad"=>$l["cantidad"],"max"=>$l["max"],"subtotal"=>self::dinero($l["subtotal"])];
+        $q = Carrito::quitadaReciente();
+        return ["ok"=>true,"msg"=>$msg,"alerta"=>$alerta,"count"=>count($d["lineas"]),"piezas"=>$d["piezas"],"lineas"=>$lineas,
+            "resumen"=>["subtotal"=>self::dinero($d["subtotal"]),"itbms"=>self::dinero($d["itbms"]),"total"=>self::dinero($d["total"])],
+            "avisos"=>$d["avisos"],"deshacer"=>$q ? ["id"=>$q["id"],"nombre"=>$q["nombre"]] : null,
+            "carrito"=>APP_URL."/?action=carrito","csrf"=>CsrfToken::generate()];
+    }
+
+    /** Termina la acción: JSON con el estado completo (fetch) o aviso y vuelta al carrito (sin JavaScript) */
+    private function terminarCarrito(bool $ajax, string $msg, bool $alerta, int $codigo = 200, string $tipo = "success", ?array $d = null): never {
+        $d ??= $this->detallarCarrito();
+        if ($ajax) {
+            $r = $this->estadoCarrito($d, $msg, $alerta);
+            if ($codigo >= 400) $r["ok"] = false;
+            $this->json($r, $codigo);
+        }
+        $avisos = $d["avisos"];
+        if ($msg !== "" || $avisos) $this->flash(implode(" ", array_filter([$msg, ...$avisos])), $alerta || $avisos ? "warning" : $tipo);
+        $this->redirect(APP_URL."/?action=carrito");
+    }
+
     public function quitarCarrito(): void {
         if (!$this->isPost()) $this->redirect(APP_URL."/?action=carrito"); // cambia el carrito: solo POST
-        CsrfToken::verify();
-        $id=Sanitizer::get("id","int"); unset($_SESSION["cart"][$id]);
-        $this->redirect(APP_URL."/?action=carrito");
+        $ajax = ($_SERVER["HTTP_X_REQUESTED_WITH"] ?? "") === "fetch";
+        $this->csrfCarrito($ajax);
+        $id = Sanitizer::get("id","int");
+        $cant = Carrito::cantidad($id);
+        if ($cant < 1) $this->terminarCarrito($ajax, "Esa pieza ya no estaba en tu carrito.", true, 409, "warning");
+        $p = $this->pam->findById($id);
+        $nombre = $p ? (string)$p["nombre"] : "la pieza";
+        Carrito::recordarQuitada($id, $cant, $nombre);
+        Carrito::quitar($id);
+        // sin JavaScript, el aviso con "Deshacer" lo pinta el carrito desde la sesión; con fetch viene en el JSON
+        $this->terminarCarrito($ajax, $ajax ? "Quitaste «".$nombre."» de tu carrito." : "", false);
     }
 
+    public function restaurarCarrito(): void {
+        if (!$this->isPost()) $this->redirect(APP_URL."/?action=carrito");
+        $ajax = ($_SERVER["HTTP_X_REQUESTED_WITH"] ?? "") === "fetch";
+        $this->csrfCarrito($ajax);
+        $q = Carrito::quitadaReciente();
+        $id = Sanitizer::get("id","int");
+        if (!$q || ($id && $id !== $q["id"])) $this->terminarCarrito($ajax, "No hay nada que deshacer.", true, 409, "warning");
+        $p = $this->pam->findById($q["id"]);
+        Carrito::olvidarQuitada();
+        if (!$p || !$p["activo"] || (int)$p["cantidad"] <= 0) $this->terminarCarrito($ajax, "«".$q["nombre"]."» ya no está disponible.", true, 409, "warning");
+        $nueva = min(Carrito::cantidad($q["id"]) + $q["cantidad"], (int)$p["cantidad"]);
+        Carrito::poner($q["id"], $nueva);
+        $this->terminarCarrito($ajax, "Volvió a tu carrito: «".$p["nombre"]."».", false);
+    }
+
+    /** Fija la cantidad de UNA línea (valor absoluto, así repetirla o hacerla desde dos pestañas da el mismo resultado) */
     public function actualizarCarrito(): void {
-        if ($this->isPost()) {
-            CsrfToken::verify();
-            $cantidades=$_POST["cantidad"]??[];
-            foreach ($cantidades as $id=>$q) {
-                $id=(int)$id; $q=max(1,(int)$q);
-                if (isset($_SESSION["cart"][$id])) $_SESSION["cart"][$id]["cantidad"]=min($q,$_SESSION["cart"][$id]["max"]);
-            }
-        }
-        $this->redirect(APP_URL."/?action=carrito");
+        if (!$this->isPost()) $this->redirect(APP_URL."/?action=carrito");
+        $ajax = ($_SERVER["HTTP_X_REQUESTED_WITH"] ?? "") === "fetch";
+        $this->csrfCarrito($ajax);
+        $id = Sanitizer::get("id","int");
+        $q = $_POST["cantidad"] ?? null;
+        if (Carrito::cantidad($id) < 1) $this->terminarCarrito($ajax, "Esa pieza ya no está en tu carrito.", true, 409, "warning");
+        if (!is_string($q) || !ctype_digit($q)) $this->terminarCarrito($ajax, "La cantidad no es válida.", true, 422, "danger");
+        Carrito::poner($id, max(1, (int)$q)); // el stock real lo aplica detallarCarrito()
+        $d = $this->detallarCarrito();
+        $linea = null; foreach ($d["lineas"] as $l) if ($l["id"] === $id) $linea = $l;
+        if (!$linea) $this->terminarCarrito($ajax, "", true, 200, "warning", $d);
+        $pidio = (int)$q;
+        $msg = $linea["cantidad"] < $pidio ? "" /* el aviso de ajuste ya lo dice */ : "«".$linea["nombre"]."»: ".$linea["cantidad"]." ".($linea["cantidad"]===1?"unidad":"unidades").".";
+        $this->terminarCarrito($ajax, $msg, $linea["cantidad"] < $pidio, 200, "success", $d);
     }
 
+    /** Paso 1: la lista del carrito con cantidades, deshacer y resumen */
     public function verCarrito(): void {
-        $cart=$_SESSION["cart"]??[];
-        foreach ($cart as $id=>&$item){
-            $p=$this->pam->findById((int)$id);
-            if (!$p||!$p["activo"]||$p["cantidad"]<=0) unset($_SESSION["cart"][$id]);
-            else $item["max"]=$p["cantidad"];
-        }
-        $cart=$_SESSION["cart"]??[];
-        $monto=Itbms::calcular(array_sum(array_map(fn($i)=>$i["precio"]*$i["cantidad"],$cart)));
-        $subtotal=$monto["subtotal"]; $itbms=$monto["itbms"]; $total=$monto["total"];
-        $this->view("public/carrito",compact("cart","subtotal","itbms","total"));
+        $d = $this->detallarCarrito();
+        $deshacer = Carrito::quitadaReciente();
+        $errCarro = $_SESSION["carrito_error"] ?? ""; unset($_SESSION["carrito_error"]);
+        $this->view("public/carrito", compact("d","deshacer","errCarro"));
+    }
+
+    /** Paso 2: tus datos (entrega y cuenta). Con el carrito vacío no hay nada que pedir */
+    public function datosCarrito(): void {
+        $d = $this->detallarCarrito();
+        if (!$d["lineas"]) $this->redirect(APP_URL."/?action=carrito", $d["avisos"] ? implode(" ", $d["avisos"]) : "Tu carrito está vacío.", "warning");
+        $viejo = FormViejo::tomar("carrito");
+        $err = $_SESSION["carrito_error"] ?? ""; unset($_SESSION["carrito_error"]);
+        $isCliente = !empty($_SESSION["user"]) && in_array("Cliente", $_SESSION["user_roles"] ?? []);
+        $userInfo = $isCliente ? (new UserModel())->findById((int)$_SESSION["user"]["id"]) : null;
+        $this->view("public/carrito_datos", compact("d","viejo","err","isCliente","userInfo"));
     }
 
     /** Total con ITBMS tal como quedó guardado en el pedido (el que ve el cliente en todas partes) */
@@ -235,24 +329,27 @@ class PedidoController extends BaseController {
     }
 
     public function procesarCarrito(): void {
-        $cart=$_SESSION["cart"]??[];
-        if (empty($cart)){ $this->redirect(APP_URL."/?action=carrito"); }
+        $cart=Carrito::leer();
+        if (empty($cart)){ $this->redirect(APP_URL."/?action=carrito","Tu carrito está vacío.","warning"); }
+        ksort($cart); // siempre se bloquean las piezas en el mismo orden (por id): dos pedidos con las mismas piezas no se interbloquean
 
         $notas=Sanitizer::post("cliente_notas");
         $dir  =Sanitizer::post("cliente_direccion");
         // Si vuelve con error, la persona recupera lo escrito (la contraseña nunca se guarda)
         $conservar=fn()=>FormViejo::guardar("carrito",$_POST,["cliente_nombre","cliente_telefono","cliente_email","cliente_direccion","cliente_notas"]);
-        CsrfToken::verify(APP_URL."/?action=carrito",$conservar);
+        $datos=APP_URL."/?action=carrito_datos"; // paso 2: errores del formulario
+        CsrfToken::verify($datos,$conservar);
 
         // Verificar las piezas ANTES de tocar cuentas: nada se crea ni se descuenta si el carrito no vale
-        // El precio sale de la BD, no de la sesión
+        // Nombre y precio salen de la BD, no de la sesión
+        $partes=$this->pam->findByIds(array_keys($cart));
         $items=[];
-        foreach ($cart as $id=>$item){
-            $p=$this->pam->findById((int)$id);
-            if (!$p||!$p["activo"]){ $conservar(); $_SESSION["carrito_error"]="La pieza ".$item["nombre"]." ya no está disponible. Quítala del carrito."; $this->redirect(APP_URL."/?action=carrito"); }
-            if ($p["cantidad"]<$item["cantidad"]){ $conservar(); $_SESSION["carrito_error"]="Stock insuficiente: ".$item["nombre"]; $this->redirect(APP_URL."/?action=carrito"); }
-            if ((int)$item["cantidad"]<1||(float)$p["precio"]<0.01){ $conservar(); $_SESSION["carrito_error"]="Cantidad o precio no válido: ".$item["nombre"]; $this->redirect(APP_URL."/?action=carrito"); }
-            $items[]=["parte_id"=>$id,"parte_nombre"=>$item["nombre"],"precio_unitario"=>(float)$p["precio"],"cantidad"=>(int)$item["cantidad"]];
+        foreach ($cart as $id=>$cantidad){
+            $p=$partes[$id]??false; $nombre=$p?$p["nombre"]:"Una pieza";
+            if (!$p||!$p["activo"]){ $conservar(); $_SESSION["carrito_error"]="La pieza ".$nombre." ya no está disponible. Quítala del carrito."; $this->redirect(APP_URL."/?action=carrito"); }
+            if ($p["cantidad"]<$cantidad){ $conservar(); $_SESSION["carrito_error"]="Stock insuficiente: ".$nombre; $this->redirect(APP_URL."/?action=carrito"); }
+            if ((int)$cantidad<1||(float)$p["precio"]<0.01){ $conservar(); $_SESSION["carrito_error"]="Cantidad o precio no válido: ".$nombre; $this->redirect(APP_URL."/?action=carrito"); }
+            $items[]=["parte_id"=>$id,"parte_nombre"=>$nombre,"precio_unitario"=>(float)$p["precio"],"cantidad"=>(int)$cantidad];
         }
 
         // ── Cliente ya logueado ───────────────────────────────────
@@ -261,18 +358,18 @@ class PedidoController extends BaseController {
             $um=new UserModel(); $u=$um->findById($_SESSION["user"]["id"]);
             $nombre=$u["nombre"]; $tel=$u["telefono"]??""; $email=$u["email"]; $usuarioId=$u["id"];
             $dir=$dir?:($u["direccion"]??"");
-            if (!$dir){ $conservar(); $this->flash("Escribe una dirección de entrega.","danger"); $this->redirect(APP_URL."/?action=carrito"); }
+            if (!$dir){ $conservar(); $this->flash("Escribe una dirección de entrega.","danger"); $this->redirect($datos); }
         } else {
             // ── Invitado — cuenta obligatoria ─────────────────────
             $nombre=Sanitizer::post("cliente_nombre"); $tel=Sanitizer::post("cliente_telefono");
             $email=Sanitizer::email(Sanitizer::post("cliente_email")); $pass=$_POST["nueva_pass"]??"";
             $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass,$email,$nombre);
-            if (!$v->isValid()){ $conservar(); $_SESSION["carrito_error"]=$v->first(); $this->redirect(APP_URL."/?action=carrito"); }
+            if (!$v->isValid()){ $conservar(); $_SESSION["carrito_error"]=$v->first(); $this->redirect($datos); }
             $um=new UserModel(); $existe=$um->findByEmail($email);
             if ($existe){
                 // No se asigna el pedido a una cuenta ajena sin autenticarse.
                 $conservar(); $_SESSION["carrito_error"]="Ya existe una cuenta con ese correo. Inicia sesión para finalizar tu pedido.";
-                $this->redirect(APP_URL."/?action=carrito");
+                $this->redirect($datos);
             }
             else {
                 $uid=$um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT),"telefono"=>$tel,"direccion"=>$dir]);
@@ -292,7 +389,7 @@ class PedidoController extends BaseController {
             EmailJsService::get()->enviarBienvenida($email,$nombre);
         }
         EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$this->totalPedido($pedidoId));
-        unset($_SESSION["cart"]);
+        Carrito::vaciar();
         $_SESSION["pedido_exitoso"]=$pedidoId;
         $this->redirect(APP_URL."/?action=compra_exitosa");
     }

@@ -29,6 +29,11 @@ final class Pantallas {
             "carrito_vacio"     => ["invitado", fn($f) => $pub()->carrito()],
             "carrito_invitado"  => ["invitado+carrito", fn($f) => $pub()->carrito()],
             "carrito_cliente"   => ["cliente+carrito", fn($f) => $pub()->carrito()],
+            "carrito_deshacer"  => ["invitado+deshacer", fn($f) => $pub()->carrito()],
+            "carrito_avisos"    => ["invitado+carrito+pieza_muerta", fn($f) => $pub()->carrito()],
+            "carrito_datos_invitado" => ["invitado+carrito", fn($f) => $pub()->datosCarrito()],
+            "carrito_datos_cliente"  => ["cliente+carrito", fn($f) => $pub()->datosCarrito()],
+            "carrito_datos_error"    => ["invitado+carrito+datos_error", fn($f) => $pub()->datosCarrito()],
             "compra_exitosa"    => ["cliente+pedido", fn($f) => $pub()->exitosa()],
             "mis_pedidos"       => ["cliente", fn($f) => $pub()->misPedidos()],
             "mis_pedidos_vacio" => ["cliente_sin_pedidos", fn($f) => $pub()->misPedidos()],
@@ -95,7 +100,7 @@ final class Pantallas {
         self::$datos = null;
     }
 
-    /** @return array{parte:int,cliente:int,admin:int,pedido:int,rol:int} */
+    /** @return array{parte:int,cliente:int,admin:int,pedido:int,rol:int,muerta:int} */
     private static function datos(PDO $db): array {
         if (self::$datos !== null) return self::$datos;
         $v = Volumen::crear($db);
@@ -107,12 +112,14 @@ final class Pantallas {
         $db->prepare("UPDATE partes SET auto_id = ?, seccion_id = ? WHERE id = ?")->execute([$v["autos"][0], $v["secciones"][0], $parte]);
         $db->prepare("INSERT INTO comentarios (parte_id, nombre_visitante, comentario, rating, publicado) VALUES (?, 'Visitante', 'Funciona muy bien', 4, 1)")->execute([$parte]);
         $pedido = Datos::pedido($db, [[$parte, 1]], "pendiente", $cliente);
+        $muerta = Datos::parte($db, 9.00, 3, "Pieza desactivada de pantalla");
+        $db->prepare("UPDATE partes SET activo = 0 WHERE id = ?")->execute([$muerta]);
         $rol = (int)$db->query("SELECT id FROM roles WHERE nombre = 'Administrador'")->fetchColumn();
-        return self::$datos = ["parte" => $parte, "cliente" => $cliente, "admin" => $admin, "pedido" => $pedido, "rol" => $rol];
+        return self::$datos = ["parte" => $parte, "cliente" => $cliente, "admin" => $admin, "pedido" => $pedido, "rol" => $rol, "muerta" => $muerta];
     }
 
     private static function sesion(PDO $db, string $contexto, array $f): void {
-        $_SESSION = array_diff_key($_SESSION, array_flip(["user", "user_roles", "cart", "flash", "pedido_exitoso", "login_error", "registro_error", "reset_ok", "reset_error", "reset_hash"]));
+        $_SESSION = array_diff_key($_SESSION, array_flip(["user", "user_roles", "cart", "cart_deshacer", "carrito_error", "form_viejo", "flash", "pedido_exitoso", "login_error", "registro_error", "reset_ok", "reset_error", "reset_hash"]));
         foreach (explode("+", $contexto) as $parte) {
             switch ($parte) {
                 case "cliente": case "cliente_sin_pedidos":
@@ -125,7 +132,17 @@ final class Pantallas {
                     $_SESSION["user_roles"] = ["Administrador"];
                     break;
                 case "carrito":
-                    $_SESSION["cart"] = [$f["parte"] => ["parte_id" => $f["parte"], "nombre" => "Pieza de pantalla", "precio" => 25.5, "cantidad" => 2, "max" => 12, "thumbnail" => null, "marca" => "Volumen Alfa Modelo V"]];
+                    $_SESSION["cart"] = [$f["parte"] => 2];
+                    break;
+                case "pieza_muerta":
+                    $_SESSION["cart"][$f["muerta"]] = 1; // una pieza desactivada: el carrito la quita y lo avisa
+                    break;
+                case "deshacer":
+                    $_SESSION["cart_deshacer"] = ["id" => $f["parte"], "cantidad" => 1, "nombre" => "Pieza de pantalla", "hasta" => time() + 300];
+                    break;
+                case "datos_error":
+                    $_SESSION["carrito_error"] = "La contraseña debe tener al menos 8 caracteres.";
+                    \FormViejo::guardar("carrito", ["cliente_nombre" => "Rosa Escrita", "cliente_email" => "rosa@example.invalid", "cliente_direccion" => "Calle de lo escrito 5"], ["cliente_nombre", "cliente_email", "cliente_direccion"]);
                     break;
                 case "pedido":
                     $_SESSION["pedido_exitoso"] = $f["pedido"];

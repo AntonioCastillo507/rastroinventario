@@ -239,7 +239,7 @@ final class ComprasAtomicasTest extends TestCase {
         $this->assertSame([10, 10], [$this->stock($viva), $this->stock($muerta)], "ninguna pieza se descontó");
         $this->assertSame(0, $this->pedidosDe($email));
         $this->assertStringContainsString("ya no está disponible", $this->mensaje($r));
-        $this->assertStringContainsString("Pieza $muerta", $this->mensaje($r));
+        $this->assertStringContainsString((string)$this->db->query("SELECT nombre FROM partes WHERE id = $muerta")->fetchColumn(), $this->mensaje($r), "el nombre sale de la base, no de la sesión");
         $this->assertArrayHasKey("cart", $r["sesion"], "el carrito se conserva para que la persona lo corrija");
     }
 

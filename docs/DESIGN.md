@@ -570,6 +570,11 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 - **`alert`**: éxito, error, aviso e información, con icono, texto y `role` adecuado; el cierre es un botón con nombre accesible. Los avisos no desaparecen solos si contienen un error.
 - **`modal-confirm`**: para eliminar, entregar un pedido y desactivar usuarios. Muestra el nombre del objeto y un botón con el verbo. Las acciones reversibles no piden confirmación y ofrecen deshacer.
 
+### Carrito en dos pasos (E8)
+- **`checkout-steps`**: lista ordenada "1 Carrito · 2 Tus datos" sobre el contenido. Cada paso lleva número y texto (`caption`, 12/500); el actual va en `{colors.text-strong}` con el número sobre `{colors.primary}` y `aria-current="step"`; el otro, en `{colors.muted-strong}` con el número en contorno `{colors.border-strong}`. Nunca solo color.
+- **Cantidad − / +** de la línea: el mismo control de la ficha (`cantidad-control`: contorno `{colors.input-border-dark}`, botones de 44 px, número en la fuente numérica). − se desactiva en 1 y + en el stock; el nombre accesible dice la acción y la pieza. Quitar es un botón de icono de 44 px con nombre accesible; se deshace con un aviso "Quitaste «…» · Deshacer", sin `confirm()`.
+- **Resumen del pedido**: tarjeta `{colors.surface-card-dark}` con borde fino y radio `{rounded.xl}`, desglose subtotal / impuesto / total (el total en `product-price`) y la nota de que los precios no incluyen impuesto. En escritorio es `sticky` y nunca más alto que la ventana (la lista de líneas hace scroll, los totales no); en móvil pasa a una barra inferior fija de 64 px ("Total $X · Ver resumen") que abre el mismo bloque como hoja inferior.
+
 ### Paginación, pie de página
 - Paginación con números, "Anterior" y "Siguiente", elemento activo con `aria-current`, y el texto "Mostrando X–Y de N".
 - **`footer-dark` / `footer-light`**: el pie **sigue el tema** de la página. Sin créditos de terceros; el texto sale de la configuración de marca. Compacto: 24 px de relleno superior, 24 px entre las columnas y la barra inferior, 8 px entre enlaces (que miden 25 px de alto), 32 px de pastilla en "Contacto y horario" con 12 px de separación al texto y la misma separación vertical entre datos. Los enlaces pasan al acento (`--link`) al pasar el cursor. Barra inferior con el copyright a la izquierda y los botones de redes (44 px de alto, borde fino, solo los que tengan dirección en `marca.php`; abren otra pestaña con `rel="noopener noreferrer"` y aviso accesible) a la derecha.
@@ -655,6 +660,7 @@ La derivación la hace un **script de línea de comandos** que recibe el color p
 | 27 | E5: relleno lateral del contenedor 16 / 24 / 32 px | No estaba definido |
 | 28 | E6: especificación de la marca del encabezado (`brand-lockup`), con el lema oculto por debajo de 768 px y una sola versión del logo (sin variante clara) | Hoy el lema (9,28 px) queda 13 px lejos del nombre y el logo tiene un filtro CSS |
 | 29 | E7: barra superior de 64 px en la tienda y en el panel | Hoy mide 81 px en la tienda y 58 en el panel |
+| 30 | E8: componentes del carrito en dos pasos (`checkout-steps`, cantidad − / + de la línea y resumen del pedido), hechos solo con tokens existentes. Aprobada por Tony (2026-10-25) | La compra pasa a dos pasos ("Carrito" y "Tus datos"); ninguno de los tres componentes existía. No añaden colores ni medidas nuevas (ver "Carrito en dos pasos") |
 
 ## Guía de iteración
 

@@ -66,7 +66,7 @@ final class AgregarCarritoTest extends TestCase {
         $this->assertStringEndsWith("/?action=carrito", $d["carrito"]);
         $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $d["csrf"], "el token nuevo");
         $this->assertSame($d["csrf"], $r["sesion"]["csrf_token"], "es el de la sesión: el siguiente envío con él pasa");
-        $this->assertSame(1, $r["sesion"]["cart"][$id]["cantidad"]);
+        $this->assertSame(1, $r["sesion"]["cart"][$id], "la sesión guarda solo pieza y cantidad");
         $this->assertArrayNotHasKey("flash", $r["sesion"], "no deja un aviso pendiente para la próxima página");
         if (Proceso::veCabeceras()) {
             $this->assertNull(Proceso::ubicacion($r), "no redirige");
@@ -94,7 +94,7 @@ final class AgregarCarritoTest extends TestCase {
         $this->assertTrue($d["alerta"]);
         $this->assertStringContainsString("todas las unidades disponibles", $d["msg"]);
         $this->assertSame(2, $d["cantidad"]);
-        $this->assertSame(2, $r["sesion"]["cart"][$id]["cantidad"]);
+        $this->assertSame(2, $r["sesion"]["cart"][$id]);
     }
 
     public function testLaCantidadPedidaSeSumaYSeLimitaAlStock(): void {
@@ -176,7 +176,7 @@ final class AgregarCarritoTest extends TestCase {
         $r = $this->agregar($id, false, true, [], ["volver" => "/rastroinventario/?ver=catalogo&page=2"]);
         $this->assertSame(APP_URL . "/?ver=catalogo&page=2#parte-$id", Proceso::ubicacion($r));
         $this->assertSame("success", $r["sesion"]["flash"]["type"]);
-        $this->assertSame(1, $r["sesion"]["cart"][$id]["cantidad"]);
+        $this->assertSame(1, $r["sesion"]["cart"][$id]);
     }
 
     public function testSinJavaScriptYSinRutaVuelveAlDetalle(): void {

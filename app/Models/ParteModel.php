@@ -31,6 +31,16 @@ class ParteModel extends BaseModel {
         $s=$this->db->prepare("SELECT p.*,a.marca,a.modelo,a.anio,s.nombre AS seccion FROM partes p LEFT JOIN autos a ON a.id=p.auto_id LEFT JOIN secciones s ON s.id=p.seccion_id WHERE p.id=?");
         $s->execute([$id]); return $s->fetch();
     }
+    /** Varias piezas con la misma forma que findById, en UNA consulta; el arreglo va indexado por id (las que no existen no aparecen) */
+    public function findByIds(array $ids): array {
+        $ids = array_values(array_unique(array_filter(array_map("intval", $ids), fn($i)=>$i>0)));
+        if (!$ids) return [];
+        $in = implode(",", array_fill(0, count($ids), "?"));
+        $s=$this->db->prepare("SELECT p.*,a.marca,a.modelo,a.anio,s.nombre AS seccion FROM partes p LEFT JOIN autos a ON a.id=p.auto_id LEFT JOIN secciones s ON s.id=p.seccion_id WHERE p.id IN ($in)");
+        $s->execute($ids);
+        $filas=[]; foreach ($s->fetchAll() as $f) $filas[(int)$f["id"]]=$f;
+        return $filas;
+    }
 
     /** WHERE y parámetros del catálogo público: el mismo para contar y para traer la página */
     private function wherePublic(string $q, int $secId, string $marca, float $pMin, float $pMax): array {

@@ -61,6 +61,8 @@ class PublicController extends BaseController {
     public function misPedidos():      void { $this->pc->misPedidos(); }
     public function miPerfil():        void { $this->pc->miPerfil(); }
     public function carrito():         void { $this->pc->verCarrito(); }
+    public function datosCarrito():    void { $this->pc->datosCarrito(); }
+    public function restaurarCarrito():void { $this->pc->restaurarCarrito(); }
     public function agregarCarrito():  void { $this->pc->agregarCarrito(); }
     public function quitarCarrito():   void { $this->pc->quitarCarrito(); }
     public function actualizarCarrito():void { $this->pc->actualizarCarrito(); }

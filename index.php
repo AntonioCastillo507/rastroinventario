@@ -17,6 +17,8 @@ try {
         "mis_pedidos"        => $ctrl->misPedidos(),
         "mi_perfil"          => $ctrl->miPerfil(),
         "carrito"            => $ctrl->carrito(),
+        "carrito_datos"      => $ctrl->datosCarrito(),
+        "restaurar_carrito"  => $ctrl->restaurarCarrito(),
         "agregar_carrito"    => $ctrl->agregarCarrito(),
         "quitar_carrito"     => $ctrl->quitarCarrito(),
         "actualizar_carrito" => $ctrl->actualizarCarrito(),
