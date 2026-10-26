@@ -24,8 +24,9 @@ class PublicController extends BaseController {
             $pagParams=["ver"=>"catalogo","q"=>$q,"seccion"=>$secId?:"","marca"=>$marca,"precio_min"=>$pMin>0?$pMin:"","precio_max"=>$pMax>0?$pMax:"","orden"=>$orden==="recientes"?"":$orden];
             $this->view("public/catalogo",array_merge($shared,compact("partes","q","secId","marca","pMin","pMax","orden","marcas","precioMin","precioMax","pag","pagParams")));
         } else {
-            $partesDestacadas=$this->pam->findFeatured(8);
-            $this->view("public/home",array_merge($shared,compact("partesDestacadas","q")));
+            $recientes=$this->pam->findPublic("",0,4,"",0,0,"recientes");
+            $marcasConteo=$this->pam->getMarcasConConteo();
+            $this->view("public/home",array_merge($shared,compact("recientes","marcasConteo","q")));
         }
     }
 

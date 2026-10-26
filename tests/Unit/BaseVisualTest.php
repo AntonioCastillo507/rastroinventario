@@ -88,7 +88,7 @@ final class BaseVisualTest extends TestCase {
     public function testLasCifrasUsanLaFuenteNumericaConCifrasTabulares(): void {
         $css = self::base();
         $this->assertMatchesRegularExpression('/\.precio[^{]*\{\s*font-family:\s*var\(--font-numeric\);\s*font-variant-numeric:\s*tabular-nums;/', $css);
-        foreach ([".detail-price", ".stat-val", ".stat-pill-num", ".cart-count", 'input[type="number"]', ".num"] as $s) $this->assertStringContainsString($s, substr($css, 0, (int)strpos($css, "font-variant-numeric")), $s);
+        foreach ([".detail-price", ".stat-val", ".cart-count", 'input[type="number"]', ".num"] as $s) $this->assertStringContainsString($s, substr($css, 0, (int)strpos($css, "font-variant-numeric")), $s);
     }
 
     public function testBaseCssSoloUsaTokensNoColoresSueltos(): void {

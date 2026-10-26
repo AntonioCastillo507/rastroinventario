@@ -20,8 +20,6 @@ final class ImagenesPesoTest extends TestCase {
     public function testLasImagenesQueUsaElSitioExistenYPesanPoco(): void {
         $usadas = $this->usadas();
         $this->assertContains("logo.png", $usadas);
-        $this->assertContains("hero-bg.jpg", $usadas);
-        $this->assertContains("hero-bg-800.jpg", $usadas);
         foreach ($usadas as $nombre) {
             $ruta = BASE_PATH . "/assets/img/$nombre";
             $this->assertFileExists($ruta, $nombre);

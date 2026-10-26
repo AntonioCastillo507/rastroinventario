@@ -11,9 +11,11 @@ final class Marca {
         "telefono" => "", "correo" => "", "direccion" => "", "ciudad" => "", "pais" => "",
         "horario" => [], "redes" => [],
         "portada" => [
-            "titulo_pagina" => "", "etiqueta" => "", "titulo" => "", "titulo_resalte" => "", "subtitulo" => "", "buscador" => "",
-            "secciones_titulo" => "", "secciones_resalte" => "", "secciones_subtitulo" => "",
-            "destacadas_titulo" => "", "destacadas_resalte" => "", "destacadas_subtitulo" => "",
+            "titulo_pagina" => "", "titulo" => "", "titulo_resalte" => "", "subtitulo" => "", "buscador" => "",
+            "foto" => "", "foto_movil" => "",
+            "categorias_titulo" => "", "recientes_titulo" => "", "recientes_ver" => "", "marcas_titulo" => "",
+            "cta_titulo" => "", "cta_texto" => "", "cta_boton" => "",
+            "confianza" => [],
         ],
         "nosotros" => ["titulo" => "", "titulo_resalte" => "", "parrafos" => [], "imagen" => "", "destacados" => [], "destacados_visibles" => false],
         "contacto" => ["titulo" => "Contacto", "intro" => ""],
@@ -104,6 +106,22 @@ final class Marca {
             if ($nombre === "" || !preg_match('~^https?://~i', $url)) continue;
             $icono = preg_replace('/[^a-z0-9-]/', "", strtolower((string)($r["icono"] ?? ""))) ?: "link-45deg";
             $out[] = ["nombre" => $nombre, "url" => $url, "icono" => $icono];
+        }
+        return $out;
+    }
+
+    /**
+     * Elementos de la franja de confianza de la portada: máximo 4 y solo los que tienen título. Vacío = la franja no se pinta.
+     * @return list<array{icono:string,titulo:string,texto:string}>
+     */
+    public static function confianza(): array {
+        $out = [];
+        foreach ((array)self::get("portada.confianza", []) as $e) {
+            $titulo = trim((string)($e["titulo"] ?? ""));
+            if ($titulo === "") continue;
+            $icono = preg_replace('/[^a-z0-9-]/', "", strtolower((string)($e["icono"] ?? "")));
+            $out[] = ["icono" => $icono, "titulo" => $titulo, "texto" => trim((string)($e["texto"] ?? ""))];
+            if (count($out) === 4) break;
         }
         return $out;
     }

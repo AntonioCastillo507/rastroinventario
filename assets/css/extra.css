@@ -33,25 +33,6 @@ input[type="file"].form-control { color:var(--text-2)!important; }
 /* ── Filtros catálogo ───────────────────────────────────────────── */
 .filter-label { color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.4rem; }
 
-/* ── Sección card (landing) ─────────────────────────────────────── */
-.sec-card { background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:border-color .2s,transform .2s;display:block;text-decoration:none; }
-.sec-card:hover { border-color:var(--accent);transform:translateY(-4px);text-decoration:none; }
-.sec-icon { width:50px;height:50px;background:var(--accent-dim);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1.4rem;margin-bottom:.85rem; }
-.sec-name { font-weight:700;color:var(--text-1);font-size:.95rem; }
-.sec-count { font-size:.75rem;color:var(--accent);margin-top:.35rem; }
-
-/* ── Hero ───────────────────────────────────────────────────────── */
-.hero-section { position:relative;min-height:440px;background:var(--bg-2) center/cover no-repeat;display:flex;align-items:center;overflow:hidden; }
-.hero-overlay { position:absolute;inset:0; } /* el color lo pone base.css (scrim plano) */
-.hero-content { position:relative;z-index:1;padding:4rem 1rem;width:100%; }
-.hero-title { font-size:clamp(2rem,5vw,3.2rem);font-weight:800;color:#fff;line-height:1.1; }
-.hero-title span { color:var(--accent); }
-
-/* ── Stats bar ──────────────────────────────────────────────────── */
-.stats-bar { background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
-.stat-pill-num { font-size:2rem;font-weight:800;color:var(--accent);line-height:1; }
-.stat-pill-lbl { font-size:.75rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.07em;margin-top:.2rem; }
-
 /* ── Carrito badge en nav ───────────────────────────────────────── */
 .cart-btn { position:relative; }
 .cart-count { position:absolute;top:-6px;right:-6px;background:var(--accent);color:#000;font-size:.6rem;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1; }

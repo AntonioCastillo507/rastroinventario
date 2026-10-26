@@ -33,17 +33,24 @@ return [
 
     "portada" => [
         "titulo_pagina" => "Partes y Repuestos en Panamá",
-        "etiqueta"      => "Rastro de autos — Panamá",
         "titulo"        => "Tu pieza al",
         "titulo_resalte" => "mejor precio",
-        "subtitulo"     => "Repuestos originales para las principales marcas del mercado panameño.",
+        "subtitulo"     => "Repuestos de autos usados en Panamá. Busca por nombre o por marca.",
         "buscador"      => "Buscar: puerta, motor, vidrio, Toyota...",
-        "secciones_titulo"   => "Explorar por",
-        "secciones_resalte"  => "Sección",
-        "secciones_subtitulo" => "Inventario organizado por área del rastro",
-        "destacadas_titulo"   => "Piezas",
-        "destacadas_resalte"  => "Destacadas",
-        "destacadas_subtitulo" => "Las piezas con mayor disponibilidad en stock",
+        // Fotos de fondo del hero (escritorio y móvil). Vacías = hero tipográfico, que es el de la plantilla.
+        // Las de Rastro del Istmo viven en assets/img/portada/ (carpeta fuera de git; hay copia en la carpeta de respaldos, fuera del proyecto).
+        "foto"          => "assets/img/portada/hero-escritorio.webp",
+        "foto_movil"    => "assets/img/portada/hero-movil.webp",
+        "categorias_titulo" => "Compra por categoría",
+        "recientes_titulo"  => "Recién llegadas",
+        "recientes_ver"     => "Ver las {total} piezas",
+        "marcas_titulo"     => "Compra por marca",
+        "cta_titulo"        => "¿No encuentras tu pieza?",
+        "cta_texto"         => "Escríbenos o llámanos con el nombre de la pieza y tu vehículo.",
+        "cta_boton"         => "Contáctanos",
+        // Franja de confianza: oculta mientras esta lista esté vacía. Cada elemento: ["icono" => "...", "titulo" => "...", "texto" => "..."].
+        // Solo afirmaciones confirmadas (garantía, devolución, retiro, envíos): ninguna se escribe en las vistas.
+        "confianza"     => [],
     ],
 
     "nosotros" => [

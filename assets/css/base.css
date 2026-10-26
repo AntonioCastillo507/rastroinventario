@@ -28,7 +28,7 @@ input, select, textarea, .form-control, .form-select,
   line-height: var(--type-input-text-line-height);
 }
 .text-precio { color: var(--precio) !important; }
-.num, .precio, .detail-price, .text-precio, .stat-val, .stat-pill-num, .cart-count, .total-preview, #totalEstimado,
+.num, .precio, .detail-price, .text-precio, .stat-val, .cart-count, .total-preview, #totalEstimado,
 .fw-bold.text-success, .fs-4.text-success, .fs-5.text-success, input[type="number"], .chip-success,
 .stock-insignia, .page-link, .chip-warning, .chip-danger, .chip-info, [style*="var(--success)"] {
   font-family: var(--font-numeric);
@@ -60,7 +60,7 @@ body:focus-visible, main:focus, main:focus-visible { outline: none; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .tarjeta-pieza:hover, .sec-card:hover, .stat-card:hover, a.stat-card:hover, .btn-gold:hover, .btn-warning:hover,
+  .tarjeta-pieza:hover, .stat-card:hover, a.stat-card:hover, .btn-gold:hover, .btn-warning:hover,
   .tarjeta-pieza:hover .foto-baldosa { transform: none !important; }
 }
 
@@ -105,9 +105,8 @@ body:focus-visible, main:focus, main:focus-visible { outline: none; }
    COMPATIBILIDAD DEL CSS HEREDADO CON EL MODO CLARO
    (los colores fijos de style.css y extra.css pasan a los tokens)
    ══════════════════════════════════════════════════ */
-body, .hero-section { color: var(--text); }
+body { color: var(--text); }
 .text-white, .admin-nav .navbar-brand { color: var(--text-strong) !important; }
-.hero-title { color: var(--text-strong); }
 .public-nav .nav-link.active { color: var(--text-strong) !important; }
 .text-primary { color: var(--link) !important; }
 ::selection { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
@@ -219,7 +218,7 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 /* Modo claro: superficies planas, sin sombras pesadas (DESIGN.md, Elevación) */
 [data-theme="light"] { --shadow: none; }
 [data-theme="light"] .tarjeta-pieza:hover, [data-theme="light"] .stat-card:hover, [data-theme="light"] a.stat-card:hover,
-[data-theme="light"] .sec-card:hover, [data-theme="light"] .login-card { box-shadow: none !important; }
+[data-theme="light"] [data-theme="light"] .login-card { box-shadow: none !important; }
 
 /* Enlace de salto al contenido: solo aparece al enfocarlo con el teclado */
 .skip-link:focus {
@@ -270,12 +269,60 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .contacto-enlace { display: inline-flex; align-items: center; min-height: 44px; color: var(--link); }
 .contacto-enlace:hover { color: var(--link-hover); }
 
-/* Portada: foto de fondo (copia chica en móvil) y scrim plano del color del lienzo oscuro, sin degradado (DESIGN.md).
-   La opacidad del scrim es la que mide tests/Support/contraste_hero.js: el texto sobre la foto da 4,5:1 hasta en su punto más claro. */
-.hero-section { background-image: url("../img/hero-bg-800.jpg"); }
-@media (min-width: 801px) { .hero-section { background-image: url("../img/hero-bg.jpg"); } }
-.hero-overlay { background: color-mix(in srgb, var(--color-canvas-dark) 65%, transparent); }
-.hero-subtitulo { color: var(--text); } /* el texto de cuerpo, no el secundario: sobre la foto el secundario deja poco margen */
+/* ── Portada (P6): hero de una columna, categorías, «Recién llegadas», «Compra por marca» y banda final. Solo tokens de tema.css. ── */
+.portada-hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--hairline); }
+.hero-texto { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
+.hero-titulo { max-width: 14em; margin: 0 0 var(--spacing-xs); font-size: var(--type-hero-display-mobile-size); font-weight: 700; line-height: var(--type-hero-display-mobile-line-height); letter-spacing: var(--type-hero-display-mobile-letter-spacing); color: var(--text-strong); text-wrap: balance; }
+.hero-resalte { color: var(--link); }
+.hero-sub { max-width: 34em; margin: 0 0 var(--spacing-md); font-size: var(--type-body-lg-size); line-height: 1.5; color: var(--text); }
+.hero-buscar { display: flex; gap: var(--spacing-xs); max-width: 540px; }
+.hero-buscar .form-control { flex: 1; min-width: 0; }
+.hero-buscar .btn { flex: none; padding-inline: var(--spacing-lg); }
+@media (min-width: 768px) {
+  .portada-hero { display: flex; align-items: center; min-height: 400px; }
+  .portada-hero .container-xl { width: 100%; }
+  .hero-texto { padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl); }
+  .hero-titulo { font-size: var(--type-hero-display-size); line-height: var(--type-hero-display-line-height); letter-spacing: var(--type-hero-display-letter-spacing); }
+  .hero-sub { margin-bottom: var(--spacing-lg); }
+}
+
+.portada-seccion { padding-block: var(--spacing-lg); }
+@media (min-width: 768px) { .portada-seccion { padding-block: var(--spacing-xl); } }
+.seccion-cabeza { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--spacing-xs) var(--spacing-md); margin-bottom: var(--spacing-md); }
+.seccion-titulo { margin: 0 0 var(--spacing-md); font-size: var(--type-title-lg-size); font-weight: 600; line-height: 1.3; color: var(--text-strong); }
+.seccion-cabeza .seccion-titulo { margin: 0; }
+.seccion-ver { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; color: var(--link); text-decoration: none; }
+.seccion-ver:hover { color: var(--link-hover); text-decoration: underline; }
+
+.cat-lista, .marca-lista, .confianza-lista { list-style: none; margin: 0; padding: 0; }
+.cat-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-sm); }
+@media (min-width: 768px) { .cat-lista { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--spacing-lg); } }
+.cat-baldosa { display: flex; flex-direction: column; gap: var(--spacing-xxs); height: 100%; min-height: 120px; padding: var(--spacing-md); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); text-decoration: none; transition: border-color .15s; }
+.cat-baldosa:hover { border-color: var(--border-strong); }
+@media (min-width: 768px) { .cat-baldosa { padding: var(--spacing-lg); } }
+.cat-nombre { font-size: var(--type-title-md-size); font-weight: 600; line-height: 1.35; color: var(--text-strong); }
+.cat-desc { font-size: var(--type-body-md-size); line-height: 1.5; color: var(--text-muted); }
+.cat-cuenta { margin-top: auto; font-size: var(--type-number-sm-size); font-weight: 500; color: var(--text); }
+
+.portada-nuevas { border-block: 1px solid var(--hairline); }
+.marca-lista { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+.marca-chip { display: inline-flex; align-items: center; gap: var(--spacing-sm); min-height: 44px; padding: 0 var(--spacing-md); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--rounded-lg); font-weight: 600; color: var(--text-strong); text-decoration: none; }
+.marca-chip:hover { border-color: var(--link); }
+.marca-chip-n { font-size: var(--type-number-sm-size); font-weight: 500; color: var(--text-muted); }
+
+.portada-confianza { padding-block: var(--spacing-md); border-bottom: 1px solid var(--hairline); }
+.confianza-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-sm) var(--spacing-lg); }
+@media (min-width: 992px) { .confianza-lista { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.confianza-item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.confianza-titulo { font-size: var(--type-title-sm-size); font-weight: 600; line-height: 1.4; color: var(--text-strong); }
+.confianza-texto { font-size: var(--type-body-md-size); line-height: 1.5; color: var(--text-muted); }
+
+.cta-banda { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-md); padding: var(--spacing-lg); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); }
+@media (min-width: 768px) { .cta-banda { flex-direction: row; align-items: center; justify-content: space-between; padding: var(--spacing-xxl); } }
+.cta-titulo { margin: 0 0 var(--spacing-xxs); font-size: var(--type-title-lg-size); font-weight: 600; line-height: 1.3; color: var(--text-strong); }
+@media (min-width: 768px) { .cta-titulo { font-size: var(--type-display-sm-size); line-height: var(--type-display-sm-line-height); } }
+.cta-texto { margin: 0; color: var(--text); }
+
 /* ── Marca del encabezado, del pie, del acceso y del panel (brand-lockup, DESIGN.md E6) ──
    Un solo enlace: logo de 40 px (36 en móvil), 12 px de separación, nombre 16/700 y lema 12/500 a 2 px, todo centrado.
    El logo es un SVG en línea de un color: toma el de la marca (--logo, el amarillo principal en los dos modos) por currentColor,

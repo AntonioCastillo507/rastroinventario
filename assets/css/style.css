@@ -169,42 +169,6 @@ small,.small { color:var(--text-2); }
 .public-footer { background:var(--bg-1)!important;border-top:1px solid var(--border); }
 
 /* ══════════════════════════════════════════════════
-   HERO
-   ══════════════════════════════════════════════════ */
-.hero-section {
-  position:relative;min-height:460px;
-  background:var(--bg-2) center/cover no-repeat;
-  display:flex;align-items:center;overflow:hidden;
-}
-.hero-overlay { position:absolute;inset:0; } /* el color lo pone base.css (scrim plano) */
-.hero-content { position:relative;z-index:1;padding:4rem 1rem;width:100%; }
-.hero-title { font-size:clamp(2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.02em;line-height:1.1; }
-.hero-title span { color:var(--accent); }
-.hero-sub { font-size:1.1rem;color:var(--text-2);max-width:520px;margin:0 auto; }
-
-/* ══════════════════════════════════════════════════
-   STATS BAR
-   ══════════════════════════════════════════════════ */
-.stats-bar { background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
-.stat-pill { text-align:center;padding:1.25rem; }
-.stat-pill-num { font-size:2rem;font-weight:800;color:var(--accent);line-height:1; }
-.stat-pill-lbl { font-size:.75rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.07em;margin-top:.2rem; }
-
-/* ══════════════════════════════════════════════════
-   SECCIÓN CARDS (landing)
-   ══════════════════════════════════════════════════ */
-.sec-card {
-  background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);
-  padding:1.5rem;transition:border-color .2s,transform .2s,box-shadow .2s;
-  display:block;text-decoration:none;
-}
-.sec-card:hover { border-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow);text-decoration:none; }
-.sec-icon { width:52px;height:52px;background:var(--accent-dim);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1.5rem;margin-bottom:1rem; }
-.sec-name { font-weight:700;color:var(--text-1);font-size:1rem;margin-bottom:.25rem; }
-.sec-desc { font-size:.8rem;color:var(--text-2);margin:0; }
-.sec-count { font-size:.75rem;color:var(--accent);margin-top:.5rem; }
-
-/* ══════════════════════════════════════════════════
    DARK CARD (admin panels)
    ══════════════════════════════════════════════════ */
 .dark-card { background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden; }
@@ -302,5 +266,4 @@ small,.small { color:var(--text-2); }
 @media(max-width:576px) {
   .stat-val { font-size:1.5rem; }
   .login-card { padding:1.75rem 1.25rem; }
-  .hero-title { font-size:2rem; }
 }

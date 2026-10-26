@@ -1,94 +1,89 @@
-<?php $title=Marca::get("portada.titulo_pagina"); $navActivo="inicio"; include BASE_PATH."/app/Views/layouts/public_header.php"; ?>
+<?php
+$title=Marca::get("portada.titulo_pagina"); $navActivo="inicio"; include BASE_PATH."/app/Views/layouts/public_header.php";
+$confianza=Marca::confianza();
+$tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
+?>
 
-<!-- HERO  ── la foto (hero-bg.jpg y su copia chica para móvil) y el scrim se definen en base.css -->
-<section id="inicio" class="hero-section">
-  <div class="hero-overlay"></div>
-  <div class="hero-content container-xl text-center">
-    <p class="text-warning small fw-bold text-uppercase mb-2" style="letter-spacing:.15em"><?=Marca::h("portada.etiqueta")?></p>
-    <h1 class="hero-title mb-3"><?=Marca::h("portada.titulo")?><br><span><?=Marca::h("portada.titulo_resalte")?></span></h1>
-    <p class="hero-subtitulo mb-4 mx-auto" style="max-width:500px;font-size:1.05rem"><?=Marca::h("portada.subtitulo")?></p>
-    <form class="d-flex justify-content-center mb-4" method="GET" action="<?=APP_URL?>/" role="search">
+<?php /* HERO: título, subtítulo y buscador en una columna. Con foto (portada.foto en marca.php) lleva la capa por modo; sin ella es tipográfico */ ?>
+<section id="inicio" class="portada-hero" aria-labelledby="hero-titulo">
+  <div class="container-xl hero-texto">
+    <h1 id="hero-titulo" class="hero-titulo"><?=Marca::h("portada.titulo")?> <span class="hero-resalte"><?=Marca::h("portada.titulo_resalte")?></span></h1>
+    <p class="hero-sub"><?=Marca::h("portada.subtitulo")?></p>
+    <form class="hero-buscar" method="GET" action="<?=APP_URL?>/" role="search">
       <input type="hidden" name="ver" value="catalogo">
-      <div class="input-group input-group-lg" style="max-width:540px">
-        <input type="search" name="q" class="form-control dark-input" placeholder="<?=Marca::h("portada.buscador")?>" aria-label="Buscar piezas">
-        <button class="btn btn-gold px-4" type="submit"><i aria-hidden="true" class="bi bi-search me-1"></i>Buscar</button>
-      </div>
+      <label class="visually-hidden" for="hero-q">Buscar piezas por nombre o por marca</label>
+      <input id="hero-q" type="search" name="q" class="form-control dark-input" placeholder="<?=Marca::h("portada.buscador")?>" autocomplete="off">
+      <button class="btn btn-gold" type="submit">Buscar</button>
     </form>
-    <div class="d-flex justify-content-center gap-3 flex-wrap">
-      <a href="<?=APP_URL?>/?ver=catalogo" class="btn btn-outline-warning px-4"><i aria-hidden="true" class="bi bi-grid me-2"></i>Ver todo el catálogo</a>
-      <a href="#secciones" class="btn btn-outline-secondary px-4"><i aria-hidden="true" class="bi bi-diagram-3 me-2"></i>Explorar secciones</a>
-    </div>
   </div>
 </section>
 
-<!-- STATS -->
-<div class="stats-bar">
+<?php if($confianza): ?>
+<?php /* franja de portada.confianza (marca.php): con la lista vacía no se pinta nada */ ?>
+<section class="portada-confianza" aria-label="Por qué comprar aquí">
   <div class="container-xl">
-    <div class="row g-0 text-center">
-      <div class="col-4 py-3 border-end" style="border-color:var(--border)!important">
-        <div class="stat-pill-num"><?=$stats["partes"]?>+</div>
-        <div class="stat-pill-lbl">Piezas</div>
-      </div>
-      <div class="col-4 py-3 border-end" style="border-color:var(--border)!important">
-        <div class="stat-pill-num"><?=$stats["marcas"]?></div>
-        <div class="stat-pill-lbl">Marcas</div>
-      </div>
-      <div class="col-4 py-3">
-        <div class="stat-pill-num"><?=$stats["secciones"]?></div>
-        <div class="stat-pill-lbl">Secciones</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SECCIONES -->
-<section id="secciones" class="py-5">
-  <div class="container-xl">
-    <div class="text-center mb-4">
-      <h2 class="fw-bold text-white"><?=Marca::h("portada.secciones_titulo")?> <span class="text-warning"><?=Marca::h("portada.secciones_resalte")?></span></h2>
-      <p class="text-secondary"><?=Marca::h("portada.secciones_subtitulo")?></p>
-    </div>
-    <div class="row g-3">
-      <?php $sicones=["Sección A"=>"bi-door-open","Sección B"=>"bi-gear-wide-connected","Sección C"=>"bi-eyeglasses","Sección D"=>"bi-lightning-charge","default"=>"bi-archive"]; ?>
-      <?php foreach($secciones as $s): $ic=$sicones[$s["nombre"]]??$sicones["default"]; ?>
-      <div class="col-6 col-md-3">
-        <a href="<?=APP_URL?>/?ver=catalogo&seccion=<?=$s["id"]?>" class="sec-card h-100">
-          <div class="sec-icon"><i aria-hidden="true" class="bi <?=$ic?>"></i></div>
-          <div class="sec-name"><?=htmlspecialchars($s["nombre"])?></div>
-          <div class="text-secondary small"><?=htmlspecialchars($s["descripcion"]??"")?></div>
-          <div class="sec-count"><i aria-hidden="true" class="bi bi-box-seam me-1"></i><?=$s["total"]?> piezas</div>
-        </a>
-      </div>
+    <ul class="confianza-lista">
+      <?php foreach($confianza as $c): ?>
+      <li class="confianza-item"><span class="confianza-titulo"><?=htmlspecialchars($c["titulo"])?></span><?php if($c["texto"]!==""): ?><span class="confianza-texto"><?=htmlspecialchars($c["texto"])?></span><?php endif; ?></li>
       <?php endforeach; ?>
-    </div>
+    </ul>
+  </div>
+</section>
+<?php endif; ?>
+
+<section class="portada-seccion" aria-labelledby="t-cats">
+  <div class="container-xl">
+    <h2 id="t-cats" class="seccion-titulo"><?=Marca::h("portada.categorias_titulo")?></h2>
+    <ul class="cat-lista">
+      <?php foreach($secciones as $s): ?>
+      <li><a class="cat-baldosa" href="<?=APP_URL?>/?ver=catalogo&amp;seccion=<?=(int)$s["id"]?>">
+        <span class="cat-nombre"><?=htmlspecialchars($s["nombre"])?></span>
+        <?php if(trim((string)($s["descripcion"]??""))!==""): ?><span class="cat-desc"><?=htmlspecialchars($s["descripcion"])?></span><?php endif; ?>
+        <span class="cat-cuenta num"><?=(int)$s["total"]?> piezas</span>
+      </a></li>
+      <?php endforeach; ?>
+    </ul>
   </div>
 </section>
 
-<!-- PIEZAS DESTACADAS — mayor stock -->
-<section style="background:var(--bg-1);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" class="py-5">
+<section class="portada-seccion portada-nuevas" aria-labelledby="t-nuevas">
   <div class="container-xl">
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-      <div>
-        <h2 class="fw-bold text-white mb-0"><?=Marca::h("portada.destacadas_titulo")?> <span class="text-warning"><?=Marca::h("portada.destacadas_resalte")?></span></h2>
-        <p class="text-secondary small mb-0"><?=Marca::h("portada.destacadas_subtitulo")?></p>
-      </div>
-      <a href="<?=APP_URL?>/?ver=catalogo" class="btn btn-gold px-4 fw-bold">
-        <i aria-hidden="true" class="bi bi-grid me-2"></i>Ver todo el catálogo
-      </a>
+    <div class="seccion-cabeza">
+      <h2 id="t-nuevas" class="seccion-titulo"><?=Marca::h("portada.recientes_titulo")?></h2>
+      <a class="seccion-ver" href="<?=APP_URL?>/?ver=catalogo"><?=htmlspecialchars(str_replace("{total}",(string)(int)$stats["partes"],(string)Marca::get("portada.recientes_ver")))?> →</a>
     </div>
-    <?php if(empty($partesDestacadas)): ?>
+    <?php if(empty($recientes)): ?>
     <p class="text-secondary text-center py-4">No hay piezas disponibles aún.</p>
     <?php else: ?>
-    <?php $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? ""; ?>
     <div class="rejilla-piezas">
-      <?php foreach($partesDestacadas as $p): $tarjetaParte=$p; include BASE_PATH."/app/Views/layouts/tarjeta_pieza.php"; endforeach; ?>
-    </div>
-    <div class="text-center mt-4">
-      <a href="<?=APP_URL?>/?ver=catalogo" class="btn btn-outline-warning px-5 py-2">
-        <i aria-hidden="true" class="bi bi-grid me-2"></i>Ver las <?=$stats["partes"]?> piezas disponibles
-      </a>
+      <?php foreach($recientes as $p): $tarjetaParte=$p; include BASE_PATH."/app/Views/layouts/tarjeta_pieza.php"; endforeach; ?>
     </div>
     <?php endif; ?>
+  </div>
+</section>
+
+<?php if(!empty($marcasConteo)): ?>
+<section class="portada-seccion" aria-labelledby="t-marcas">
+  <div class="container-xl">
+    <h2 id="t-marcas" class="seccion-titulo"><?=Marca::h("portada.marcas_titulo")?></h2>
+    <ul class="marca-lista">
+      <?php foreach($marcasConteo as $m): ?>
+      <li><a class="marca-chip" href="<?=APP_URL?>/?ver=catalogo&amp;marca=<?=htmlspecialchars(rawurlencode($m["marca"]))?>"><span><?=htmlspecialchars($m["marca"])?></span><span class="marca-chip-n num"><?=(int)$m["total"]?></span></a></li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+</section>
+<?php endif; ?>
+
+<section class="portada-seccion portada-cta" aria-labelledby="t-cta">
+  <div class="container-xl">
+    <div class="cta-banda">
+      <div>
+        <h2 id="t-cta" class="cta-titulo"><?=Marca::h("portada.cta_titulo")?></h2>
+        <p class="cta-texto"><?=Marca::h("portada.cta_texto")?></p>
+      </div>
+      <a class="btn btn-gold" href="<?=APP_URL?>/?action=contacto"><?=Marca::h("portada.cta_boton")?></a>
+    </div>
   </div>
 </section>
 

@@ -1,6 +1,6 @@
 # ESTADO DEL PROYECTO: Rastroinventario (Rastro del Istmo)
 
-Última actualización: 2026-10-25 (sesión S3 completa: token CSRF por sesión, carrito en dos pasos y P7)
+Última actualización: 2026-10-26 (S4.0 hecha; maqueta de la portada P6 hecha, a la espera de aprobación de Tony)
 
 ## Para Claude: cómo usar este archivo
 - Lee este archivo al empezar cualquier sesión. Es la memoria del proyecto.
@@ -327,3 +327,10 @@ Plan aprobado por Tony y hecho en tres tandas: la primera cerró S3.1 y S3.2 (al
 
 ### Pendiente de S3: nada
 - La sesión S3 (carrito en dos pasos y P7) está completa. Sigue del backlog: P6 (portada), A1 a A5 (panel) y las sesiones futuras F1 (galería con zoom) y F2 (compra como invitado; el bloque `_cuenta.php` del paso 2 es el único que cambia).
+
+## Sesión S4 del rediseño: portada (P6) (2026-10-26)
+- El párrafo de S3 de este archivo ya decía que S3.1 a S3.4 están hechas (corregido en `e530ef4`); no hizo falta tocarlo otra vez.
+- **S4.0 hecha** (`f7f108a`, `composer test` 2055 → 2061, sin push): (a) controles de 40 px en escritorio y 44 px en táctil en la regla global de `base.css` (`.btn`, campos y selects, `.page-link`, `.btn-back`, `.icon-btn`; antes campos de 36 px y botones de 28 a 32 px), medido en el navegador a 1280 px en la tienda y en el panel (mínimo 40 px, sin desbordes; el 44 del táctil no cambia); (b) el icono de la R va en `--logo` (nuevo token en `tema.css` generado por `TemaGenerador`, igual al color principal: #FCD535) en los dos modos y en encabezado, pie, acceso y panel (medido `rgb(252, 213, 53)` en oscuro y claro; el nombre y el lema no cambian). DESIGN.md: `brand-lockup` documenta la excepción a la regla de contraste (el nombre va escrito al lado) y las adaptaciones 31 y 32. Pruebas nuevas: `LogoAmarilloTest` (5), `BaseVisualTest::testBotonesYCamposTienen40PxEnEscritorioFueraDeLaConsultaTactil` y el cambio en `MarcaEncabezadoTest`; 8 mutaciones, 8 detectadas.
+- **Maqueta de la portada** (solo en la carpeta temporal de la sesión; el proyecto no se tocó): `maqueta/index.html` (`?v=foto|tipo&t=dark|light`) y tres hojas comparativas `hoja1.png` (hero a 1280 px), `hoja2.png` (hero a 390 px) y `hoja3.png` (página completa). Composición B adaptada de `docs/UX.md` 5.1: hero compacto con buscador y tarjeta «Busca por tu vehículo», franja de confianza OCULTA, categorías, «Recién llegadas», «Compra por marca», banda de llamada a la acción, sin franja de cifras. Foto de stock de Tony recortada a 16:9 (1600×900, 144 KB) y a 4:5 (720×900, 72 KB) en WebP. Capa de la foto: oscuro, `canvas-dark` al 76 %; claro, `surface-strong-light` (crema cálido) al 90 %; título y subtítulo con `text-strong` / `text`. Contraste medido con la foto real en el peor píxel de cada línea de texto (+8 px): dos modos y 390, 768 y 1280 px; el mínimo con la capa elegida es 7,78:1 (oscuro) y 11,81:1 (claro); el α mínimo para 4,5:1 es 0,613 en oscuro y 0,548 en claro.
+- **Decisiones de Tony sobre la maqueta (2026-10-26)**: variante (a) con foto; SIN selector de vehículo en S4 (el hero lleva solo el buscador, en una columna, con el subtítulo «Repuestos de autos usados en Panamá. Busca por nombre o por marca.»); «Compra por marca» con conteo de piezas por marca y sin más consultas; banda final con «Contáctanos» hacia Contacto, sin WhatsApp; arreglar la hamburguesa casi invisible en modo oscuro a 390 px; medir también el logo en el acceso.
+- **Pendiente (tarea aparte): selector de vehículo «Busca por tu vehículo»** (Marca → Modelo → Año; ver `docs/UX.md` 5.1 y 10.3). Hace falta filtrar el catálogo por modelo y año (hoy solo por marca: `ParteModel::wherePublic`), listar modelos por marca y años por modelo, y la pantalla de maqueta (la tarjeta plegable en móvil ya está en la maqueta de la sesión S4).

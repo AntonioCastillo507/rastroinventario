@@ -17,7 +17,9 @@ final class MarcaPantallasTest extends BaseDatos {
         "telefono" => "+999 8888-7777", "correo" => "cambiado@example.invalid", "direccion" => "Calle Cambiada 123",
         "pais" => "Paisandu", "pie" => "Pie cambiado {nombre} {pais}",
         "horario" => [["dia" => "Dia Cambiado", "horas" => "1:00 AM – 2:00 AM", "abierto" => true]],
-        "portada" => ["titulo_pagina" => "Titulo de portada cambiado", "etiqueta" => "Etiqueta cambiada", "titulo" => "Titulo cambiado", "titulo_resalte" => "resalte cambiado", "subtitulo" => "Subtitulo cambiado", "buscador" => "Buscador cambiado"],
+        "portada" => ["titulo_pagina" => "Titulo de portada cambiado", "titulo" => "Titulo cambiado", "titulo_resalte" => "resalte cambiado", "subtitulo" => "Subtitulo cambiado", "buscador" => "Buscador cambiado",
+            "categorias_titulo" => "Categorias cambiadas", "recientes_titulo" => "Recientes cambiadas", "recientes_ver" => "Todas las {total} cambiadas", "marcas_titulo" => "Marcas cambiadas",
+            "cta_titulo" => "Banda cambiada", "cta_texto" => "Texto de banda cambiado", "cta_boton" => "Boton cambiado"],
         "impuesto" => ["nombre" => "IVAX", "tasa" => 0.12],
     ];
 
@@ -82,8 +84,9 @@ final class MarcaPantallasTest extends BaseDatos {
     public function testLaPortadaUsaLosTextosDeLaMarca(): void {
         $html = Pantallas::render($this->db, "home");
         $plano = preg_replace('/\s+/u', " ", html_entity_decode(strip_tags(str_replace("<br>", " ", $html)), ENT_QUOTES, "UTF-8"));
-        foreach (["Etiqueta cambiada", "Titulo cambiado resalte cambiado", "Subtitulo cambiado"] as $t) $this->assertStringContainsString($t, $plano);
+        foreach (["Titulo cambiado resalte cambiado", "Subtitulo cambiado", "Categorias cambiadas", "Recientes cambiadas", "Marcas cambiadas", "Banda cambiada", "Texto de banda cambiado", "Boton cambiado"] as $t) $this->assertStringContainsString($t, $plano);
         $this->assertStringContainsString('placeholder="Buscador cambiado"', $html);
+        $this->assertMatchesRegularExpression('/Todas las \d+ cambiadas/', $plano, "{total} se sustituye por el número de piezas");
         $this->assertStringContainsString("<title>Titulo de portada cambiado — Taller Cambiado Zeta</title>", $html);
     }
 

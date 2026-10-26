@@ -177,11 +177,11 @@ final class PaginacionPantallasTest extends BaseDatos {
         $this->assertSame(0, Html::contar($x, "//script[contains(., 'alert(1)')]"));
     }
 
-    public function testLaPortadaSigueConSusOchoDestacadosSinBarra(): void {
+    public function testLaPortadaMuestraLasCuatroRecienLlegadasSinBarra(): void {
         $x = $this->pantalla(fn() => (new \PublicController())->home(), []);
-        $this->assertSame(8, $this->tarjetas($x));
+        $this->assertSame(4, $this->tarjetas($x));
         $this->assertSame([], Html::enlacesDePaginacion($x));
         $x2 = $this->pantalla(fn() => (new \PublicController())->home(), ["page" => "3"]);
-        $this->assertSame(8, $this->tarjetas($x2), "?page= sin ver=catalogo sigue siendo la portada");
+        $this->assertSame(4, $this->tarjetas($x2), "?page= sin ver=catalogo sigue siendo la portada");
     }
 }
