@@ -475,7 +475,7 @@ Los verdes y rojos del análisis base eran para precios que suben o bajan. En es
 | `{typography.display-md}` | 40 px | 600 | 1,15 | -0,3 px | Encabezados de sección |
 | `{typography.display-sm}` | 32 px | 600 | 1,2 | 0 | Titulares de bandas de llamada a la acción |
 | `{typography.title-lg}` | 24 px | 600 | 1,3 | 0 | Subtítulos de sección, título de página del panel |
-| `{typography.title-md}` | 20 px | 600 | 1,35 | 0 | Títulos de tarjetas; nombre de pieza en escritorio (en móvil usa `{typography.title-sm}`) |
+| `{typography.title-md}` | 20 px | 600 | 1,35 | 0 | Títulos de tarjetas que no son de pieza (el nombre de la pieza usa `{typography.title-sm}` en todos los anchos) |
 | `{typography.title-sm}` | 16 px | 600 | 1,4 | 0 | Insignias de confianza, etiquetas |
 | `{typography.number-display}` | 40 px | 700 | 1,1 | -0,3 px | Cifras grandes (estadísticas) |
 | `{typography.number-md}` | 16 px | 500 | 1,4 | 0 | Celdas de tabla y cifras en línea |
@@ -556,7 +556,7 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 - Un solo botón principal por vista.
 
 ### Tarjetas y contenedores
-- **`product-card`**: foto sobre la baldosa blanca fija (`product-photo-tile`, E4: `{colors.canvas-light}` en los dos modos, foto completa con `contain`), nombre (`title-md` en escritorio, `title-sm` en móvil), marca y modelo, precio (`product-price`, IBM Plex Sans 20/600: amarillo `{colors.primary-text-on-dark}` en oscuro y bronce `{colors.link-on-light}` en claro; el verde no se usa en precios), indicador de stock y botón principal "Añadir al carrito". El indicador usa texto y color (`badge-stock-*`), nunca solo color.
+- **`product-card`**: foto sobre la baldosa blanca fija (`product-photo-tile`, E4: `{colors.canvas-light}` en los dos modos, foto completa con `contain`), nombre (`title-sm`, 16/600, en todos los anchos; máximo 2 líneas), marca y modelo, precio (`product-price`, IBM Plex Sans 20/600: amarillo `{colors.primary-text-on-dark}` en oscuro y bronce `{colors.link-on-light}` en claro; el verde no se usa en precios), indicador de stock y botón principal "Añadir al carrito". El indicador usa texto y color (`badge-stock-*`), nunca solo color.
 - **`stat-callout-card`**: cifras grandes del panel y de la portada, en amarillo sobre fondo plano, en `{typography.number-display}`. El valor de las tarjetas KPI del panel (`kpi-card-value`, E3) va en IBM Plex Sans 32/700.
 - **`trust-badge`**: etiquetas de confianza (envío, garantía), opcionales.
 - **`data-table-card` y `data-row`**: tablas del panel. Cabecera fija, cifras alineadas, acciones al final con nombre accesible. **En móvil (menos de 768 px) cada fila pasa a `admin-card-mobile`**: una tarjeta con el nombre, los datos clave y las acciones siempre visibles, hecha con CSS y un `data-label` por celda, sin duplicar el HTML.
@@ -647,7 +647,7 @@ La derivación la hace un **script de línea de comandos** que recibe el color p
 | 19 | Provisional aprobado: botón principal deshabilitado en claro (`button-primary-disabled-on-light`) | El archivo base solo definía el deshabilitado sobre oscuro; fondo `surface-strong-light`, texto `muted-on-light`, borde `border-strong` (los controles deshabilitados están exentos de contraste) |
 | 20 | Provisional aprobado: fondo de portada y superficie elevada en claro (`hero-band-light`, `surface-elevated-light`) | El archivo base solo definía la banda de portada y la superficie elevada sobre oscuro |
 | 21 | Nuevo token `primary-text-on-dark` | Con un principal oscuro (el azul de prueba) el principal como texto da 2,87:1 sobre oscuro; el token lo aclara hasta 4,5:1 (en el dorado coincide con el principal) |
-| 22 | Nombre de la pieza en tarjeta: `title-sm` en móvil | A dos columnas, `title-md` partía el nombre en tres líneas |
+| 22 | Nombre de la pieza en tarjeta: `title-sm` (16/600) en todos los anchos. Aprobada por Tony (2026-10-25) | Con 4 columnas y la barra lateral la tarjeta mide ~220 px y `title-md` partía el nombre en tres líneas |
 | 23 | E1: catálogo en 3 columnas desde 768 px (antes 2 en tableta) | A 768 px, 2 columnas daban fotos de 348 px, demasiado grandes. Aprobada por Tony (2026-10-25) |
 | 24 | E2: precio de tarjeta y detalle a 20/600 con token `--precio`: amarillo (`primary-text-on-dark`) en oscuro y bronce (`link-on-light`, 6,25:1 sobre blanco) en claro. El verde queda solo para éxito y stock disponible | El sitio pintaba los precios en verde (`success`), contra lo que decía este archivo. Aprobada con el color decidido por Tony |
 | 25 | E3: valor de las tarjetas KPI a 32 px (IBM Plex Sans 32/700) | Hoy 30,4 px; se alinea con la escala (`display-sm`) |
