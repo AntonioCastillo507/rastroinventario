@@ -64,6 +64,20 @@ body:focus-visible, main:focus, main:focus-visible { outline: none; }
   .tarjeta-pieza:hover .foto-baldosa { transform: none !important; }
 }
 
+/* ── Tamaño de los controles: 40 px en escritorio (button-primary y campos de DESIGN.md) ───────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+}
+.form-control, .form-select, .form-control-sm, .form-select-sm, .input-group-text,
+.dark-input, input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]), select {
+  min-height: 40px;
+}
+.page-link { display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; }
+.btn-back, .icon-btn { min-width: 40px; min-height: 40px; }
+
 /* ── Zonas táctiles: 44 px en pantallas táctiles y en móvil ───────────── */
 @media (pointer: coarse), (max-width: 767.98px) {
   .btn {
@@ -264,10 +278,11 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .hero-subtitulo { color: var(--text); } /* el texto de cuerpo, no el secundario: sobre la foto el secundario deja poco margen */
 /* ── Marca del encabezado, del pie, del acceso y del panel (brand-lockup, DESIGN.md E6) ──
    Un solo enlace: logo de 40 px (36 en móvil), 12 px de separación, nombre 16/700 y lema 12/500 a 2 px, todo centrado.
-   El logo es un SVG en línea de un color: toma el del tema por currentColor, sin filtros. El lema solo desde 768 px. */
+   El logo es un SVG en línea de un color: toma el de la marca (--logo, el amarillo principal en los dos modos) por currentColor,
+   sin filtros. Es una excepción documentada al contraste: el nombre va escrito al lado. El lema solo desde 768 px. */
 .marca { display: flex; align-items: center; gap: 12px; min-height: 44px; color: var(--text-strong); text-decoration: none; }
 .navbar-brand.marca { padding: 0; margin: 0; font-size: 16px; }
-.marca-logo { display: block; flex-shrink: 0; height: var(--marca-alto, 40px); width: auto; color: var(--link); }
+.marca-logo { display: block; flex-shrink: 0; height: var(--marca-alto, 40px); width: auto; color: var(--logo); }
 .marca-texto { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; }
 .marca-nombre { font-size: 16px; font-weight: 700; line-height: 1.2; color: var(--text-strong); white-space: nowrap; }
 .marca-lema { display: none; font-size: 12px; font-weight: 500; line-height: 1.2; color: var(--text-muted); white-space: nowrap; }

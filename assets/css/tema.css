@@ -178,6 +178,7 @@
   --input-border: var(--color-input-border-dark);
   --link: var(--color-primary-text-on-dark);
   --precio: var(--color-primary-text-on-dark);
+  --logo: var(--color-primary);
   --link-hover: var(--color-on-dark);
   --success-text: var(--color-success);
   --danger-text: var(--color-danger);
@@ -289,6 +290,7 @@
   --input-border: var(--color-input-border-light);
   --link: var(--color-link-on-light);
   --precio: var(--color-link-on-light);
+  --logo: var(--color-primary);
   --link-hover: var(--color-ink);
   --success-text: var(--color-success-on-light);
   --danger-text: var(--color-danger-on-light);

@@ -59,6 +59,20 @@ final class BaseVisualTest extends TestCase {
         $this->assertMatchesRegularExpression('/\.navbar-toggler[^{]*\{[^}]*min-height:\s*44px/', $m);
     }
 
+    public function testBotonesYCamposTienen40PxEnEscritorioFueraDeLaConsultaTactil(): void {
+        $css = self::base();
+        // se quita el bloque táctil: lo que queda es la regla de escritorio
+        $tactil = self::media($css, "@media (pointer: coarse), (max-width: 767.98px)");
+        $fuera = str_replace($tactil, "", $css);
+        $this->assertMatchesRegularExpression('/\n\.btn \{[^}]*min-height:\s*40px/', $fuera, ".btn a 40 px en escritorio");
+        $this->assertMatchesRegularExpression('/\n\.form-control[^{]*\{[^}]*min-height:\s*40px/', $fuera, "campos a 40 px");
+        $this->assertMatchesRegularExpression('/\n\.form-control, \.form-select,[^{]*\{[^}]*min-height:\s*40px/', $fuera, "selects a 40 px");
+        $this->assertMatchesRegularExpression('/\n\.page-link \{[^}]*min-height:\s*40px/', $fuera);
+        $this->assertMatchesRegularExpression('/\n\.form-control[^{]*input:not\(\[type="checkbox"\]\)[^{]*select \{\s*min-height:\s*40px/', $fuera, "los input y select también");
+        // y el táctil sigue por encima del de escritorio: la regla táctil va después, así que gana
+        $this->assertGreaterThan(strpos($css, "min-height: 40px"), strpos($css, $tactil), "el bloque táctil (44 px) va después del de escritorio");
+    }
+
     public function testCamposA16PxYTextoBaseSegunDesignMd(): void {
         $css = self::base();
         $tema = self::tema();

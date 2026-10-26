@@ -63,12 +63,13 @@ final class MarcaEncabezadoTest extends BaseDatos {
         $this->assertSame(0, $q->query(".//*[@style]", $a)->length, "$n: nada de estilos en línea (ni filtros) en el bloque");
     }
 
-    public function testElSvgDelLogoTomaElColorDelTema(): void {
+    public function testElSvgDelLogoTomaElAmarilloDeMarcaEnLosDosModos(): void {
         $x = Html::xpath(Pantallas::render($this->db, "home"));
         $svg = $x->query("//nav//svg[contains(@class,'marca-logo')]")->item(0);
         $this->assertSame("true", $svg->getAttribute("aria-hidden"));
         $this->assertSame("currentColor", $x->query(".//path", $svg)->item(0)->getAttribute("fill"));
-        $this->assertStringContainsString("var(--link)", self::regla(".marca-logo"), "amarillo en oscuro y bronce en claro, vía --link");
+        $this->assertStringContainsString("var(--logo)", self::regla(".marca-logo"), "amarillo de marca en los dos modos, vía --logo");
+        $this->assertStringNotContainsString("var(--link)", self::regla(".marca-logo"), "ya no el bronce del modo claro");
     }
 
     public function testSinSvgElBloqueUsaElPngSinFiltros(): void {
