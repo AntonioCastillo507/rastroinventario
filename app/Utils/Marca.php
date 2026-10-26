@@ -111,6 +111,17 @@ final class Marca {
     }
 
     /**
+     * Icono de Bootstrap Icons (sin "bi-") de una categoría de la portada: el de "portada.categoria_iconos" para ese id de
+     * sección o, si falta, "portada.categoria_icono_defecto". Solo letras minúsculas, cifras y guiones.
+     */
+    public static function iconoCategoria(int $seccionId): string {
+        $mapa = (array)self::get("portada.categoria_iconos", []);
+        $icono = $mapa[$seccionId] ?? self::get("portada.categoria_icono_defecto", "");
+        $icono = preg_replace('/[^a-z0-9-]/', "", strtolower(trim((string)$icono)));
+        return $icono !== "" ? $icono : "box-seam";
+    }
+
+    /**
      * Enlace de Google Maps de la dirección del pie: la clave "mapa" de marca.php si es una dirección http(s); si no, una
      * búsqueda de Google Maps con el texto de "direccion".
      */

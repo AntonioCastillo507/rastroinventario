@@ -1,4 +1,4 @@
-# Rastro del Istmo — Sistema de Inventario y Venta de Repuestos de Autos Usados
+# Rastro del Istmo — Sistema de Inventario y Venta de Repuestos Usados para Autos
 
 Autor: Antonio Castillo
 
@@ -7,7 +7,7 @@ Autor: Antonio Castillo
 ## 1. Información General
 
 ### 1.1. Nombre del Proyecto
-**Rastro del Istmo** — Sistema de Inventario y Venta de Repuestos de Autos Usados.
+**Rastro del Istmo** — Sistema de Inventario y Venta de Repuestos Usados para Autos.
 
 ### 1.2. Fecha del Sistema y Versión
 - **Versión actual:** v1.6.0

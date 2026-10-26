@@ -535,7 +535,7 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 | `{rounded.pill}` | 9999 px | Una sola acción destacada por pantalla (por ejemplo "Ver catálogo") |
 
 ### Iconos y fotografía
-- Pocos iconos, **de un solo estilo y tamaño** (Bootstrap Icons, autoalojados), con nombre accesible cuando son botones. **Prohibido** un icono en cada título, la etiqueta en mayúsculas con icono y los emojis. **Excepción aprobada por Tony (2026-10-25, corrige la regla anterior): solo en el pie** se permiten los iconos con función de ubicación, teléfono, correo y reloj del horario, en el color de acento del tema sobre una pastilla redondeada de fondo suave (`pie-icono`, 32 px, radio 6 px, acento al 14 %), y los botones de redes y mensajería (WhatsApp, Instagram, TikTok) con icono y nombre visible. Los iconos decorativos llevan `aria-hidden`; el texto accesible es el dato o el nombre. Fuera del pie, ni la pastilla ni el icono en títulos ni en botones del resto del sitio.
+- Pocos iconos, **de un solo estilo y tamaño** (Bootstrap Icons, autoalojados), con nombre accesible cuando son botones. **Prohibido** un icono en cada título, la etiqueta en mayúsculas con icono y los emojis. **Excepción aprobada por Tony (2026-10-25, corrige la regla anterior): solo en el pie** se permiten los iconos con función de ubicación, teléfono, correo y reloj del horario, en el color de acento del tema sobre una pastilla redondeada de fondo suave (`pie-icono`, 32 px, radio 6 px, acento al 14 %), y los botones de redes y mensajería (WhatsApp, Instagram, TikTok) con icono y nombre visible. Los iconos decorativos llevan `aria-hidden`; el texto accesible es el dato o el nombre. Fuera del pie, ni la pastilla ni el icono en títulos ni en botones del resto del sitio. **Segunda excepción (Tony, 2026-10-26): las tarjetas de «Compra por categoría» de la portada** llevan un icono por categoría (Bootstrap Icons, configurable en `portada.categoria_iconos` de `marca.php`, por id de sección) en una pastilla de 40 px con radio `{rounded.md}` y el acento al 14 %, como la del pie; los iconos son decorativos (`aria-hidden`) y el nombre de la categoría va escrito al lado.
 - Los símbolos funcionales (calificación con estrellas, flechas de orden) se resuelven con iconos o con texto, no con caracteres decorativos.
 - Las fotos de producto se recortan a `{rounded.xl}` y llevan texto alternativo; si la imagen no existe, se muestra un marcador neutro, nunca una imagen rota.
 
@@ -578,6 +578,19 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 ### Paginación, pie de página
 - Paginación con números, "Anterior" y "Siguiente", elemento activo con `aria-current`, y el texto "Mostrando X–Y de N".
 - **`footer-dark` / `footer-light`**: el pie **sigue el tema** de la página. Sin créditos de terceros; el texto sale de la configuración de marca. Compacto: 24 px de relleno superior, 24 px entre las columnas y la barra inferior, 8 px entre enlaces (que miden 25 px de alto), 32 px de pastilla en "Contacto y horario" con 12 px de separación al texto y la misma separación vertical entre datos. Los enlaces pasan al acento (`--link`) al pasar el cursor. Cuatro columnas alineadas (desde 992 px; apiladas por debajo): marca con descripción y los botones de redes (44 px de alto, borde fino, solo los que tengan dirección en `marca.php`; abren otra pestaña con `rel="noopener noreferrer"` y aviso accesible) | Comprar | Empresa | Contacto y horario. Los iconos de contacto miden todos 32 px, van centrados con su texto y separados 12 px, y los datos de la columna se separan 12 px entre sí. La dirección es un enlace a Google Maps (`Marca::mapa()`, clave `mapa` de `marca.php` o, sin ella, una búsqueda con el texto de la dirección) que abre otra pestaña. Barra inferior solo con el copyright.
+
+## Movimiento
+
+Movimiento sutil y barato, autorizado por Tony el 2026-10-26. Solo para dar continuidad, nunca para decorar.
+
+| Qué | Valor |
+|---|---|
+| Duración | de 150 a 250 ms (hover 150 a 200 ms, aparición 250 ms) |
+| Curva | `ease-out` |
+| Propiedades | `transform` y `opacity`; en el hover también el color del borde. **Nada de animar tamaño** (`width`, `height`, `padding`) **ni sombras pesadas** |
+| Desplazamiento | hover de tarjeta: 2 px hacia arriba y borde en `{colors.primary}`; flecha de la tarjeta de marca: 4 px a la derecha; botón principal: 1 px hacia arriba |
+| Aparición | el texto del hero sube 8 px y aparece al cargar la página (250 ms); cada sección de la portada sube 12 px y aparece al entrar en pantalla (`IntersectionObserver` en `main.js`, sin librerías; sin JavaScript el contenido ya está visible) |
+| Movimiento reducido | con `prefers-reduced-motion: reduce` no hay aparición, ni desplazamiento en hover ni animaciones (regla global de `base.css`); los cambios de color y de borde siguen, sin transición |
 
 ## Qué hacer y qué no
 
@@ -677,6 +690,6 @@ La derivación la hace un **script de línea de comandos** que recibe el color p
 ## Lagunas conocidas
 
 - Los estados de formulario más allá del campo básico (error, éxito, deshabilitado) deben definirse al implementar y medirse.
-- Las animaciones y transiciones no están formalizadas; se limitan a transiciones breves que respetan `prefers-reduced-motion`.
+- Las animaciones quedan formalizadas en la sección «Movimiento»; fuera de ella no se añaden otras.
 - La pantalla del panel para editar el tema queda como bosquejo futuro; por ahora se edita `assets/css/tema.css`.
 - Falta decidir el logo y el nombre definitivos de cada comprador de la plantilla.

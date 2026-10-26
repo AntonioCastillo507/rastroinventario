@@ -118,7 +118,7 @@ small,.small { color:var(--text-2); }
   background:var(--accent)!important;
   border-color:var(--accent-h)!important;
   color:#000!important;font-weight:600;
-  transition:background .15s,transform .1s;
+  transition:background .15s,transform .15s;
 }
 .btn-gold:hover,.btn-warning:hover { background:var(--accent-h)!important; transform:translateY(-1px); }
 .btn-outline-warning { color:var(--accent)!important; border-color:var(--accent)!important; }

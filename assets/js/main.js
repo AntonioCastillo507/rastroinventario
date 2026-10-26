@@ -45,6 +45,16 @@ document.addEventListener("DOMContentLoaded", function () {
     sel.addEventListener("change", function(){ this.closest("form").submit(); });
   });
 
+  // Las secciones de la portada aparecen con suavidad al entrar en pantalla (sin librerías); sin movimiento si el usuario lo pidió
+  var sinMovimiento = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var seccionesPortada = document.querySelectorAll(".portada-seccion");
+  if (!sinMovimiento && "IntersectionObserver" in window && seccionesPortada.length) {
+    var vigia = new IntersectionObserver(function(entradas){
+      entradas.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add("rv-visto"); vigia.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    seccionesPortada.forEach(function(s){ s.classList.add("rv"); vigia.observe(s); });
+  }
+
   // El menú plegable se cierra al elegir una opción (las anclas de la portada no recargan la página)
   document.querySelectorAll(".navbar-collapse").forEach(function(menu){
     menu.addEventListener("click", function(e){

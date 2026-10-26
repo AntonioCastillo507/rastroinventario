@@ -46,6 +46,7 @@ $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
     <ul class="cat-lista">
       <?php foreach($secciones as $s): ?>
       <li><a class="cat-baldosa" href="<?=APP_URL?>/?ver=catalogo&amp;seccion=<?=(int)$s["id"]?>">
+        <span class="cat-icono" aria-hidden="true"><i aria-hidden="true" class="bi bi-<?=htmlspecialchars(Marca::iconoCategoria((int)$s["id"]))?>"></i></span>
         <span class="cat-nombre"><?=htmlspecialchars($s["nombre"])?></span>
         <?php if(trim((string)($s["descripcion"]??""))!==""): ?><span class="cat-desc"><?=htmlspecialchars($s["descripcion"])?></span><?php endif; ?>
         <span class="cat-cuenta num"><?=(int)$s["total"]?> piezas</span>
@@ -77,7 +78,10 @@ $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
     <h2 id="t-marcas" class="seccion-titulo"><?=Marca::h("portada.marcas_titulo")?></h2>
     <ul class="marca-lista">
       <?php foreach($marcasConteo as $m): ?>
-      <li><a class="marca-chip" href="<?=APP_URL?>/?ver=catalogo&amp;marca=<?=htmlspecialchars(rawurlencode($m["marca"]))?>"><span><?=htmlspecialchars($m["marca"])?></span><span class="marca-chip-n num"><?=(int)$m["total"]?></span></a></li>
+      <li><a class="marca-tarjeta" href="<?=APP_URL?>/?ver=catalogo&amp;marca=<?=htmlspecialchars(rawurlencode($m["marca"]))?>">
+        <span class="marca-tarjeta-nombre"><?=htmlspecialchars($m["marca"])?></span>
+        <span class="marca-tarjeta-pie"><span class="marca-tarjeta-n num"><?=(int)$m["total"]?> <?=(int)$m["total"]===1?"pieza":"piezas"?></span><i aria-hidden="true" class="bi bi-arrow-right marca-flecha"></i></span>
+      </a></li>
       <?php endforeach; ?>
     </ul>
   </div>

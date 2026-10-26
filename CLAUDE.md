@@ -1,6 +1,6 @@
 # Rastroinventario (Rastro del Istmo)
 
-Inventario y tienda de repuestos de autos usados. Al empezar, lee ESTADO.md (es la memoria del proyecto). Al terminar cada tarea, actualízalo y avísame.
+Inventario y tienda de repuestos usados para autos. Al empezar, lee ESTADO.md (es la memoria del proyecto). Al terminar cada tarea, actualízalo y avísame.
 
 ## Proyecto
 - PHP con estructura MVC en WampServer (Apache + MySQL 8.4 en el puerto 3306) sobre Windows. URL local: http://localhost/rastroinventario

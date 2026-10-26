@@ -70,7 +70,7 @@ final class PortadaTest extends BaseDatos {
 
     public function testElSubtituloDeLaMarcaEsElAprobado(): void {
         $real = require BASE_PATH . "/app/Config/marca.php";
-        $this->assertSame("Repuestos de autos usados en Panamá. Busca por nombre o por marca.", $real["portada"]["subtitulo"]);
+        $this->assertSame("Repuestos usados para tu carro en Panamá. Busca por nombre o por marca.", $real["portada"]["subtitulo"]);
     }
 
     public function testNoQuedaLaFranjaDeCifras(): void {
@@ -181,11 +181,13 @@ final class PortadaTest extends BaseDatos {
         [$x, $html] = $this->home();
         $chips = [];
         foreach ($x->query("//ul[contains(@class,'marca-lista')]//a") as $a2) {
-            $chips[trim($a2->childNodes->item(0)->textContent)] = [trim($a2->childNodes->item(1)->textContent), $a2->getAttribute("href")];
+            $nombre = trim($x->query(".//*[contains(@class,'marca-tarjeta-nombre')]", $a2)->item(0)->textContent);
+            $n = trim($x->query(".//*[contains(concat(' ',@class,' '),' marca-tarjeta-n ')]", $a2)->item(0)->textContent);
+            $chips[$nombre] = [$n, $a2->getAttribute("href")];
         }
-        $this->assertSame("2", $chips["Zeta Marca & Co"][0], "solo cuentan las activas y con stock");
+        $this->assertSame("2 piezas", $chips["Zeta Marca & Co"][0], "solo cuentan las activas y con stock");
         $this->assertSame(APP_URL . "/?ver=catalogo&marca=Zeta%20Marca%20%26%20Co", $chips["Zeta Marca & Co"][1], "el nombre va codificado en la dirección");
-        $this->assertSame("1", $chips["Zeta Otra"][0]);
+        $this->assertSame("1 pieza", $chips["Zeta Otra"][0]);
         $this->assertArrayNotHasKey("Sin Piezas", $chips, "una marca sin piezas a la venta no sale");
         $this->assertStringContainsString("Zeta Marca &amp; Co", $html);
     }

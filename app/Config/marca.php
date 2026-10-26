@@ -9,7 +9,7 @@
  */
 return [
     "nombre"      => "Rastro del Istmo",
-    "eslogan"     => "Rastro & Partes",
+    "eslogan"     => "Repuestos usados",
     "descripcion" => "Repuestos de calidad para todo tipo de vehículos. Tu rastro de confianza en Panamá.",
     "logo"        => "assets/img/logo.png",
 
@@ -38,13 +38,16 @@ return [
         "titulo_pagina" => "Partes y Repuestos en Panamá",
         "titulo"        => "Tu pieza al",
         "titulo_resalte" => "mejor precio",
-        "subtitulo"     => "Repuestos de autos usados en Panamá. Busca por nombre o por marca.",
+        "subtitulo"     => "Repuestos usados para tu carro en Panamá. Busca por nombre o por marca.",
         "buscador"      => "Buscar: puerta, motor, vidrio, Toyota...",
         // Fotos de fondo del hero (escritorio y móvil). Vacías = hero tipográfico, que es el de la plantilla.
         // Las de Rastro del Istmo viven en assets/img/portada/ (carpeta fuera de git; hay copia en la carpeta de respaldos, fuera del proyecto).
         "foto"          => "assets/img/portada/hero-escritorio.webp",
         "foto_movil"    => "assets/img/portada/hero-movil.webp",
         "categorias_titulo" => "Compra por categoría",
+        // Icono de Bootstrap Icons (sin el prefijo "bi-") de cada categoría, por id de sección; el que falte usa el de por defecto.
+        "categoria_iconos"  => [1 => "car-front", 2 => "gear-wide-connected", 3 => "lightbulb", 4 => "lightning-charge"],
+        "categoria_icono_defecto" => "box-seam",
         "recientes_titulo"  => "Recién llegadas",
         "recientes_ver"     => "Ver las {total} piezas",
         "marcas_titulo"     => "Compra por marca",
