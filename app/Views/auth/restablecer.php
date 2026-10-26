@@ -11,8 +11,8 @@
 <body class="login-body d-flex align-items-center justify-content-center min-vh-100 p-3">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 <main class="login-card" id="contenido" tabindex="-1">
-  <div class="text-center mb-4">
-    <?php include __DIR__ . "/../layouts/acceso_marca.php"; ?>
+  <div class="acceso-cabeza mb-4">
+    <?php $accesoIcono = true; include __DIR__ . "/../layouts/acceso_marca.php"; ?>
     <h1 class="h3 fw-bold text-white mb-0">Nueva contraseña</h1>
     <?php if($valido): ?><p class="text-secondary small mt-1">Elige una contraseña nueva para tu cuenta</p><?php endif; ?>
   </div>
@@ -36,11 +36,11 @@
     <button type="submit" class="btn btn-gold w-100 fw-bold py-2">Cambiar contraseña</button>
   </form>
   <?php else: ?>
-  <div class="text-center mt-3">
+  <div class="mt-3">
     <a href="<?=APP_URL?>/olvide.php" class="btn btn-gold fw-bold">Pedir un enlace nuevo</a>
   </div>
   <?php endif; ?>
-  <div class="text-center mt-3">
+  <div class="mt-3">
     <a href="<?=APP_URL?>/login.php" class="acceso-enlace text-secondary small">Volver a iniciar sesión</a>
   </div>
 </main>

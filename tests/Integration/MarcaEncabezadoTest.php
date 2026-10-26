@@ -116,7 +116,8 @@ final class MarcaEncabezadoTest extends BaseDatos {
         $this->assertMatchesRegularExpression('/display:\s*block/', self::regla(".marca-lema", "@media (min-width: 768px)"), "visible desde 768 px");
         $this->assertMatchesRegularExpression('/--marca-alto:\s*32px/', self::regla(".marca-pie"));
         $this->assertMatchesRegularExpression('/--marca-alto:\s*32px/', self::regla(".marca-panel"));
-        $this->assertMatchesRegularExpression('/--marca-alto:\s*48px/', self::regla(".marca-acceso .marca-logo"));
+        $this->assertMatchesRegularExpression('/--marca-alto:\s*48px/', self::regla(".marca-acceso .marca-logo"), "la página de error conserva el bloque de 48 px");
+        $this->assertMatchesRegularExpression('/--marca-alto:\s*32px/', self::regla(".marca-acceso--icono .marca-logo"), "el acceso lleva solo el icono, pequeño");
     }
 
     public function testLasBarrasMiden64Px(): void {
@@ -252,7 +253,7 @@ final class MarcaEncabezadoTest extends BaseDatos {
         $enlace = $x->query("//main//div[contains(@class,'marca-acceso')]/a[contains(@class,'marca-acceso-enlace')]")->item(0);
         $this->assertNotNull($enlace, "$n: el bloque de marca es un enlace al inicio");
         $this->assertSame(APP_URL . "/", $enlace->getAttribute("href"));
-        $this->assertSame(\Marca::get("nombre"), trim($x->query(".//*[contains(@class,'marca-nombre')]", $enlace)->item(0)->textContent), "$n: con el nombre visible");
+        $this->assertSame(\Marca::get("nombre") . ", ir al inicio", $enlace->getAttribute("aria-label"), "$n: el nombre es el texto accesible del icono");
         $this->assertSame(0, $x->query("//*[contains(@class,'login-icon')]")->length, "$n: ya no hay icono genérico");
         $this->assertSame(0, $x->query("//*[contains(@class,'bi-tools')]")->length);
     }

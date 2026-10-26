@@ -11,8 +11,8 @@
 <body class="login-body d-flex align-items-center justify-content-center min-vh-100 p-3">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 <main class="login-card" id="contenido" tabindex="-1">
-  <div class="text-center mb-4">
-    <?php include __DIR__ . "/../layouts/acceso_marca.php"; ?>
+  <div class="acceso-cabeza mb-4">
+    <?php $accesoIcono = true; include __DIR__ . "/../layouts/acceso_marca.php"; ?>
     <h1 class="h3 fw-bold text-white mb-0">Iniciar sesión</h1>
     <p class="text-secondary small mt-1">Ingresa a tu cuenta para continuar</p>
   </div>
@@ -37,11 +37,11 @@
     </div>
     <button type="submit" class="btn btn-gold w-100 fw-bold py-2">Iniciar sesión</button>
   </form>
-  <div class="text-center mt-3">
+  <div class="mt-3">
     <span class="text-secondary small">¿No tienes cuenta?</span>
     <a href="<?=APP_URL?>/registro.php" class="acceso-enlace text-warning small fw-semibold">Crear cuenta</a>
   </div>
-  <div class="text-center">
+  <div>
     <a href="<?=APP_URL?>/" class="acceso-enlace text-secondary small">Volver a la tienda</a>
   </div>
 </main>

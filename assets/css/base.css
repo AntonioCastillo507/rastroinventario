@@ -286,9 +286,8 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .hero-titulo { max-width: 14em; margin: 0 0 var(--spacing-xs); font-size: var(--type-hero-display-mobile-size); font-weight: 700; line-height: var(--type-hero-display-mobile-line-height); letter-spacing: var(--type-hero-display-mobile-letter-spacing); color: var(--text-strong); text-wrap: balance; }
 .hero-resalte { color: var(--link); }
 .hero-sub { max-width: 34em; margin: 0 0 var(--spacing-md); font-size: var(--type-body-lg-size); line-height: 1.5; color: var(--text); }
-.hero-buscar { display: flex; gap: var(--spacing-xs); max-width: 540px; }
-.hero-buscar .form-control { flex: 1; min-width: 0; }
-.hero-buscar .btn { flex: none; padding-inline: var(--spacing-lg); }
+.hero-buscar { max-width: 540px; }
+.hero-buscar .btn { padding-inline: var(--spacing-lg); }
 @media (min-width: 768px) {
   .portada-hero { display: flex; align-items: center; min-height: 400px; }
   .portada-hero .container-xl { width: 100%; }
@@ -350,6 +349,11 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .marca-panel { --marca-alto: 32px; }
 .marca-acceso { display: flex; justify-content: center; margin-bottom: 12px; }
 .marca-acceso .marca-logo { --marca-alto: 48px; }
+/* Acceso limpio: solo el icono de la R, pequeño y arriba a la izquierda de la tarjeta; el título va alineado a la izquierda */
+.marca-acceso--icono { justify-content: flex-start; margin-bottom: var(--spacing-md); }
+.marca-acceso--icono .marca-logo { --marca-alto: 32px; }
+.marca-acceso--icono .marca-acceso-enlace { justify-content: flex-start; min-width: 44px; }
+.acceso-cabeza { text-align: left; }
 
 /* ── Encabezado de la tienda: barra de 64 px; en móvil, fila de 56 px y buscador en su propia fila ── */
 .public-nav { padding: 0; min-height: 64px; }
@@ -629,3 +633,10 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .error-acciones { display: flex; flex-direction: column; gap: var(--spacing-xs); }
 .error-acciones .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
 @media (min-width: 576px) { .error-acciones { flex-direction: row; justify-content: center; } }
+
+/* ── Grupo campo + botón unificado (buscador del encabezado y del hero, ojo de la contraseña, buscador de la 404): misma altura,
+   borde compartido y esquinas redondeadas solo en los extremos exteriores. El radio del campo (lg, 8 px) manda sobre el del botón. ── */
+.input-group, .hero-buscar { display: flex; flex-wrap: nowrap; align-items: stretch; }
+.input-group > .form-control, .hero-buscar > .form-control { flex: 1 1 auto; width: 1%; min-width: 0; border-radius: var(--rounded-lg) 0 0 var(--rounded-lg) !important; }
+.input-group > .btn, .hero-buscar > .btn { flex: 0 0 auto; margin-left: -1px; border-radius: 0 var(--rounded-lg) var(--rounded-lg) 0 !important; }
+.input-group > .form-control:focus, .hero-buscar > .form-control:focus { position: relative; z-index: 3; }

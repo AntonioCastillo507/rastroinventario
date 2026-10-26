@@ -31,14 +31,18 @@ final class AccesoMarcaTest extends BaseDatos {
     }
 
     #[DataProvider("pantallas")]
-    public function testLlevaElBloqueDeMarcaConLogoNombreYLemaEnUnEnlaceAlInicio(string $n, string $h1): void {
+    public function testLlevaSoloElIconoDeLaMarcaEnUnEnlaceAlInicioConNombreAccesible(string $n, string $h1): void {
         $x = $this->x($n);
         $a = $x->query("//main//div[contains(@class,'marca-acceso')]/a[contains(@class,'marca-acceso-enlace')]");
         $this->assertSame(1, $a->length, $n);
         $this->assertSame(APP_URL . "/", $a->item(0)->getAttribute("href"));
         $this->assertSame(1, $x->query(".//svg[contains(@class,'marca-logo')]", $a->item(0))->length, "logo");
-        $this->assertSame(\Marca::get("nombre"), trim($x->query(".//*[contains(@class,'marca-nombre')]", $a->item(0))->item(0)->textContent));
-        $this->assertSame(\Marca::get("eslogan"), trim($x->query(".//*[contains(@class,'marca-lema')]", $a->item(0))->item(0)->textContent), "el lema se oculta por CSS bajo 768 px");
+        $this->assertSame(0, $x->query("//main//*[contains(@class,'marca-nombre') or contains(@class,'marca-lema')]")->length, "$n: sin nombre ni lema sobre el título");
+        $this->assertSame(\Marca::get("nombre") . ", ir al inicio", $a->item(0)->getAttribute("aria-label"), "el nombre queda como texto accesible");
+        $this->assertStringContainsString("marca-acceso--icono", $a->item(0)->parentNode->getAttribute("class"));
+        $h = $x->query("//main//h1")->item(0);
+        $this->assertStringContainsString("acceso-cabeza", $h->parentNode->getAttribute("class"), "$n: el título va en la cabecera alineada a la izquierda");
+        $this->assertStringNotContainsString("text-center", $h->parentNode->getAttribute("class"));
     }
 
     #[DataProvider("pantallas")]
