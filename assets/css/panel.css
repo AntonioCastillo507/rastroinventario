@@ -107,6 +107,7 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
 .admin-contenido > .alert .btn-close { margin-left: auto; }
 
 /* ── Remates S6b.2: tarjetas de Reportes y matriz de permisos de Roles ── */
+.lista-card.pedido-card, .lista-card.reporte-card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); }
 .reporte-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-md); }
 @media (min-width: 768px) { .reporte-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-lg); } }
 .reporte-card { display: flex; flex-direction: column; padding: var(--spacing-md); }
@@ -116,11 +117,11 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
 .reporte-card .reporte-boton, .reporte-card form .btn { margin-top: auto; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
 .matriz-permisos { margin-bottom: var(--spacing-md); border: 1px solid var(--hairline); border-radius: var(--rounded-lg); overflow-x: auto; }
 .matriz-tabla { width: 100%; margin: 0; border-collapse: collapse; color: var(--text); font-size: var(--type-body-md-size); }
-.matriz-tabla thead th { height: 44px; padding: 0 var(--spacing-xs); background: var(--surface-elevated); border-bottom: 1px solid var(--hairline); font-size: var(--type-body-sm-size); font-weight: 600; text-align: center; color: var(--text-muted); }
+.matriz-tabla thead th { height: 44px; min-width: 44px; padding: 0 var(--spacing-xxs); background: var(--surface-elevated); border-bottom: 1px solid var(--hairline); font-size: var(--type-body-sm-size); font-weight: 600; text-align: center; color: var(--text-muted); }
 .matriz-tabla thead th:first-child { padding-left: var(--spacing-md); text-align: left; }
 .matriz-tabla tbody tr + tr > * { border-top: 1px solid var(--hairline); }
-.matriz-tabla tbody th { padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md); font-weight: 600; text-align: left; color: var(--text-strong); }
-.matriz-tabla tbody td { width: 56px; height: 52px; padding: 0; text-align: center; vertical-align: middle; }
+.matriz-tabla tbody th { min-width: 112px; overflow-wrap: anywhere; padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md); font-weight: 600; text-align: left; color: var(--text-strong); }
+.matriz-tabla tbody td { width: 48px; min-width: 44px; height: 52px; padding: 0; text-align: center; vertical-align: middle; }
 .matriz-tabla .dark-check { width: 20px; height: 20px; margin: 0; vertical-align: middle; }
 .matriz-tabla tbody tr:hover > * { background: var(--surface-elevated); }
 

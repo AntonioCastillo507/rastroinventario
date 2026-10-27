@@ -1,7 +1,7 @@
 <?php
 $edit=!empty($rol); $title=$edit?"Editar Rol":"Nuevo Rol";
 include BASE_PATH."/app/Views/layouts/admin_header.php";
-$ML=["usuarios"=>"Usuarios","roles"=>"Roles","partes"=>"Partes/Inventario","autos"=>"Autos","secciones"=>"Secciones","ventas"=>"Ventas","comentarios"=>"Comentarios","pedidos"=>"Pedidos","seguridad"=>"Seguridad"];
+$ML=["usuarios"=>"Usuarios","roles"=>"Roles","partes"=>"Partes","autos"=>"Autos","secciones"=>"Secciones","ventas"=>"Ventas","comentarios"=>"Comentarios","pedidos"=>"Pedidos","seguridad"=>"Seguridad"];
 $MS=["usuarios"=>"Cuentas del personal y de clientes","roles"=>"Roles y esta matriz","partes"=>"Piezas, fotos y stock","ventas"=>"Registro de ventas","comentarios"=>"Moderación de reseñas","pedidos"=>"Pedidos de la tienda y su estado","seguridad"=>"Bitácora de accesos"];
 ?>
 <div class="panel-cabeza">
