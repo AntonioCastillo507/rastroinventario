@@ -213,7 +213,7 @@ final class SelectYMovimientoSitioTest extends BaseDatos {
 
     public function testLaTarjetaDeFormularioYElMainTienenElElementoParaAnimar(): void {
         $x = Html::xpath(Pantallas::render($this->db, "admin_partes_crear"));
-        $this->assertSame(1, Html::contar($x, "//main//div[contains(@class,'form-card')]"));
+        $this->assertGreaterThanOrEqual(1, Html::contar($x, "//main//*[contains(@class,'form-card')]"));
         $this->assertSame(1, Html::contar($x, "//main"), "un solo main: es el que aparece al cargar");
     }
 }

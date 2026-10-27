@@ -35,7 +35,12 @@ final class FormulariosPanelTest extends BaseDatos {
     #[DataProvider("formularios")]
     public function testElFormularioUsaLaColumnaLaBarraDeAccionesYElEnlaceDeVolver(string $pantalla, bool $volver): void {
         $x = Html::xpath(Pantallas::render($this->db, $pantalla));
-        $this->assertSame(1, Html::contar($x, "//main/div[contains(@class,'form-panel')]//div[contains(@class,'form-card')]//form"), "$pantalla: formulario dentro de su tarjeta de 720 px");
+        if (str_starts_with($pantalla, "admin_partes_")) {
+            $this->assertSame(1, Html::contar($x, "//main/div[contains(@class,'form-panel-producto')]/form"), "$pantalla: página de producto con su formulario");
+            $this->assertGreaterThanOrEqual(5, Html::contar($x, "//main/div[contains(@class,'form-panel-producto')]/form//section[contains(@class,'form-card')]"), "$pantalla: tarjetas dentro del formulario");
+        } else {
+            $this->assertSame(1, Html::contar($x, "//main/div[contains(@class,'form-panel')]//div[contains(@class,'form-card')]//form"), "$pantalla: formulario dentro de su tarjeta de 720 px");
+        }
         $this->assertSame(1, Html::contar($x, "//h1[contains(@class,'panel-titulo')]"), "$pantalla: un h1");
         $this->assertSame(0, Html::contar($x, "//h1//i"), "$pantalla: sin icono en el título");
         $this->assertSame(1, Html::contar($x, "//form//div[contains(@class,'form-acciones')]//button[@type='submit']"), "$pantalla: una barra de acciones con un solo botón de enviar");
