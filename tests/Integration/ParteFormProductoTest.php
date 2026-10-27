@@ -19,8 +19,8 @@ final class ParteFormProductoTest extends BaseDatos {
     public function testLasTarjetasEstanEnSuColumna(string $pantalla): void {
         $x = Html::xpath(Pantallas::render($this->db, $pantalla));
         $titulos = fn(string $col) => array_map(fn($n) => trim($n->textContent), iterator_to_array($x->query("//div[contains(@class,'$col')]/section[contains(@class,'form-card')]/h2[contains(@class,'form-subtitulo')]")));
-        $this->assertSame(["Información", "Fotos", "Compatibilidad"], $titulos("producto-principal"));
-        $this->assertSame(["Precio e inventario", "Organización"], $titulos("producto-lateral"));
+        $this->assertSame(["Información", "Fotos"], $titulos("producto-principal"));
+        $this->assertSame(["Precio e inventario", "Organización", "Compatibilidad"], $titulos("producto-lateral"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-info']//input[@name='nombre']"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-info']//textarea[@name='descripcion']"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-fotos']//input[@name='imagen'][@type='file']"));
@@ -72,6 +72,6 @@ final class ParteFormProductoTest extends BaseDatos {
         $this->assertMatchesRegularExpression('/\.pagina-cabeza\s*\{[^}]*position:\s*sticky[^}]*top:\s*var\(--panel-barra-alto\)/', $css);
         $this->assertMatchesRegularExpression('/\.pagina-acciones\s*\{\s*position:\s*fixed[^}]*bottom:\s*0/', $css, "móvil: barra fija abajo");
         $this->assertMatchesRegularExpression('/\.pagina-acciones \.btn\s*\{\s*flex:\s*1;\s*min-height:\s*44px/', $css);
-        $this->assertMatchesRegularExpression('/input\[type="file"\]::file-selector-button\s*\{[^}]*height:\s*30px/', $css);
+        $this->assertMatchesRegularExpression('/input\[type="file"\]::file-selector-button\s*\{[^}]*height:\s*38px[^}]*margin:\s*0 var\(--spacing-sm\) 0 0[^}]*border-radius:\s*0[^}]*background:\s*var\(--surface-elevated\)/', $css, "a ras del recuadro, con tokens de tema");
     }
 }

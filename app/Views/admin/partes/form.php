@@ -44,16 +44,6 @@
           </div>
         </div>
       </section>
-      <section class="form-card" aria-labelledby="pf-compat">
-        <h2 class="form-subtitulo" id="pf-compat">Compatibilidad</h2>
-        <label for="f-auto-id" class="form-label-dark">Auto (Marca / Modelo / Año)</label>
-        <select id="f-auto-id" name="auto_id" class="form-select dark-input">
-          <option value="">— Sin especificar —</option>
-          <?php foreach($autos as $a): ?>
-          <option value="<?=$a["id"]?>" <?=($d["auto_id"]??"")==$a["id"]?"selected":""?>><?=htmlspecialchars($a["marca"]." ".$a["modelo"]." (".$a["anio"].")")?></option>
-          <?php endforeach; ?>
-        </select>
-      </section>
     </div>
     <div class="producto-lateral">
       <section class="form-card" aria-labelledby="pf-precio">
@@ -76,6 +66,16 @@
           <option value="">— Sin sección —</option>
           <?php foreach($secciones as $s): ?>
           <option value="<?=$s["id"]?>" <?=($d["seccion_id"]??"")==$s["id"]?"selected":""?>><?=htmlspecialchars($s["nombre"])?></option>
+          <?php endforeach; ?>
+        </select>
+      </section>
+      <section class="form-card" aria-labelledby="pf-compat">
+        <h2 class="form-subtitulo" id="pf-compat">Compatibilidad</h2>
+        <label for="f-auto-id" class="form-label-dark">Auto (Marca / Modelo / Año)</label>
+        <select id="f-auto-id" name="auto_id" class="form-select dark-input">
+          <option value="">— Sin especificar —</option>
+          <?php foreach($autos as $a): ?>
+          <option value="<?=$a["id"]?>" <?=($d["auto_id"]??"")==$a["id"]?"selected":""?>><?=htmlspecialchars($a["marca"]." ".$a["modelo"]." (".$a["anio"].")")?></option>
           <?php endforeach; ?>
         </select>
       </section>
