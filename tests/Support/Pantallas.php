@@ -168,7 +168,7 @@ final class Pantallas {
     }
 
     /** HTML completo de la pantalla $nombre */
-    public static function render(PDO $db, string $nombre): string {
+    public static function render(PDO $db, string $nombre, array $get = []): string {
         $defs = self::definiciones();
         if (!isset($defs[$nombre])) throw new \InvalidArgumentException("Pantalla desconocida: $nombre");
         [$contexto, $accion] = $defs[$nombre];
@@ -179,6 +179,7 @@ final class Pantallas {
             // admin/index.php enruta con ?mod=; el menú del panel lo usa para marcar la opción activa
             $_GET["mod"] = ["pedido_detalle" => "pedidos"][substr($nombre, 6)] ?? explode("_", substr($nombre, 6))[0];
         }
+        $_GET = array_merge($_GET, $get); // parámetros extra de la prueba (filtros, página)
         $_SERVER["REQUEST_METHOD"] = "GET";
         self::sesion($db, $contexto, $f);
         ob_start();

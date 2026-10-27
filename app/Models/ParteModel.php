@@ -10,7 +10,7 @@ class ParteModel extends BaseModel {
         $w = " WHERE p.activo=1"; $params = [];
         if ($q) { $w .= " AND (p.nombre LIKE ? OR a.marca LIKE ? OR a.modelo LIKE ?)"; $params = ["%$q%","%$q%","%$q%"]; }
         if ($seccionId) { $w .= " AND p.seccion_id=?"; $params[] = $seccionId; }
-        $w .= match($filtro){"stock_bajo"=>" AND p.cantidad<=5 AND p.cantidad>0","agotado"=>" AND p.cantidad=0","con_stock"=>" AND p.cantidad>0",default=>""};
+        $w .= match($filtro){"stock_bajo"=>" AND p.cantidad<=5 AND p.cantidad>0","agotado"=>" AND p.cantidad=0","con_stock"=>" AND p.cantidad>0","disponible"=>" AND p.cantidad>5",default=>""};
         return [$w, $params];
     }
     /** Cada orden termina en p.id DESC: con empates (mismo precio, mismo stock) las páginas no repiten ni saltan filas */

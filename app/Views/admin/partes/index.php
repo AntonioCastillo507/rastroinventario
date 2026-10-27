@@ -4,31 +4,37 @@
   <a href="<?=APP_URL?>/admin/?mod=partes&action=crear" class="btn btn-gold"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nueva parte</a>
 </div>
 <!-- Filtros admin -->
-<form class="lista-filtros" method="GET" id="fAdm">
+<form class="lista-filtros lista-filtros-partes" method="GET" id="fAdm">
   <input type="hidden" name="mod" value="partes">
   <div class="input-group lista-filtros-buscar">
     <input type="search" name="q" class="form-control dark-input" placeholder="Buscar nombre, marca..." aria-label="Buscar parte por nombre o marca" value="<?=htmlspecialchars($q??"")?>">
     <button type="submit" class="btn btn-gold" aria-label="Buscar"><i aria-hidden="true" class="bi bi-search"></i></button>
   </div>
-  <select name="filtro" class="form-select dark-input" aria-label="Filtrar por existencias">
-    <option value="all"       <?=($filtro??"all")==="all"       ?"selected":""?>>Todas</option>
-    <option value="con_stock" <?=($filtro??"")==="con_stock" ?"selected":""?>>Con stock</option>
-    <option value="stock_bajo"<?=($filtro??"")==="stock_bajo"?"selected":""?>>Stock bajo (≤5)</option>
-    <option value="agotado"   <?=($filtro??"")==="agotado"   ?"selected":""?>>Agotadas</option>
+  <select name="seccion" class="form-select dark-input" aria-label="Filtrar por sección">
+    <option value="">Todas las secciones</option>
+    <?php foreach(($secciones??[]) as $sec): ?>
+    <option value="<?=(int)$sec["id"]?>" <?=(int)($seccion??0)===(int)$sec["id"]?"selected":""?>><?=htmlspecialchars($sec["nombre"])?></option>
+    <?php endforeach; ?>
+  </select>
+  <select name="filtro" class="form-select dark-input" aria-label="Filtrar por estado de stock">
+    <?php foreach(ParteController::FILTROS_STOCK as $fk=>$ft): ?>
+    <option value="<?=htmlspecialchars($fk)?>" <?=($filtro??"all")===$fk?"selected":""?>><?=htmlspecialchars($fk==="all"?"Todo el stock":$ft)?></option>
+    <?php endforeach; ?>
   </select>
   <select name="orden" class="form-select dark-input" aria-label="Ordenar por">
-    <option value="recientes"  <?=($orden??"recientes")==="recientes"  ?"selected":""?>>Más recientes</option>
-    <option value="precio_asc" <?=($orden??"")==="precio_asc" ?"selected":""?>>Precio ↑</option>
-    <option value="precio_desc"<?=($orden??"")==="precio_desc"?"selected":""?>>Precio ↓</option>
-    <option value="stock_asc"  <?=($orden??"")==="stock_asc"  ?"selected":""?>>Stock ↑</option>
-    <option value="stock_desc" <?=($orden??"")==="stock_desc" ?"selected":""?>>Stock ↓</option>
-    <option value="nombre"     <?=($orden??"")==="nombre"     ?"selected":""?>>Nombre A–Z</option>
-    <option value="mas_vendidas"<?=($orden??"")==="mas_vendidas"?"selected":""?>>Más vendidas</option>
+    <?php foreach(ParteController::ORDENES as $ok=>$ot): ?>
+    <option value="<?=htmlspecialchars($ok)?>" <?=($orden??"recientes")===$ok?"selected":""?>><?=htmlspecialchars($ot)?></option>
+    <?php endforeach; ?>
   </select>
-  <?php if(($q??"")!==""||($filtro??"all")!=="all"||($orden??"recientes")!=="recientes"): ?>
-  <a href="<?=APP_URL?>/admin/?mod=partes" class="lista-filtros-limpiar">Limpiar filtros</a>
-  <?php endif; ?>
 </form>
+<?php if(!empty($fichas)): ?>
+<ul class="lista-fichas" aria-label="Filtros activos">
+  <?php foreach($fichas as [$ftexto,$furl]): ?>
+  <li><a class="lista-ficha" href="<?=htmlspecialchars($furl)?>" aria-label="Quitar filtro: <?=htmlspecialchars($ftexto)?>"><span><?=htmlspecialchars($ftexto)?></span><i aria-hidden="true" class="bi bi-x-lg"></i></a></li>
+  <?php endforeach; ?>
+  <li><a href="<?=APP_URL?>/admin/?mod=partes" class="lista-filtros-limpiar">Limpiar filtros</a></li>
+</ul>
+<?php endif; ?>
 <div class="lista-card">
 <table class="lista-tabla">
   <thead><tr><th scope="col">Pieza</th><th scope="col" class="col-num">Precio</th><th scope="col">Stock</th><th scope="col" class="col-acciones">Acciones</th></tr></thead>
@@ -58,7 +64,7 @@
     </td>
   </tr>
   <?php endforeach; ?>
-  <?php if(empty($partes)): $conFiltros=($q??"")!==""||($filtro??"all")!=="all"; $vaciaColspan=4; $vaciaTitulo=$conFiltros?"Sin resultados":"Aún no hay partes"; $vaciaTexto=$conFiltros?"Prueba con otro nombre o marca, o quita los filtros.":"Agrega la primera pieza del inventario."; $vaciaAccion=$conFiltros?[APP_URL."/admin/?mod=partes","Limpiar filtros"]:[APP_URL."/admin/?mod=partes&action=crear","Nueva parte"]; include BASE_PATH."/app/Views/layouts/lista_vacia.php"; endif; ?>
+  <?php if(empty($partes)): $conFiltros=!empty($fichas); $vaciaColspan=4; $vaciaTitulo=$conFiltros?"Sin resultados":"Aún no hay partes"; $vaciaTexto=$conFiltros?"Prueba con otro nombre o marca, o quita los filtros.":"Agrega la primera pieza del inventario."; $vaciaAccion=$conFiltros?[APP_URL."/admin/?mod=partes","Limpiar filtros"]:[APP_URL."/admin/?mod=partes&action=crear","Nueva parte"]; include BASE_PATH."/app/Views/layouts/lista_vacia.php"; endif; ?>
   </tbody>
 </table></div>
 <?php $pagBase=APP_URL."/admin/"; include BASE_PATH."/app/Views/layouts/paginacion.php"; ?>

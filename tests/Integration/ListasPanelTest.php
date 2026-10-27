@@ -112,12 +112,12 @@ final class ListasPanelTest extends BaseDatos {
         $x = Html::xpath(Pantallas::render($this->db, "admin_partes"));
         $this->assertSame(1, Html::contar($x, "//form[@id='fAdm' and contains(@class,'lista-filtros')]/div[contains(@class,'input-group')]/input[@type='search' and @aria-label]"));
         $this->assertSame(1, Html::contar($x, "//form[@id='fAdm']/div[contains(@class,'input-group')]/button[@type='submit' and @aria-label='Buscar']"));
-        $this->assertSame(2, Html::contar($x, "//form[@id='fAdm']/select[@aria-label]"));
+        $this->assertSame(3, Html::contar($x, "//form[@id='fAdm']/select[@aria-label]"), "sección, estado de stock y orden");
         $this->assertSame(0, Html::contar($x, "//form[@id='fAdm']//*[@onchange]"), "el cambio de los selects lo maneja main.js, no un atributo en línea");
         $this->assertSame(0, Html::contar($x, "//a[contains(@class,'lista-filtros-limpiar')]"), "sin filtros activos no hay enlace de limpiar");
         $src = (string)file_get_contents(BASE_PATH . "/app/Views/admin/partes/index.php");
         $this->assertStringContainsString('class="lista-filtros-limpiar">Limpiar filtros</a>', $src);
-        $this->assertMatchesRegularExpression('/<\?php if\(\(\$q\?\?""\)!==""\|\|\(\$filtro\?\?"all"\)!=="all"\|\|\(\$orden\?\?"recientes"\)!=="recientes"\): \?>\s*<a .*lista-filtros-limpiar/', $src);
+        $this->assertMatchesRegularExpression('/<\?php if\(!empty\(\$fichas\)\): \?>.*lista-filtros-limpiar/s', $src, "limpiar solo aparece con fichas activas");
     }
 
     public function testElEstadoVacioUsaElComponenteYOcupaTodasLasColumnasDeSuLista(): void {

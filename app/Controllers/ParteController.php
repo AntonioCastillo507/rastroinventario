@@ -5,17 +5,44 @@ class ParteController extends BaseController {
     private SeccionModel $sm;
     public function __construct() { $this->pm=new ParteModel(); $this->am=new AutoModel(); $this->sm=new SeccionModel(); }
 
+    /** Estados de stock del filtro: clave => texto de la lista y de la ficha */
+    public const FILTROS_STOCK = ["all"=>"Todos","disponible"=>"Disponible (más de 5)","stock_bajo"=>"Stock bajo (1 a 5)","agotado"=>"Agotado"];
+    public const ORDENES = ["recientes"=>"Más recientes","precio_asc"=>"Precio ↑","precio_desc"=>"Precio ↓","stock_asc"=>"Stock ↑","stock_desc"=>"Stock ↓","nombre"=>"Nombre A–Z","mas_vendidas"=>"Más vendidas"];
+
+    /** Fichas de los filtros activos: [texto, URL que quita solo ese filtro]; lo demás se conserva */
+    public static function fichas(string $q, string $filtro, string $orden, int $seccion, array $secciones, string $base): array {
+        $activos = ["q"=>$q, "seccion"=>$seccion?:"", "filtro"=>$filtro==="all"?"":$filtro, "orden"=>$orden==="recientes"?"":$orden];
+        $nombres = [];
+        foreach ($secciones as $s) $nombres[(int)$s["id"]] = (string)$s["nombre"];
+        $textos = [
+            "q"=>$q!=="" ? "Búsqueda: «".$q."»" : "",
+            "seccion"=>$seccion ? "Sección: ".($nombres[$seccion] ?? "#".$seccion) : "",
+            "filtro"=>$filtro!=="all" ? "Stock: ".(self::FILTROS_STOCK[$filtro] ?? "Con stock") : "",
+            "orden"=>$orden!=="recientes" ? "Orden: ".self::ORDENES[$orden] : "",
+        ];
+        $fichas = [];
+        foreach ($textos as $k => $t) {
+            if ($t === "") continue;
+            $resto = array_filter(array_merge(["mod"=>"partes"], array_diff_key($activos, [$k=>1])), fn($v) => $v !== "" && $v !== null);
+            $fichas[] = [$t, $base."?".http_build_query($resto)];
+        }
+        return $fichas;
+    }
+
     public function index(): void {
         $this->requirePermission("partes");
         $q       = Sanitizer::get("q");
         $filtro  = Sanitizer::get("filtro") ?: "all";
+        if (!isset(self::FILTROS_STOCK[$filtro]) && $filtro !== "con_stock") $filtro = "all"; // valor desconocido: sin filtro
         $orden   = Sanitizer::get("orden")  ?: "recientes";
-        $seccion = Sanitizer::get("seccion","int"); // <-- NUEVO: filtro por sección
+        if (!isset(self::ORDENES[$orden])) $orden = "recientes";
+        $seccion = Sanitizer::get("seccion","int"); // filtro por sección
         $pag     = Paginador::crear(Sanitizer::get("page"), $this->pm->contarAdmin($q, $filtro, $seccion), Paginador::PANEL);
         $partes  = $this->pm->findAllWithDetails($q, $filtro, $orden, $seccion, $pag);
         $secciones = $this->sm->findActive(); // para el select de filtro
         $pagParams = ["mod"=>"partes", "q"=>$q, "filtro"=>$filtro==="all"?"":$filtro, "orden"=>$orden==="recientes"?"":$orden, "seccion"=>$seccion?:""];
-        $this->view("admin/partes/index", compact("partes","q","filtro","orden","seccion","secciones","pag","pagParams"));
+        $fichas  = self::fichas($q, $filtro, $orden, $seccion, $secciones, APP_URL."/admin/");
+        $this->view("admin/partes/index", compact("partes","q","filtro","orden","seccion","secciones","pag","pagParams","fichas"));
     }
 
     /** Mensaje y tipo del aviso tras guardar: si la foto trae avisos (no bloqueos) se anotan y el aviso pasa a amarillo */

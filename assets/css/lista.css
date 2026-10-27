@@ -21,6 +21,14 @@
   .lista-filtros-limpiar { min-height: 40px; }
 }
 
+/* Partes: buscador + sección + stock + orden, y fichas de los filtros activos (S6c.5) */
+@media (min-width: 768px) { .lista-filtros-partes { grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(0, 1fr)); } }
+.lista-fichas { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-xs); margin: calc(-1 * var(--spacing-xxs)) 0 var(--spacing-md); padding: 0; list-style: none; }
+.lista-ficha { display: inline-flex; align-items: center; gap: var(--spacing-xs); min-height: 44px; padding: 0 var(--spacing-sm); border: 1px solid var(--hairline); border-radius: var(--rounded-pill); background: var(--surface); color: var(--text); font-size: var(--type-body-sm-size); text-decoration: none; }
+.lista-ficha:hover { border-color: var(--border-strong); color: var(--text-strong); }
+.lista-ficha i { font-size: 11px; color: var(--text-muted); }
+@media (min-width: 768px) { .lista-ficha { min-height: 32px; } }
+
 /* ── Tabla ── */
 .lista-card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); }
 .lista-tabla { width: 100%; margin: 0; border-collapse: separate; border-spacing: 0; color: var(--text); font-size: var(--type-body-md-size); line-height: var(--type-body-md-line-height); }
