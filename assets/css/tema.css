@@ -201,6 +201,15 @@
   --btn-success-fg: var(--color-ink);
   --hero-capa-alfa: 0.76;
 
+  /* Gráficas del dashboard: 6 tonos categóricos y el gris de «Otras» */
+  --chart-1: var(--link);
+  --chart-2: #3b82f6;
+  --chart-3: #f472b6;
+  --chart-4: #22d3ee;
+  --chart-5: #a78bfa;
+  --chart-6: #fb923c;
+  --chart-otras: var(--text-muted);
+
   /* Avisos (alert): fondo de tarjeta, texto normal y el estado en el borde */
   --alert-success-text: #eaecef;
   --alert-success-bg: #1e2329;
@@ -314,6 +323,15 @@
   --btn-success-bg: var(--color-success-on-light);
   --btn-success-fg: var(--color-on-dark);
   --hero-capa-alfa: 0.9;
+
+  /* Gráficas del dashboard: 6 tonos categóricos y el gris de «Otras» */
+  --chart-1: var(--link);
+  --chart-2: #2563eb;
+  --chart-3: #be185d;
+  --chart-4: #0891b2;
+  --chart-5: #7c3aed;
+  --chart-6: #c2410c;
+  --chart-otras: var(--text-muted);
 
   /* Avisos (alert): fondo de tarjeta, texto normal y el estado en el borde */
   --alert-success-text: #181a20;

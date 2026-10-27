@@ -97,6 +97,12 @@ final class TemaGenerador {
     /** Opacidad de la capa del hero con foto, por modo: da 4,5:1 con el píxel más claro (oscuro) o más oscuro (claro) de cualquier foto, con margen */
     public const HERO_CAPA_ALFA = ["dark" => 0.76, "light" => 0.90];
 
+    /** Paleta categórica de las gráficas, slots 2 a 6 (el 1 es el acento del tema y «otras» el gris secundario). Validada con el script de contraste de dataviz */
+    public const GRAFICA = [
+        "dark"  => ["#3b82f6", "#f472b6", "#22d3ee", "#a78bfa", "#fb923c"],
+        "light" => ["#2563eb", "#be185d", "#0891b2", "#7c3aed", "#c2410c"],
+    ];
+
     /**
      * Pares de contraste que se vigilan en cada modo: [texto o componente, fondo, mínimo, tipo].
      * Mínimo 4,5 para texto normal y 3 para componentes. Los nombres son las variables semánticas de MODOS
@@ -318,6 +324,9 @@ final class TemaGenerador {
         foreach (self::MODOS[$modo] as $nombre => $clave) $o .= "  --$nombre: var(--color-$clave);\n";
         $o .= "  --hero-capa-alfa: " . self::HERO_CAPA_ALFA[$modo] . ";
 ";
+        $o .= "\n  /* Gráficas del dashboard: 6 tonos categóricos y el gris de «Otras» */\n  --chart-1: var(--link);\n";
+        foreach (self::GRAFICA[$modo] as $i => $c) $o .= "  --chart-" . ($i + 2) . ": $c;\n";
+        $o .= "  --chart-otras: var(--text-muted);\n";
         $o .= "\n  /* Avisos (alert): fondo de tarjeta, texto normal y el estado en el borde */\n";
         foreach (["success", "danger", "warning", "info", "primary"] as $a) {
             $o .= "  --alert-$a-text: {$v["alert-$a-text"]};\n  --alert-$a-bg: {$v["alert-$a-bg"]};\n  --alert-$a-border: {$v["alert-$a-border"]};\n";

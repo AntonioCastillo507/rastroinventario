@@ -455,6 +455,21 @@ Los verdes y rojos del análisis base eran para precios que suben o bajan. En es
 - Un botón relleno de verde o de rojo usa **texto oscuro** (`{colors.ink}`) sobre el tono vivo en oscuro (8,18:1 sobre verde; 4,95:1 sobre rojo) o **texto blanco** sobre el tono oscuro en claro (5,37:1 y 5,93:1).
 - Los estados nunca se indican solo con color: llevan siempre texto o un icono con nombre accesible.
 
+### Gráficas (S6a)
+Tokens de `tema.css` (`--chart-1` a `--chart-6` y `--chart-otras`), un único juego para todas las gráficas. Cada categoría se pinta siempre con el mismo tono, asignado **por id** (lugar entre todas las secciones, módulo 6): una categoría nueva toma el siguiente tono libre y las demás no cambian. «Otras» y «Sin categoría» van en `--chart-otras` (gris secundario). Con más de 6 categorías un tono se repite; la leyenda con nombre y monto evita depender solo del color. La dona no pasa de 5 segmentos.
+
+| Token | Oscuro | Claro |
+|---|---|---|
+| `chart-1` | `{colors.primary-text-on-dark}` (el acento, `--link`) | `{colors.link-on-light}` |
+| `chart-2` (azul) | #3B82F6 | #2563EB |
+| `chart-3` (rosa) | #F472B6 | #BE185D |
+| `chart-4` (cian) | #22D3EE | #0891B2 |
+| `chart-5` (violeta) | #A78BFA | #7C3AED |
+| `chart-6` (naranja) | #FB923C | #C2410C |
+| `chart-otras` | `{colors.muted-strong}` | `{colors.muted-on-light}` |
+
+Validados con el script de contraste de dataviz contra la tarjeta (≥ 3:1 en los siete, en los dos modos) y con separación para daltonismo entre tonos vecinos (ΔE ≥ 8,5 en oscuro, ≥ 13 en claro). El amarillo de marca queda fuera de la banda de luminosidad recomendada en oscuro: es la marca y se mantiene. Series únicas (barras de piezas y marcas, línea de ventas): `chart-1`, el acento. El periodo anterior va en gris secundario y punteado.
+
 ## Tipografía
 
 ### Familias (alternativas libres a las tipografías propietarias del análisis base)
@@ -686,6 +701,7 @@ La derivación la hace un **script de línea de comandos** que recibe el color p
 | 31 | El icono del logo va en `{colors.primary}` (amarillo de marca) en los dos modos, token `--logo`; excepción documentada a la regla de contraste porque el nombre va escrito al lado. Decisión de Tony (2026-10-26) | En claro el bronce `link-on-light` no gustaba; el amarillo sobre el suelo claro da ~1,4:1, aceptado por ser un logotipo con el nombre al lado |
 | 32 | Controles de 40 px en escritorio y 44 px en táctil, aplicado en la regla global de `base.css` (antes campos de 36 px y botones de 28 a 32 px). Corrección de implementación, no cambia el diseño | DESIGN.md ya lo pedía (`button-primary`, `search-input-on-dark`, `text-input-on-light`) |
 | 33 | S5.4: movimiento extendido a todo el sitio (contenido principal, aparición escalonada, botones, menús, cajón y modal), flecha propia en todos los `select`, `.enlace-volver` y formularios del panel a 720 px. Pedido por Tony (2026-10-26) | Hasta S4.5 solo la portada se movía y los desplegables parecían texto fijo; las reglas de duración, propiedades y movimiento reducido son las de la sección «Movimiento» |
+| 34 | S6a: paleta categórica de gráficas (`chart-1` a `chart-6` y `chart-otras`, ver «Gráficas»). Aprobada por Tony (2026-10-26) | Las gráficas del dashboard necesitan seis tonos distinguibles que no sean los de estado; salen del generador de tema y se validan en los dos modos |
 
 ## Guía de iteración
 
