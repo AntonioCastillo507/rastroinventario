@@ -20,7 +20,7 @@
       <?php endforeach; ?>
     </select>
   </div>
-  <div id="stockAlert" role="status" class="alert-dark-info mb-4 d-none">
+  <div id="stockAlert" role="status" class="alert alert-info mb-4 d-none">
     <i aria-hidden="true" class="bi bi-info-circle icon-info me-2"></i><span id="stockMsg"></span>
   </div>
   <div class="mb-4">

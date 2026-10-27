@@ -1,7 +1,8 @@
 <?php
 $edit=!empty($rol); $title=$edit?"Editar Rol":"Nuevo Rol";
 include BASE_PATH."/app/Views/layouts/admin_header.php";
-$ML=["usuarios"=>"Usuarios","roles"=>"Roles","partes"=>"Partes/Inventario","autos"=>"Autos","secciones"=>"Secciones","ventas"=>"Ventas","comentarios"=>"Comentarios","pedidos"=>"Pedidos","seguridad"=>"Seguridad (bitácora de accesos)"];
+$ML=["usuarios"=>"Usuarios","roles"=>"Roles","partes"=>"Partes/Inventario","autos"=>"Autos","secciones"=>"Secciones","ventas"=>"Ventas","comentarios"=>"Comentarios","pedidos"=>"Pedidos","seguridad"=>"Seguridad"];
+$MS=["usuarios"=>"Cuentas del personal y de clientes","roles"=>"Roles y esta matriz","partes"=>"Piezas, fotos y stock","ventas"=>"Registro de ventas","comentarios"=>"Moderación de reseñas","pedidos"=>"Pedidos de la tienda y su estado","seguridad"=>"Bitácora de accesos"];
 ?>
 <div class="panel-cabeza">
   <div>
@@ -24,15 +25,15 @@ $ML=["usuarios"=>"Usuarios","roles"=>"Roles","partes"=>"Partes/Inventario","auto
     </div>
   </div>
   <h2 class="form-subtitulo">Matriz de permisos por módulo</h2>
-  <div class="table-responsive">
-  <table class="table dark-table mb-4">
-    <thead><tr><th>Módulo</th><th class="text-center">Ver</th><th class="text-center">Crear</th><th class="text-center">Editar</th><th class="text-center">Borrar</th></tr></thead>
+  <div class="matriz-permisos">
+  <table class="matriz-tabla">
+    <thead><tr><th scope="col">Módulo</th><th scope="col">Ver</th><th scope="col">Crear</th><th scope="col">Editar</th><th scope="col">Borrar</th></tr></thead>
     <tbody>
     <?php foreach($modulos as $m): $p=$permisos[$m]??[]; ?>
     <tr>
-      <td class="fw-semibold text-white"><?=$ML[$m]??$m?></td>
+      <th scope="row"><?=htmlspecialchars($ML[$m]??$m)?><?php if(!empty($MS[$m])): ?><span class="celda-sub"><?=htmlspecialchars($MS[$m])?></span><?php endif; ?></th>
       <?php foreach(["ver","crear","editar","borrar"] as $a): ?>
-      <td class="text-center">
+      <td>
         <input type="checkbox" class="dark-check" name="permisos[<?=$m?>][<?=$a?>]" value="1" aria-label="<?=["ver"=>"Ver","crear"=>"Crear","editar"=>"Editar","borrar"=>"Borrar"][$a]?> en <?=htmlspecialchars($ML[$m]??$m)?>" <?=(!empty($p["puede_".$a]))?"checked":""?>>
       </td>
       <?php endforeach; ?>
