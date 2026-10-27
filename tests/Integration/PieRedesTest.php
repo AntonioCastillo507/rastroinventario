@@ -35,7 +35,11 @@ final class PieRedesTest extends BaseDatos {
         ]);
         $botones = $x->query("//footer//a[contains(@class,'pie-red')]");
         $this->assertSame(3, $botones->length);
-        $this->assertSame(["WhatsApp", "Instagram", "TikTok"], array_map(fn($a) => trim($x->query("./span[1]", $a)->item(0)->textContent), iterator_to_array($botones)));
+        $this->assertSame(["WhatsApp", "Instagram", "TikTok"], array_map(fn($a) => $a->getAttribute("title"), iterator_to_array($botones)), "botones circulares de solo icono: el nombre va en title");
+        foreach ($botones as $a) {
+            $this->assertSame("", trim($a->textContent), "sin texto visible");
+            $this->assertSame($a->getAttribute("title") . " (se abre en otra pestaña)", $a->getAttribute("aria-label"), "el nombre accesible lleva el aviso");
+        }
         $this->assertSame("https://wa.me/50760000000", $botones->item(0)->getAttribute("href"));
         foreach (["whatsapp", "instagram", "tiktok"] as $k => $icono) {
             $i = $x->query(".//i", $botones->item($k))->item(0);
@@ -51,7 +55,7 @@ final class PieRedesTest extends BaseDatos {
             ["nombre" => "Mala", "url" => "javascript:alert(1)", "icono" => "link"],
         ]);
         $this->assertSame(1, $x->query("//footer//a[contains(@class,'pie-red')]")->length);
-        $this->assertStringNotContainsString("WhatsApp", $x->query("//footer")->item(0)->textContent);
+        $this->assertStringNotContainsString("WhatsApp", $x->document->saveHTML($x->query("//footer")->item(0)));
         $this->assertStringNotContainsString("javascript:", $x->document->saveHTML());
     }
 
@@ -66,7 +70,7 @@ final class PieRedesTest extends BaseDatos {
         $a = $x->query("//footer//a[contains(@class,'pie-red')]")->item(0);
         $this->assertSame("_blank", $a->getAttribute("target"));
         $this->assertSame("noopener noreferrer", $a->getAttribute("rel"));
-        $this->assertStringContainsString("se abre en otra pestaña", $x->query(".//span[contains(@class,'visually-hidden')]", $a)->item(0)->textContent);
+        $this->assertSame("Instagram (se abre en otra pestaña)", $a->getAttribute("aria-label"));
     }
 
     public function testElNombreYLaDireccionDeLaRedSeEscapan(): void {
@@ -81,6 +85,7 @@ final class PieRedesTest extends BaseDatos {
         $x = Html::xpath(Pantallas::render($this->db, "home"));
         $iconos = $x->query("//footer//ul[contains(@class,'pie-contacto')]//span[contains(@class,'pie-icono')]");
         $this->assertSame(4, $iconos->length, "ubicación, teléfono, correo y reloj");
+        $this->assertSame(0, $x->query("//footer//span[contains(@class,'pie-icono')]/ancestor::*[contains(@class,'pie-contacto')]//*[contains(@class,'pie-icono')][@style]")->length, "icono sin caja ni estilos en línea");
         foreach ($iconos as $s) $this->assertSame("true", $s->getAttribute("aria-hidden"));
         $clases = implode(" ", array_map(fn($s) => $x->query("./i", $s)->item(0)->getAttribute("class"), iterator_to_array($iconos)));
         foreach (["geo-alt", "telephone", "envelope", "clock"] as $n) $this->assertStringContainsString("bi-$n", $clases);

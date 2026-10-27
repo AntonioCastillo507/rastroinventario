@@ -76,7 +76,7 @@ final class MarcaPantallasTest extends BaseDatos {
         $this->assertStringContainsString("Taller Cambiado Zeta", $marca, $pantalla);
         $this->assertStringContainsString("Lema Cambiado", $marca, $pantalla);
         $pie = preg_replace('/\s+/u', " ", trim($x->query("//footer")->item(0)->textContent));
-        foreach (["Taller Cambiado Zeta", "Descripcion cambiada del negocio.", "+999 8888-7777", "cambiado@example.invalid", "Calle Cambiada 123", "Dia Cambiado: 1:00 AM – 2:00 AM", "Pie cambiado Taller Cambiado Zeta Paisandu"] as $texto) {
+        foreach (["Taller Cambiado Zeta", "Descripcion cambiada del negocio.", "+999 8888-7777", "cambiado@example.invalid", "Calle Cambiada 123", "Dia Cambiado 1:00 AM – 2:00 AM", "Pie cambiado Taller Cambiado Zeta Paisandu"] as $texto) {
             $this->assertStringContainsString($texto, $pie, "$pantalla: pie sin «{$texto}»");
         }
     }

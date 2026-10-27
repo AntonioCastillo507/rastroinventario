@@ -240,12 +240,12 @@ final class EstructuraVistasTest extends BaseDatos {
         if (str_starts_with($n, "admin_") || in_array($n, Pantallas::deAcceso(), true)) { $this->addToAssertionCount(1); return; }
         $x = Html::xpath(Pantallas::render($this->db, $n));
         $this->assertSame(1, $x->query("//footer")->length, $n);
-        // los únicos iconos del pie: ubicación, teléfono, correo y horario (en su pastilla) y los de los botones de redes, todos aria-hidden
+        // los únicos iconos del pie: ubicación, teléfono, correo y horario, los botones de redes y la flecha de «Volver arriba», todos aria-hidden
         foreach ($x->query("//footer//*[contains(@class,'bi-')]") as $i) {
             $this->assertSame("true", $i->getAttribute("aria-hidden"), "$n: icono del pie sin aria-hidden");
-            $this->assertMatchesRegularExpression('/(^|\s)(pie-icono|pie-red)(\s|$)/', $i->parentNode->getAttribute("class"), "$n: icono del pie fuera de su pastilla o botón");
+            $this->assertMatchesRegularExpression('/(^|\s)(pie-icono|pie-red|pie-arriba)(\s|$)/', $i->parentNode->getAttribute("class"), "$n: icono del pie fuera de su pastilla o botón");
         }
-        foreach ($x->query("//footer//a") as $a) $this->assertNotSame("", trim($a->textContent), "$n: enlace del pie sin texto");
-        $this->assertSame(["Comprar", "Empresa", "Contacto y horario"], array_map(fn($e) => trim($e->textContent), iterator_to_array($x->query("//footer//h2"))), $n);
+        foreach ($x->query("//footer//a") as $a) $this->assertNotSame("", trim($a->textContent) . $a->getAttribute("aria-label"), "$n: enlace del pie sin nombre accesible (texto o aria-label)");
+        $this->assertSame(["Comprar", "Empresa", "Contacto"], array_map(fn($e) => trim($e->textContent), iterator_to_array($x->query("//footer//h2"))), $n);
     }
 }
