@@ -17,7 +17,7 @@ class ParteController extends BaseController {
         $textos = [
             "q"=>$q!=="" ? "Búsqueda: «".$q."»" : "",
             "seccion"=>$seccion ? "Sección: ".($nombres[$seccion] ?? "#".$seccion) : "",
-            "filtro"=>$filtro!=="all" ? "Stock: ".(self::FILTROS_STOCK[$filtro] ?? "Con stock") : "",
+            "filtro"=>$filtro!=="all" ? (self::FILTROS_STOCK[$filtro] ?? "Con stock") : "",
             "orden"=>$orden!=="recientes" ? "Orden: ".self::ORDENES[$orden] : "",
         ];
         $fichas = [];

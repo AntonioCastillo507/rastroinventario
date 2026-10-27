@@ -28,8 +28,10 @@ final class DashboardMovimientoTest extends TestCase {
 
     public function testLasGraficasAnimanAlCargarYResaltanAlPasarElCursor(): void {
         $js = self::js();
-        $this->assertStringContainsString('{ duration: 500, easing: "easeOutCubic" }', $js);
-        $this->assertStringContainsString("sinMovimiento ? false", $js, "sin animación con movimiento reducido");
+        $this->assertStringContainsString('Chart.defaults.animation.duration = 500', $js);
+        $this->assertStringContainsString('Chart.defaults.animation.easing = "easeOutCubic"', $js);
+        $this->assertStringContainsString("if (sinMovimiento) Chart.defaults.animation = false", $js, "sin animación con movimiento reducido");
+        $this->assertStringNotContainsString("Chart.defaults.animation = {", $js, "reemplazar el objeto rompe las animaciones de Chart.js");
         $this->assertStringContainsString("hoverOffset", $js, "la dona resalta el segmento");
         $this->assertStringContainsString("hoverBorderWidth", $js, "las barras resaltan");
     }

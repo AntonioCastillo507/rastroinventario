@@ -55,7 +55,7 @@ final class PartesFiltrosTest extends BaseDatos {
         $secs = [["id" => $this->secA, "nombre" => "Filtro A S6c5"]];
         $f = \ParteController::fichas("faro", "agotado", "precio_asc", $this->secA, $secs, "/admin/");
         $this->assertCount(4, $f);
-        $this->assertSame(["Búsqueda: «faro»", "Sección: Filtro A S6c5", "Stock: Agotado", "Orden: Precio ↑"], array_column($f, 0));
+        $this->assertSame(["Búsqueda: «faro»", "Sección: Filtro A S6c5", "Agotado", "Orden: Precio ↑"], array_column($f, 0));
         parse_str((string)parse_url($f[1][1], PHP_URL_QUERY), $sinSeccion);
         $this->assertSame(["mod" => "partes", "q" => "faro", "filtro" => "agotado", "orden" => "precio_asc"], $sinSeccion);
         $this->assertSame([], \ParteController::fichas("", "all", "recientes", 0, [], "/admin/"), "sin filtros no hay fichas");

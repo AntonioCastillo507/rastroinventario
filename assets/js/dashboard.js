@@ -63,7 +63,9 @@
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     Chart.defaults.font.size = 12;
     Chart.defaults.color = c.tenue;
-    Chart.defaults.animation = sinMovimiento ? false : { duration: 500, easing: "easeOutCubic" };
+    // Se ajustan duración y curva sin reemplazar el objeto: Chart.js guarda ahí las funciones de cada propiedad
+    if (sinMovimiento) Chart.defaults.animation = false;
+    else { Chart.defaults.animation.duration = 500; Chart.defaults.animation.easing = "easeOutCubic"; }
 
     var s = datos.serie, el = lienzo("dgLinea");
     if (s && el) {
