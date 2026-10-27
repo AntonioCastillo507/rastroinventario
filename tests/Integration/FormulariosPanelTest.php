@@ -87,6 +87,23 @@ final class FormulariosPanelTest extends BaseDatos {
         $this->assertSame(0, Html::contar($x, "//main//div[@role='alert']"));
     }
 
+    public function testLosAvisosDelPanelSeanExitoYErrorTienenIconoRoleYCierreConNombreYSoloElDeExitoSeCierraSolo(): void {
+        foreach (["admin_aviso_error" => ["alert", "alert-danger"], "con_aviso_exito" => null] as $pantalla => $esperado) {
+            if ($esperado === null) continue;
+            $x = Html::xpath(Pantallas::render($this->db, $pantalla));
+            $a = $x->query("//main/div[contains(@class,'alert')]");
+            $this->assertSame(1, $a->length, $pantalla);
+            $this->assertSame("alert", $a->item(0)->getAttribute("role"), "el error se anuncia con role=alert");
+            $this->assertSame(1, (new \DOMXPath($a->item(0)->ownerDocument))->query("./i[@aria-hidden='true']", $a->item(0))->length);
+            $this->assertSame(1, (new \DOMXPath($a->item(0)->ownerDocument))->query("./button[@aria-label='Cerrar aviso']", $a->item(0))->length, "cierre con nombre accesible");
+        }
+        $js = (string)file_get_contents(BASE_PATH . "/assets/js/main.js");
+        $this->assertStringContainsString('querySelectorAll(".alert-success,.alert-info")', $js, "solo éxito e información se cierran solos; un error se queda hasta que se cierra");
+        $this->assertStringNotContainsString("alert-danger", explode("Auto-cerrar", $js)[1] ?? "", "un error nunca se cierra solo");
+        $css = (string)file_get_contents(BASE_PATH . "/assets/css/panel.css");
+        $this->assertMatchesRegularExpression('/\.admin-contenido > \.alert\s*\{[^}]*border-radius:\s*var\(--rounded-lg\)/', $css, "alert: radio lg");
+    }
+
     // ── Acceso: «Volver…» como enlace ──
 
     /** @return array<string,array{0:string,1:string,2:string}> */
