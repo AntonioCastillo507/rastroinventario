@@ -23,7 +23,7 @@
     <td class="small text-secondary"><?=date("d/m/Y", strtotime($u["creado_en"]))?></td>
     <td>
       <a href="<?=APP_URL?>/admin/?mod=usuarios&action=editar&id=<?=$u["id"]?>" class="icon-btn" title="Editar" aria-label="Editar a <?=htmlspecialchars($u["nombre"])?>"><i aria-hidden="true" class="bi bi-pencil-square text-warning"></i></a>
-      <form method="POST" action="<?=APP_URL?>/admin/?mod=usuarios&action=toggle&id=<?=$u["id"]?>" class="d-inline">
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=usuarios&action=toggle&id=<?=$u["id"]?>" class="d-inline"<?=$u["activo"]?Confirmar::attrs(["titulo"=>"Desactivar a «".$u["nombre"]."»","texto"=>"No podrá iniciar sesión hasta que lo vuelvas a activar.","boton"=>"Desactivar","cancelar"=>"Conservar","peligro"=>true]):""?>>
         <?=CsrfToken::field()?>
         <button type="submit" class="icon-btn" title="<?=$u["activo"]?"Desactivar":"Activar"?>" aria-label="<?=$u["activo"]?"Desactivar":"Activar"?> a <?=htmlspecialchars($u["nombre"])?>">
           <i aria-hidden="true" class="bi bi-power <?=$u["activo"]?"text-danger":"text-success"?>"></i>

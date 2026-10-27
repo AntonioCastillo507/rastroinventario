@@ -75,3 +75,15 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
   .admin-enlace, .admin-icono, .admin-cuenta, .admin-cuenta-menu .dropdown-item { min-height: 44px; }
   .admin-icono { min-width: 44px; }
 }
+
+/* ── Modal de confirmación (modal-confirm de DESIGN.md): superficie elevada, radio xl, relleno 24 px, botón con el verbo ──
+   <dialog> nativo; assets/js/confirmar.js. Aparece con opacidad y 8 px de subida (200 ms, ease-out). */
+.modal-confirmar { width: min(440px, calc(100vw - 2 * var(--spacing-md))); padding: var(--spacing-lg); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); background: var(--surface-elevated); color: var(--text); font-size: var(--type-body-md-size); line-height: var(--type-body-md-line-height); }
+.modal-confirmar[open] { animation: modal-entra 200ms ease-out; }
+.modal-confirmar::backdrop { background: color-mix(in srgb, var(--canvas) 72%, transparent); }
+.modal-confirmar-titulo { margin: 0 0 var(--spacing-xs); font-size: var(--type-title-md-size); font-weight: var(--type-title-md-weight); line-height: var(--type-title-md-line-height); color: var(--text-strong); overflow-wrap: anywhere; }
+.modal-confirmar-texto { margin: 0 0 var(--spacing-lg); color: var(--text); }
+.modal-confirmar-acciones { display: flex; flex-direction: column-reverse; gap: var(--spacing-xs); }
+.modal-confirmar-acciones .btn { min-height: 44px; }
+@media (min-width: 576px) { .modal-confirmar-acciones { flex-direction: row; justify-content: flex-end; } .modal-confirmar-acciones .btn { min-height: 40px; } }
+@keyframes modal-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

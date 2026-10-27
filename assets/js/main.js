@@ -7,11 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function(){ var a=bootstrap.Alert.getOrCreateInstance(el); if(a)a.close(); },4500);
   });
 
-  // Confirmar antes de eliminar
-  document.querySelectorAll("[data-confirm]").forEach(function(el){
-    el.addEventListener("click",function(e){ if(!confirm(el.dataset.confirm))e.preventDefault(); });
-  });
-
   // Toggle contraseña
   document.querySelectorAll(".toggle-pass").forEach(function(btn){
     btn.addEventListener("click",function(){

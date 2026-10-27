@@ -49,7 +49,7 @@
     <td><?=$p["firma_digital"]?"<i aria-hidden=\"true\" class=\"bi bi-shield-check text-success fs-5\"></i><span class=\"visually-hidden\">Firmada</span>":"<i aria-hidden=\"true\" class=\"bi bi-shield-x text-secondary\"></i><span class=\"visually-hidden\">Sin firma</span>"?></td>
     <td>
       <a href="<?=APP_URL?>/admin/?mod=partes&action=editar&id=<?=$p["id"]?>" class="icon-btn" title="Editar" aria-label="Editar <?=htmlspecialchars($p["nombre"])?>"><i aria-hidden="true" class="bi bi-pencil-square text-warning"></i></a>
-      <form method="POST" action="<?=APP_URL?>/admin/?mod=partes&action=eliminar&id=<?=$p["id"]?>" class="d-inline" onsubmit="return confirm('¿Desactivar?')">
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=partes&action=eliminar&id=<?=$p["id"]?>" class="d-inline"<?=Confirmar::attrs(["titulo"=>"Desactivar «".$p["nombre"]."»","texto"=>"La pieza dejará de mostrarse en la tienda. Los pedidos y ventas anteriores se conservan.","boton"=>"Desactivar","cancelar"=>"Conservar","peligro"=>true])?>>
         <?=CsrfToken::field()?>
         <button type="submit" class="icon-btn" title="Desactivar" aria-label="Desactivar <?=htmlspecialchars($p["nombre"])?>"><i aria-hidden="true" class="bi bi-trash text-danger"></i></button>
       </form>

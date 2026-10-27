@@ -23,7 +23,7 @@
           <i aria-hidden="true" class="bi bi-<?=$c["publicado"]?"eye-slash text-warning":"check-circle text-success"?>"></i>
         </button>
       </form>
-      <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=eliminar&id=<?=$c["id"]?>" class="d-inline" onsubmit="return confirm('¿Eliminar este comentario?')">
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=eliminar&id=<?=$c["id"]?>" class="d-inline"<?=Confirmar::attrs(["titulo"=>"Eliminar el comentario de «".$c["nombre_visitante"]."»","texto"=>"Se borra para siempre y no se puede deshacer.","boton"=>"Eliminar","cancelar"=>"Conservar","peligro"=>true])?>>
         <?=CsrfToken::field()?>
         <button type="submit" class="icon-btn" title="Eliminar" aria-label="Eliminar el comentario de <?=htmlspecialchars($c["nombre_visitante"])?>"><i aria-hidden="true" class="bi bi-trash text-danger"></i></button>
       </form>

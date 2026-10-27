@@ -11,6 +11,7 @@ final class AnalizadorVistas {
     private const FUNCIONES_SEGURAS = [
         "htmlspecialchars", "htmlentities", "urlencode", "rawurlencode",
         "number_format", "date", "count", "intval", "starsHtml",
+        "attrs", "attrsPorCampo", // Confirmar:: escapa todo lo que devuelve (ConfirmarTest lo comprueba)
     ];
     private const IGNORAR = [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT];
 

@@ -28,7 +28,7 @@
       <a href="<?=APP_URL?>/admin/?mod=secciones&action=editar&id=<?=$s["id"]?>" class="btn btn-outline-warning btn-sm flex-fill">
         <i aria-hidden="true" class="bi bi-pencil me-1"></i>Editar
       </a>
-      <form method="POST" action="<?=APP_URL?>/admin/?mod=secciones&action=eliminar&id=<?=$s["id"]?>" class="d-inline" onsubmit="return confirm('¿Desactivar?')">
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=secciones&action=eliminar&id=<?=$s["id"]?>" class="d-inline"<?=Confirmar::attrs(["titulo"=>"Desactivar «".$s["nombre"]."»","texto"=>"La sección dejará de mostrarse en la tienda.","boton"=>"Desactivar","cancelar"=>"Conservar","peligro"=>true])?>>
         <?=CsrfToken::field()?>
         <button type="submit" class="btn btn-outline-danger btn-sm" aria-label="Desactivar la sección <?=htmlspecialchars($s["nombre"])?>"><i aria-hidden="true" class="bi bi-trash"></i></button>
       </form>

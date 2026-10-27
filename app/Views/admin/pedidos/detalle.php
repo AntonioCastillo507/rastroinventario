@@ -58,8 +58,7 @@
       <div class="card-body p-4">
         <?php $siguientes=PedidoModel::transicionesPermitidas($pedido["estado"]); ?>
         <?php if($siguientes): ?>
-        <form action="<?=APP_URL?>/admin/?mod=pedidos&action=cambiarEstado&id=<?=$pedido["id"]?>" method="POST"
-              onsubmit="var e=this.estado.value;return e==='entregado'?confirm('Entregado es definitivo: no se podrá cambiar después. ¿Continuar?'):(e==='cancelado'?confirm('Se devolverá el stock del pedido. ¿Cancelar el pedido?'):true);">
+        <form action="<?=APP_URL?>/admin/?mod=pedidos&action=cambiarEstado&id=<?=$pedido["id"]?>" method="POST"<?=Confirmar::attrsPorCampo("estado",["entregado"=>["titulo"=>"Marcar el pedido #".$pedido["id"]." como entregado","texto"=>"Entregado es definitivo: no se podrá cambiar después.","boton"=>"Marcar como entregado","cancelar"=>"Volver"],"cancelado"=>["titulo"=>"Cancelar el pedido #".$pedido["id"],"texto"=>"Se devolverá el stock del pedido.","boton"=>"Cancelar el pedido","cancelar"=>"Conservar el pedido","peligro"=>true]])?>>
           <?=CsrfToken::field()?>
           <label for="f-estado" class="form-label-dark">Estado del pedido</label>
           <select id="f-estado" name="estado" class="form-select dark-input mb-3" required>

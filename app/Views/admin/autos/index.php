@@ -16,7 +16,7 @@
     <td><?=$a["activo"]?"<span class=\"chip-success\">Activo</span>":"<span class=\"chip-neutral\">Inactivo</span>"?></td>
     <td>
       <a href="<?=APP_URL?>/admin/?mod=autos&action=editar&id=<?=$a["id"]?>" class="icon-btn" title="Editar" aria-label="Editar <?=htmlspecialchars($a["marca"]." ".$a["modelo"]." ".$a["anio"])?>"><i aria-hidden="true" class="bi bi-pencil-square text-warning"></i></a>
-      <form method="POST" action="<?=APP_URL?>/admin/?mod=autos&action=eliminar&id=<?=$a["id"]?>" class="d-inline" onsubmit="return confirm('¿Desactivar este auto?')">
+      <form method="POST" action="<?=APP_URL?>/admin/?mod=autos&action=eliminar&id=<?=$a["id"]?>" class="d-inline"<?=Confirmar::attrs(["titulo"=>"Desactivar «".$a["marca"]." ".$a["modelo"]." ".$a["anio"]."»","texto"=>"El auto dejará de mostrarse como activo.","boton"=>"Desactivar","cancelar"=>"Conservar","peligro"=>true])?>>
         <?=CsrfToken::field()?>
         <button type="submit" class="icon-btn" title="Desactivar" aria-label="Desactivar <?=htmlspecialchars($a["marca"]." ".$a["modelo"]." ".$a["anio"])?>"><i aria-hidden="true" class="bi bi-trash text-danger"></i></button>
       </form>
