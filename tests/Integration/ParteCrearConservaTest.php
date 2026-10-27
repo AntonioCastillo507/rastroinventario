@@ -30,8 +30,8 @@ final class ParteCrearConservaTest extends BaseDatos {
     public function testConUnPrecioInvalidoVuelveElFormularioNuevoConLoEscrito(): void {
         $auto = (int)$this->db->query("SELECT id FROM autos LIMIT 1")->fetchColumn();
         $x = $this->crearConPost(["nombre" => "Faro <i>trasero</i>", "descripcion" => "Para Civic 2018", "precio" => "0", "cantidad" => "7", "auto_id" => (string)$auto, "seccion_id" => ""]);
-        $this->assertSame("Nueva Parte", trim($x->query("//h1")->item(0)->textContent), "sigue siendo el formulario de crear");
-        $this->assertSame(1, $x->query("//button[contains(.,'Crear Parte')]")->length);
+        $this->assertSame("Agregar parte al inventario", trim($x->query("//h1")->item(0)->textContent), "sigue siendo el formulario de crear");
+        $this->assertSame(1, $x->query("//button[contains(.,'Guardar parte')]")->length);
         $this->assertSame(0, $x->query("//button[contains(.,'Guardar Cambios')]")->length, "no pasa a modo edición");
         $this->assertStringContainsString("alert", $x->query("//*[@role='alert']")->item(0)?->getAttribute("class") ?? "");
         $this->assertSame("Faro <i>trasero</i>", $x->query("//input[@name='nombre']")->item(0)->getAttribute("value"));

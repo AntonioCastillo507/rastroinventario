@@ -106,23 +106,44 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
   .form-acciones .btn { flex: 1; min-height: 44px; }
 }
 
-/* ── Nueva / Editar parte (S6c.4): página de producto. Dos columnas desde 992 px, apiladas debajo; barra de acciones fija abajo ── */
-.form-panel-producto { max-width: 1100px; }
+/* ── Encabezado de página (volver, título y acciones fijas): componente reutilizable del panel ──
+   Sticky bajo la barra superior (64 px); en móvil las acciones pasan a una barra fija abajo con botones a todo el ancho. */
+.pagina-cabeza { position: sticky; top: var(--panel-barra-alto); z-index: 10; display: flex; align-items: flex-end; justify-content: space-between; gap: var(--spacing-md); margin: 0 0 var(--spacing-md); padding: var(--spacing-sm) 0; background: var(--canvas); }
+.pagina-cabeza-titulo { min-width: 0; }
+.pagina-cabeza .panel-titulo { margin: 0; }
+.pagina-acciones { display: flex; flex: none; gap: var(--spacing-xs); }
+.pagina-acciones .btn { min-height: 40px; }
+@media (max-width: 767.98px) {
+  .pagina-cabeza { position: static; }
+  .pagina-acciones { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: var(--surface); border-top: 1px solid var(--hairline); }
+  .pagina-acciones .btn { flex: 1; min-height: 44px; }
+  .form-panel-producto { padding-bottom: 72px; }
+}
+
+/* ── Nueva / Editar parte: página de producto, mismo contenedor que el encabezado; lateral de 380 px desde 992 px ── */
 .producto-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-md); }
 .producto-principal, .producto-lateral { display: flex; flex-direction: column; gap: var(--spacing-md); min-width: 0; }
 .producto-campos { display: grid; gap: var(--spacing-md); }
+.form-panel-producto .form-card { padding: var(--spacing-md); }
 .form-panel-producto .form-subtitulo { margin-bottom: var(--spacing-md); }
-.form-acciones-fija { position: sticky; bottom: 0; z-index: 5; margin: var(--spacing-md) 0 0; padding: var(--spacing-sm) var(--spacing-md); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); }
-.form-acciones-fija .btn { min-height: 44px; }
+.form-panel-producto .form-label-dark { margin-bottom: var(--spacing-xs); }
 @media (min-width: 992px) {
-  .producto-grid { grid-template-columns: minmax(0, 1fr) 340px; gap: var(--spacing-lg); align-items: start; }
+  .producto-grid { grid-template-columns: minmax(0, 1fr) 380px; gap: var(--spacing-lg); align-items: start; }
   .producto-principal, .producto-lateral { gap: var(--spacing-lg); }
-  .form-acciones-fija { justify-content: flex-end; margin-top: var(--spacing-lg); }
+  .form-panel-producto .form-card { padding: var(--spacing-lg); }
 }
-@media (max-width: 767.98px) {
-  .form-acciones-fija { margin: var(--spacing-md) calc(-1 * var(--spacing-md)) 0; border-width: 1px 0 0; border-radius: 0; }
-  .form-acciones-fija .btn { flex: 1; }
-}
+/* Foto: campo a la izquierda y vista previa de 160 px a la derecha (debajo en móvil) */
+.foto-campo { display: grid; gap: var(--spacing-md); align-items: start; }
+.foto-campo-datos { display: grid; gap: var(--spacing-xs); min-width: 0; align-content: start; }
+.foto-campo-datos .form-label-dark { margin-bottom: 0; }
+.foto-ayuda { margin: 0; font-size: var(--type-body-sm-size); color: var(--text-muted); }
+.foto-campo-previa { min-width: 0; }
+@media (min-width: 576px) { .foto-campo { grid-template-columns: minmax(0, 1fr) 160px; gap: var(--spacing-lg); } }
+/* Selector de archivo: botón secundario del sistema dentro del recuadro de 40 px (44 en táctil) */
+.form-panel-producto input[type="file"] { display: flex; align-items: center; min-height: 40px; padding: 4px 8px; font-size: var(--type-body-md-size); color: var(--text-muted); }
+.form-panel-producto input[type="file"]::file-selector-button { height: 30px; margin: 0 var(--spacing-sm) 0 0; padding: 0 var(--spacing-sm); border: 1px solid var(--btn-secondary-border); border-radius: var(--rounded-md); background: var(--btn-secondary-bg); color: var(--btn-secondary-fg); font-family: var(--font-text); font-size: var(--type-button-size); font-weight: var(--type-button-weight); cursor: pointer; }
+.form-panel-producto input[type="file"]:hover::file-selector-button { border-color: var(--border-strong); }
+@media (pointer: coarse) { .form-panel-producto input[type="file"] { min-height: 44px; } }
 
 /* ── Avisos de éxito y error del panel (flash): arriba del contenido, texto de 14 px, con icono y botón de cierre de 44 px ── */
 .admin-contenido > .alert { margin-bottom: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--rounded-lg); font-size: var(--type-body-md-size); }

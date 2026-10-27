@@ -43,7 +43,11 @@ final class FormulariosPanelTest extends BaseDatos {
         }
         $this->assertSame(1, Html::contar($x, "//h1[contains(@class,'panel-titulo')]"), "$pantalla: un h1");
         $this->assertSame(0, Html::contar($x, "//h1//i"), "$pantalla: sin icono en el título");
-        $this->assertSame(1, Html::contar($x, "//form//div[contains(@class,'form-acciones')]//button[@type='submit']"), "$pantalla: una barra de acciones con un solo botón de enviar");
+        if (str_starts_with($pantalla, "admin_partes_")) {
+            $this->assertSame(1, Html::contar($x, "//div[contains(@class,'pagina-acciones')]//button[@type='submit'][@form='form-parte']"), "$pantalla: guardar en el encabezado, enlazado al formulario");
+        } else {
+            $this->assertSame(1, Html::contar($x, "//form//div[contains(@class,'form-acciones')]//button[@type='submit']"), "$pantalla: una barra de acciones con un solo botón de enviar");
+        }
         $this->assertSame(1, Html::contar($x, "//main//form//input[@name='csrf_token']"), "$pantalla: con token");
         $this->assertSame(0, Html::contar($x, "//*[contains(@class,'btn-back') or contains(@class,'dark-card') or contains(@class,'alert-dark-danger')]"), "$pantalla: sin los componentes viejos");
         $this->assertSame(0, Html::contar($x, "//main//*[contains(@style,'max-width')]"), "$pantalla: el ancho sale de la clase, no de un estilo en línea");

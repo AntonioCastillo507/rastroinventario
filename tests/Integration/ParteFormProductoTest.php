@@ -6,7 +6,7 @@ use Tests\Support\BaseDatos;
 use Tests\Support\Html;
 use Tests\Support\Pantallas;
 
-/** S6c.4: «Nueva parte» / «Editar parte» como página de producto: tarjetas en dos columnas y barra de acciones fija. */
+/** Nueva / Editar parte como página de producto: tarjetas en dos columnas, encabezado con acciones fijas y foto con su vista previa. */
 final class ParteFormProductoTest extends BaseDatos {
     protected function setUp(): void {
         parent::setUp();
@@ -24,7 +24,6 @@ final class ParteFormProductoTest extends BaseDatos {
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-info']//input[@name='nombre']"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-info']//textarea[@name='descripcion']"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-fotos']//input[@name='imagen'][@type='file']"));
-        $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-fotos']//*[@data-foto-previa]"), "vista previa dentro de Fotos");
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-compat']//select[@name='auto_id']"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-precio']//input[@name='precio']"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-precio']//input[@name='cantidad']"));
@@ -38,26 +37,41 @@ final class ParteFormProductoTest extends BaseDatos {
         foreach ($x->query("//main//form//*[self::input or self::select or self::textarea][@name]") as $n) $nombres[] = $n->getAttribute("name");
         sort($nombres);
         $this->assertSame(["auto_id", "cantidad", "csrf_token", "descripcion", "imagen", "nombre", "precio", "seccion_id"], $nombres);
-        foreach (["nombre" => "required", "precio" => "required", "cantidad" => "required"] as $campo => $atr) {
-            $this->assertTrue($x->query("//input[@name='$campo']")->item(0)->hasAttribute($atr), "$campo sigue siendo obligatorio");
-        }
+        foreach (["nombre", "precio", "cantidad"] as $campo) $this->assertTrue($x->query("//input[@name='$campo']")->item(0)->hasAttribute("required"), "$campo sigue siendo obligatorio");
         $this->assertSame("150", $x->query("//input[@name='nombre']")->item(0)->getAttribute("maxlength"));
         $this->assertSame("0", $x->query("//input[@name='precio']")->item(0)->getAttribute("min"));
     }
 
     #[DataProvider("pantallas")]
-    public function testLaBarraDeAccionesFijaTraeGuardarYCancelar(string $pantalla): void {
+    public function testElEncabezadoTraeVolverTituloYAccionesYNoHayTarjetaFinal(string $pantalla): void {
         $x = Html::xpath(Pantallas::render($this->db, $pantalla));
-        $this->assertSame(1, Html::contar($x, "//form/div[contains(@class,'form-acciones-fija')]/button[@type='submit']"));
-        $this->assertSame(1, Html::contar($x, "//form/div[contains(@class,'form-acciones-fija')]/a[normalize-space(.)='Cancelar']"));
+        $edit = $pantalla === "admin_partes_editar";
+        $this->assertSame($edit ? "Editar parte" : "Agregar parte al inventario", trim($x->query("//div[contains(@class,'pagina-cabeza')]//h1")->item(0)->textContent));
+        $this->assertSame(1, Html::contar($x, "//div[contains(@class,'pagina-cabeza-titulo')]/a[contains(@class,'enlace-volver')][normalize-space(.)='Volver a partes']/following-sibling::h1"), "volver encima del título, mismo borde");
+        $this->assertSame(1, Html::contar($x, "//div[contains(@class,'pagina-acciones')]/a[normalize-space(.)='Cancelar']"));
+        $g = $x->query("//div[contains(@class,'pagina-acciones')]/button[@type='submit'][@form='form-parte']");
+        $this->assertSame(1, $g->length);
+        $this->assertSame($edit ? "Guardar cambios" : "Guardar parte", trim($g->item(0)->textContent));
+        $this->assertSame(1, Html::contar($x, "//form[@id='form-parte']"));
+        $this->assertSame(0, Html::contar($x, "//form[@id='form-parte']//button[@type='submit']"), "el único botón de guardar está fuera del form");
+        $this->assertSame(0, Html::contar($x, "//*[contains(@class,'form-acciones')]"), "sin tarjeta de acciones al final");
     }
 
-    public function testLaCuadriculaEsDeDosColumnasDesde992PxYTopeDe1100(): void {
+    #[DataProvider("pantallas")]
+    public function testLaFotoLlevaCampoYVistaPreviaJuntos(string $pantalla): void {
+        $x = Html::xpath(Pantallas::render($this->db, $pantalla));
+        $this->assertSame(1, Html::contar($x, "//div[contains(@class,'foto-campo')][@data-foto-previa]/div[contains(@class,'foto-campo-datos')]/input[@type='file'][@name='imagen']"));
+        $this->assertSame(1, Html::contar($x, "//div[@data-foto-previa]/div[contains(@class,'foto-campo-previa')]//*[@data-foto-titulo]"));
+    }
+
+    public function testElCssUsaElContenedorDelPanelYUnLateralDe380(): void {
         $css = (string)file_get_contents(BASE_PATH . "/assets/css/panel.css");
-        $this->assertMatchesRegularExpression('/\.form-panel-producto\s*\{\s*max-width:\s*1100px/', $css);
-        $this->assertMatchesRegularExpression('/\.producto-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/', $css, "apiladas por defecto (móvil)");
-        $this->assertMatchesRegularExpression('/@media \(min-width: 992px\)\s*\{\s*\.producto-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 340px/', $css);
-        $this->assertMatchesRegularExpression('/\.form-acciones-fija\s*\{[^}]*position:\s*sticky[^}]*bottom:\s*0/', $css);
-        $this->assertMatchesRegularExpression('/\.form-acciones-fija \.btn\s*\{\s*min-height:\s*44px/', $css);
+        $this->assertDoesNotMatchRegularExpression('/\.form-panel-producto\s*\{[^}]*max-width/', $css, "mismo contenedor que el encabezado, sin franjas");
+        $this->assertMatchesRegularExpression('/\.producto-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/', $css, "apiladas en móvil");
+        $this->assertMatchesRegularExpression('/@media \(min-width: 992px\)\s*\{\s*\.producto-grid\s*\{[^}]*minmax\(0, 1fr\) 380px/', $css);
+        $this->assertMatchesRegularExpression('/\.pagina-cabeza\s*\{[^}]*position:\s*sticky[^}]*top:\s*var\(--panel-barra-alto\)/', $css);
+        $this->assertMatchesRegularExpression('/\.pagina-acciones\s*\{\s*position:\s*fixed[^}]*bottom:\s*0/', $css, "móvil: barra fija abajo");
+        $this->assertMatchesRegularExpression('/\.pagina-acciones \.btn\s*\{\s*flex:\s*1;\s*min-height:\s*44px/', $css);
+        $this->assertMatchesRegularExpression('/input\[type="file"\]::file-selector-button\s*\{[^}]*height:\s*30px/', $css);
     }
 }

@@ -1,13 +1,17 @@
-<?php $edit=!empty($parte); $d=$edit?$parte:($viejo??[]); $title=$edit?"Editar Parte":"Nueva Parte"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="panel-cabeza">
-  <div>
+<?php $edit=!empty($parte); $d=$edit?$parte:($viejo??[]); $title=$edit?"Editar parte":"Agregar parte al inventario"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
+<div class="form-panel-producto">
+<div class="pagina-cabeza">
+  <div class="pagina-cabeza-titulo">
     <a href="<?=APP_URL?>/admin/?mod=partes" class="enlace-volver"><i aria-hidden="true" class="bi bi-arrow-left"></i>Volver a partes</a>
     <h1 class="panel-titulo"><?=$title?></h1>
   </div>
+  <div class="pagina-acciones">
+    <a href="<?=APP_URL?>/admin/?mod=partes" class="btn btn-outline-secondary">Cancelar</a>
+    <button type="submit" form="form-parte" class="btn btn-gold fw-bold"><?=$edit?"Guardar cambios":"Guardar parte"?></button>
+  </div>
 </div>
 <?php if($error??""): ?><div role="alert" class="alert alert-danger d-flex align-items-center gap-2 mb-4"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill"></i><span><?=htmlspecialchars($error)?></span></div><?php endif; ?>
-<div class="form-panel form-panel-producto">
-<form action="<?=APP_URL?>/admin/?mod=partes&action=<?=$edit?"editar&id=".$id:"crear"?>" method="POST" enctype="multipart/form-data">
+<form id="form-parte" action="<?=APP_URL?>/admin/?mod=partes&action=<?=$edit?"editar&id=".$id:"crear"?>" method="POST" enctype="multipart/form-data">
   <?=CsrfToken::field()?>
   <div class="producto-grid">
     <div class="producto-principal">
@@ -26,17 +30,17 @@
       </section>
       <section class="form-card" aria-labelledby="pf-fotos">
         <h2 class="form-subtitulo" id="pf-fotos">Fotos</h2>
-        <label for="f-imagen" class="form-label-dark">Imagen de la Parte</label>
-        <input id="f-imagen" type="file" name="imagen" class="form-control dark-input" accept="image/*">
-        <div class="text-secondary small mt-1">JPG / PNG / GIF / WebP, máximo <?=htmlspecialchars(ImageHelper::limiteTexto())?>. Se vuelve a codificar y se generan las derivadas de 640, 1200 y 2400 px. La foto se muestra completa, sin recortar, en una baldosa blanca cuadrada.</div>
-        <div class="mt-3 d-flex align-items-start gap-3" data-foto-previa data-prop-min="<?=ImageHelper::PROPORCION_MIN?>" data-prop-max="<?=ImageHelper::PROPORCION_MAX?>" data-lado-bajo="<?=ImageHelper::LADO_BAJO?>">
-          <div>
+        <div class="foto-campo" data-foto-previa data-prop-min="<?=ImageHelper::PROPORCION_MIN?>" data-prop-max="<?=ImageHelper::PROPORCION_MAX?>" data-lado-bajo="<?=ImageHelper::LADO_BAJO?>">
+          <div class="foto-campo-datos">
+            <label for="f-imagen" class="form-label-dark">Imagen de la parte</label>
+            <input id="f-imagen" type="file" name="imagen" class="form-control dark-input" accept="image/*">
+            <p class="foto-ayuda">JPG, PNG, GIF o WebP · máx. <?=htmlspecialchars(ImageHelper::limiteTexto())?></p>
+            <div class="small text-secondary" data-foto-info><?=!empty($parte)?"Sube una nueva para reemplazarla.":"Aún no has elegido una foto."?></div>
+            <div data-foto-avisos class="small" role="status" aria-live="polite"></div>
+          </div>
+          <div class="foto-campo-previa">
             <div class="text-secondary small mb-1" data-foto-titulo><?=!empty($parte)?"Imagen actual":"Vista previa"?></div>
             <?php $fotoParte=$parte??[]; $fotoTam="thumbnails"; $fotoClase="foto-160"; $fotoAlt=!empty($parte)?"Imagen actual":""; $fotoLazy=false; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?>
-          </div>
-          <div class="small flex-fill">
-            <div class="text-secondary" data-foto-info><?=!empty($parte)?"Sube una nueva para reemplazarla.":"Aún no has elegido una foto."?></div>
-            <div class="mt-2" data-foto-avisos role="status" aria-live="polite"></div>
           </div>
         </div>
       </section>
@@ -76,12 +80,6 @@
         </select>
       </section>
     </div>
-  </div>
-  <div class="form-acciones form-acciones-fija">
-    <button type="submit" class="btn btn-gold fw-bold px-4">
-      <i aria-hidden="true" class="bi bi-save me-2"></i><?=$edit?"Guardar Cambios":"Crear Parte"?>
-    </button>
-    <a href="<?=APP_URL?>/admin/?mod=partes" class="btn btn-outline-secondary">Cancelar</a>
   </div>
 </form>
 </div>
