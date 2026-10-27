@@ -210,7 +210,7 @@ final class PanelEstructuraTest extends BaseDatos {
         $this->assertMatchesRegularExpression('/--panel-menu-ancho:\s*248px/', $css);
         $this->assertMatchesRegularExpression('/html\[data-panel-menu="colapsado"\]\s*\{\s*--panel-menu-ancho:\s*72px/', $css);
         $this->assertMatchesRegularExpression('/@media \(min-width: 992px\)\s*\{\s*\.admin-shell\s*\{[^}]*grid-template-columns:\s*var\(--panel-menu-ancho\) minmax\(0, 1fr\)/', $css, "desde 992 px, que es donde Bootstrap deja de ser cajón");
-        $this->assertMatchesRegularExpression('/@media \(min-width: 992px\)\s*\{[^@]*\.admin-sidebar\.offcanvas-lg\s*\{[^}]*position:\s*sticky[^}]*height:\s*100vh/', $css, "fija a la altura de la ventana en escritorio");
+        $this->assertMatchesRegularExpression('/@media \(min-width: 992px\)\s*\{[^@]*\.admin-sidebar\.offcanvas-lg\s*\{[^}]*position:\s*fixed[^}]*height:\s*100dvh/', $css, "fija a la altura de la ventana en escritorio");
     }
 
     public function testElEncabezadoMide64PxYElContenedorLlegaA1440ConRelleno16_24_32(): void {
