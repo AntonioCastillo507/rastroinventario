@@ -72,8 +72,8 @@ final class ParteFormProductoTest extends BaseDatos {
         $this->assertMatchesRegularExpression('/\.pagina-cabeza\s*\{[^}]*position:\s*sticky[^}]*top:\s*var\(--panel-barra-alto\)/', $css);
         $this->assertMatchesRegularExpression('/\.pagina-acciones\s*\{\s*position:\s*fixed[^}]*bottom:\s*0/', $css, "móvil: barra fija abajo");
         $this->assertMatchesRegularExpression('/\.pagina-acciones \.btn\s*\{\s*flex:\s*1;\s*min-height:\s*44px/', $css);
-        $this->assertMatchesRegularExpression('/input\[type="file"\]\s*\{[^}]*align-items:\s*center[^}]*padding:\s*0;[^}]*line-height:\s*38px/', $css, "texto del campo centrado en vertical");
-        $this->assertMatchesRegularExpression('/::file-selector-button\s*\{\s*display:\s*inline-flex;\s*align-items:\s*center;\s*height:\s*38px;\s*line-height:\s*38px/', $css, "texto del botón centrado");
+        $this->assertMatchesRegularExpression('/input\[type="file"\]\s*\{[^}]*align-items:\s*center[^}]*padding:\s*0;[^}]*line-height:\s*26px/', $css, "texto del campo centrado en vertical");
+        $this->assertMatchesRegularExpression('/::file-selector-button\s*\{\s*display:\s*inline-flex;\s*align-items:\s*center;\s*height:\s*38px;\s*line-height:\s*26px/', $css, "texto del botón centrado");
         $this->assertMatchesRegularExpression('/input\[type="file"\]::file-selector-button\s*\{[^}]*height:\s*38px[^}]*margin:\s*0 var\(--spacing-sm\) 0 0[^}]*border-radius:\s*0[^}]*background:\s*var\(--surface-elevated\)/', $css, "a ras del recuadro, con tokens de tema");
     }
 }

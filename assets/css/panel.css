@@ -139,11 +139,11 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
 .foto-ayuda { margin: 0; font-size: var(--type-body-sm-size); color: var(--text-muted); }
 .foto-campo-previa { min-width: 0; }
 @media (min-width: 576px) { .foto-campo { grid-template-columns: minmax(0, 1fr) 160px; gap: var(--spacing-lg); } }
-/* Selector de archivo: el botón va pegado y a ras del recuadro (como la lupa del buscador), separado del texto por un borde fino */
-.form-panel-producto input[type="file"] { display: flex; align-items: center; height: 40px; min-height: 0; padding: 0; overflow: hidden; line-height: 38px; font-size: var(--type-body-md-size); color: var(--text-muted); }
-.form-panel-producto input[type="file"]::file-selector-button { display: inline-flex; align-items: center; height: 38px; line-height: 38px; margin: 0 var(--spacing-sm) 0 0; padding: 0 var(--spacing-md); border: 0; border-right: 1px solid var(--input-border); border-radius: 0; background: var(--surface-elevated); color: var(--text-strong); font-family: var(--font-text); font-size: var(--type-button-size); font-weight: var(--type-button-weight); cursor: pointer; }
+/* Selector de archivo (line-height medido por píxeles: con Manrope, 38 px dejaba el dibujo ~5 px bajo el centro; 26 px lo centra). El botón va pegado y a ras del recuadro (como la lupa del buscador), separado del texto por un borde fino */
+.form-panel-producto input[type="file"] { display: flex; align-items: center; height: 40px; min-height: 0; padding: 0; overflow: hidden; line-height: 26px; font-size: var(--type-body-md-size); color: var(--text-muted); }
+.form-panel-producto input[type="file"]::file-selector-button { display: inline-flex; align-items: center; height: 38px; line-height: 26px; margin: 0 var(--spacing-sm) 0 0; padding: 0 var(--spacing-md); border: 0; border-right: 1px solid var(--input-border); border-radius: 0; background: var(--surface-elevated); color: var(--text-strong); font-family: var(--font-text); font-size: var(--type-button-size); font-weight: var(--type-button-weight); cursor: pointer; }
 .form-panel-producto input[type="file"]:hover::file-selector-button { color: var(--link); border-right-color: var(--link); }
-@media (pointer: coarse) { .form-panel-producto input[type="file"] { height: 44px; line-height: 42px; } .form-panel-producto input[type="file"]::file-selector-button { height: 42px; line-height: 42px; } }
+@media (pointer: coarse) { .form-panel-producto input[type="file"] { height: 44px; line-height: 30px; } .form-panel-producto input[type="file"]::file-selector-button { height: 42px; line-height: 30px; } }
 
 /* ── Avisos de éxito y error del panel (flash): arriba del contenido, texto de 14 px, con icono y botón de cierre de 44 px ── */
 .admin-contenido > .alert { margin-bottom: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--rounded-lg); font-size: var(--type-body-md-size); }
