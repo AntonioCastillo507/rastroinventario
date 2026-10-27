@@ -398,3 +398,16 @@ Plan aprobado por Tony y hecho en tres tandas: la primera cerró S3.1 y S3.2 (al
 - **Mutaciones** (copia temporal inventada, borrada): 9 de 9 detectadas.
 - **Pendiente futuro**: registrar motivo y autor de cada ocultación (requiere esquema).
 - **No cubierto**: el clic real sobre la fila (se comprobó con `elementFromPoint`); el hover; las estrellas en modo claro; lector de pantalla.
+
+## S6a: dashboards (en curso, 2026-10-26)
+Definiciones y reglas decididas con Tony (se cumplen en `EstadisticaModel`):
+- **Venta** = pedido en estado «entregado». Monto = `subtotal` (neto, sin ITBMS). Fecha = `creado_en` del pedido (no hay fecha de entrega). Las cifras salen de `pedidos`/`pedido_items`, no de `vendido_parte`. Ojo: el «Total vendido» viejo de `PedidoModel::totalVendido()` cuenta todo lo que no es «cancelado»; el dashboard nuevo solo cuenta «entregado».
+- **Periodo**: 7, 30, 90 días o año (365), de hoy hacia atrás; la variación se compara con el periodo anterior de igual duración (sin base si el anterior vale 0). Rango por defecto: «Año», en una clave de `marca.php` (se cambia a 30 días cuando haya pedidos recientes). Hoy los 6 pedidos reales son de julio de 2026.
+- **Todo variable, nada a mano**: categorías desde `secciones`, marcas desde `partes`→`autos`, piezas desde `pedido_items`. Ningún nombre, id ni cantidad escrito en código.
+- **Dona**: máximo 5 segmentos. Con más de 5 categorías con ventas salen las 4 mayores y el resto en «Otras» (con su monto, color gris). Una categoría sin ventas en el periodo no aparece. Con 1 categoría se ve la dona completa con su leyenda.
+- **Colores**: paleta categórica de 6 tonos en DESIGN.md (tokens, modo claro y oscuro). El color es estable por id de categoría: lugar entre todas las secciones por id, módulo 6 (`coloresDeCategorias()`); una categoría nueva toma el siguiente color libre sin cambiar las demás. «Otras» y «Sin categoría» van en gris. Con más de 6 categorías un color se repite, y la leyenda con nombre y monto evita depender solo del color.
+- **Barras** (piezas y marcas más vendidas): top 5 fijo; si hay menos, las que haya; escala al máximo real. Una pieza o marca nueva entra sola si vende más.
+- **Histórico intacto**: una pieza desactivada o una categoría renombrada no rompen las ventas pasadas (se leen de los pedidos entregados; el nombre de la pieza sale del pedido). Si la pieza se borra, la venta cae en «Sin categoría».
+- Pedido de Tony: el dashboard va dentro del panel real de S5 (barra lateral y encabezado actuales); no se rehacen. El encabezado ya dice «Dashboard»: bajo él solo va el subtítulo con el rango y, a la derecha, el selector de rango y «+ Nueva venta» / «+ Nueva parte». Gráficas de barras en el color de acento (azul solo en la dona), etiquetas recortadas con «…» y nombre completo en el tooltip, logo del menú lateral = el SVG real de la marca.
+- Pendiente (S6a.4 o después): logos de marca de las piezas.
+- S6a.1 hecho: `app/Models/EstadisticaModel.php` + `tests/Integration/EstadisticaModelTest.php` (22 pruebas; 11 mutaciones, todas detectadas).
