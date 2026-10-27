@@ -1,38 +1,35 @@
 <?php $title="Comentarios"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="page-header mb-4">
-  <div><h1 class="h4 fw-bold text-white mb-0"><i aria-hidden="true" class="bi bi-chat-dots me-2 text-warning"></i>Moderación de Comentarios</h1></div>
+<div class="panel-cabeza">
+  <h1 class="panel-titulo">Moderación de comentarios <span class="panel-titulo-cuenta">(<?=(int)$pag->total?>)</span></h1>
 </div>
-<div class="dark-card"><div class="table-responsive">
-<table class="table dark-table mb-0">
-  <thead><tr><th>#</th><th>Parte</th><th>Visitante</th><th>Comentario</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead>
+<div class="lista-card">
+<table class="lista-tabla">
+  <thead><tr><th scope="col">Comentario</th><th scope="col">Estado</th><th scope="col">Fecha</th><th scope="col" class="col-acciones">Acciones</th></tr></thead>
   <tbody>
   <?php foreach($comentarios as $c): ?>
   <tr>
-    <td class="small text-secondary"><?=$c["id"]?></td>
-    <td class="small fw-semibold text-warning"><?=htmlspecialchars($c["parte_nombre"]??"—")?></td>
-    <td class="text-white"><?=htmlspecialchars($c["nombre_visitante"])?></td>
-    <td class="small text-secondary" style="max-width:280px"><?=htmlspecialchars(mb_substr($c["comentario"],0,90)).(mb_strlen($c["comentario"])>90?"…":"")?></td>
-    <td><?=$c["publicado"]
+    <td class="celda-principal celda-texto"><span class="celda-titulo"><?=htmlspecialchars($c["nombre_visitante"])?></span><span class="celda-sub">Sobre <?=htmlspecialchars($c["parte_nombre"]??"—")?></span><span><?=htmlspecialchars(mb_substr($c["comentario"],0,90)).(mb_strlen($c["comentario"])>90?"…":"")?></span></td>
+    <td data-label="Estado"><?=$c["publicado"]
       ? "<span class=\"chip-success\"><i aria-hidden=\"true\" class=\"bi bi-eye me-1\"></i>Publicado</span>"
       : "<span class=\"chip-warning\"><i aria-hidden=\"true\" class=\"bi bi-hourglass me-1\"></i>Pendiente</span>"?></td>
-    <td class="small text-secondary"><?=date("d/m/Y H:i",strtotime($c["creado_en"]))?></td>
-    <td>
-      <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=toggle&id=<?=$c["id"]?>" class="d-inline">
-        <?=CsrfToken::field()?>
-        <button type="submit" class="icon-btn" title="<?=$c["publicado"]?"Ocultar":"Publicar"?>" aria-label="<?=$c["publicado"]?"Ocultar":"Publicar"?> el comentario de <?=htmlspecialchars($c["nombre_visitante"])?>">
-          <i aria-hidden="true" class="bi bi-<?=$c["publicado"]?"eye-slash text-warning":"check-circle text-success"?>"></i>
-        </button>
-      </form>
-      <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=eliminar&id=<?=$c["id"]?>" class="d-inline"<?=Confirmar::attrs(["titulo"=>"Eliminar el comentario de «".$c["nombre_visitante"]."»","texto"=>"Se borra para siempre y no se puede deshacer.","boton"=>"Eliminar","cancelar"=>"Conservar","peligro"=>true])?>>
-        <?=CsrfToken::field()?>
-        <button type="submit" class="icon-btn" title="Eliminar" aria-label="Eliminar el comentario de <?=htmlspecialchars($c["nombre_visitante"])?>"><i aria-hidden="true" class="bi bi-trash text-danger"></i></button>
-      </form>
+    <td data-label="Fecha"><span class="celda-sub"><?=date("d/m/Y H:i",strtotime($c["creado_en"]))?></span></td>
+    <td class="col-acciones">
+      <div class="lista-acciones">
+        <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=toggle&id=<?=$c["id"]?>">
+          <?=CsrfToken::field()?>
+          <button type="submit" class="accion-btn" title="<?=$c["publicado"]?"Ocultar":"Publicar"?>" aria-label="<?=$c["publicado"]?"Ocultar":"Publicar"?> el comentario de <?=htmlspecialchars($c["nombre_visitante"])?>"><i aria-hidden="true" class="bi bi-<?=$c["publicado"]?"eye-slash":"check-circle"?>"></i><span class="accion-texto"><?=$c["publicado"]?"Ocultar":"Publicar"?></span></button>
+        </form>
+        <form method="POST" action="<?=APP_URL?>/admin/?mod=comentarios&action=eliminar&id=<?=$c["id"]?>"<?=Confirmar::attrs(["titulo"=>"Eliminar el comentario de «".$c["nombre_visitante"]."»","texto"=>"Se borra para siempre y no se puede deshacer.","boton"=>"Eliminar","cancelar"=>"Conservar","peligro"=>true])?>>
+          <?=CsrfToken::field()?>
+          <button type="submit" class="accion-btn accion-peligro" title="Eliminar" aria-label="Eliminar el comentario de <?=htmlspecialchars($c["nombre_visitante"])?>"><i aria-hidden="true" class="bi bi-trash"></i><span class="accion-texto">Eliminar</span></button>
+        </form>
+      </div>
     </td>
   </tr>
   <?php endforeach; ?>
-  <?php if(empty($comentarios)): ?><tr><td colspan="7" class="text-center text-secondary py-4">No hay comentarios.</td></tr><?php endif; ?>
+  <?php if(empty($comentarios)): ?><tr class="lista-vacia"><td colspan="4">No hay comentarios.</td></tr><?php endif; ?>
   </tbody>
 </table>
-</div></div>
+</div>
 <?php $pagBase=APP_URL."/admin/"; include BASE_PATH."/app/Views/layouts/paginacion.php"; ?>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>

@@ -67,7 +67,7 @@ final class ModalConfirmarVistasTest extends BaseDatos {
             $this->assertSame("POST", strtoupper($f->getAttribute("method")));
             $this->assertSame(1, $q->query(".//input[@name='csrf_token']", $f)->length, "con token");
             $d = $this->datos($f);
-            $nombre = trim($q->query("./td[3]", $tr)->item(0)->textContent);
+            $nombre = trim($q->query(".//span[contains(@class,'celda-titulo')]", $tr)->item(0)->textContent);
             $this->assertSame("Desactivar «{$nombre}»", $d["titulo"], "el título lleva el nombre de la pieza de esa fila");
             $this->assertSame(["Desactivar", "Conservar", true], [$d["boton"], $d["cancelar"], $d["peligro"]]);
         }

@@ -1,29 +1,31 @@
 <?php $title="Pedidos"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="page-header mb-4">
-  <div><h1 class="h4 fw-bold text-white mb-0"><i aria-hidden="true" class="bi bi-bag-check me-2 text-warning"></i>Pedidos de la Tienda</h1>
-  <p class="text-secondary small mb-0">Compras realizadas desde la tienda pública</p></div>
+<div class="panel-cabeza">
+  <div>
+    <h1 class="panel-titulo">Pedidos de la tienda <span class="panel-titulo-cuenta">(<?=(int)$pag->total?>)</span></h1>
+    <p class="panel-subtitulo">Compras realizadas desde la tienda pública</p>
+  </div>
 </div>
-<div class="dark-card">
-<div class="table-responsive">
-<table class="table dark-table mb-0">
-  <thead><tr><th>#</th><th>Cliente</th><th>Email</th><th>Teléfono</th><th>Total</th><th>Estado</th><th>Fecha</th><th>Acción</th></tr></thead>
+<div class="lista-card">
+<table class="lista-tabla">
+  <thead><tr><th scope="col">Pedido</th><th scope="col">Cliente</th><th scope="col" class="col-num">Total</th><th scope="col">Estado</th><th scope="col">Fecha</th><th scope="col" class="col-acciones">Acciones</th></tr></thead>
   <tbody>
   <?php foreach($pedidos as $p): ?>
   <tr>
-    <td class="text-warning fw-bold">#<?=$p["id"]?></td>
-    <td class="fw-semibold text-white"><?=htmlspecialchars($p["cliente_nombre"])?></td>
-    <td class="text-secondary small"><?=htmlspecialchars($p["cliente_email"])?></td>
-    <td class="text-secondary small"><?=htmlspecialchars($p["cliente_telefono"])?></td>
-    <td class="fw-bold text-precio num">$<?=number_format($p["total"],2)?></td>
-    <td><span class="estado-<?=$p["estado"]?> fw-semibold chip-<?=match($p["estado"]){"pendiente"=>"warning","procesando"=>"info","entregado"=>"success",default=>"danger"} ?>"><?=ucfirst($p["estado"])?></span></td>
-    <td class="text-secondary small"><?=date("d/m/Y H:i",strtotime($p["creado_en"]))?></td>
-    <td><a href="<?=APP_URL?>/admin/?mod=pedidos&action=detalle&id=<?=$p["id"]?>" class="btn btn-sm btn-outline-warning" aria-label="Ver el pedido #<?=(int)$p["id"]?>"><i aria-hidden="true" class="bi bi-eye me-1"></i>Ver</a></td>
+    <td class="celda-principal"><span class="celda-titulo num">#<?=(int)$p["id"]?></span></td>
+    <td data-label="Cliente"><span class="celda-titulo"><?=htmlspecialchars($p["cliente_nombre"])?></span><span class="celda-sub"><?=htmlspecialchars($p["cliente_email"])?></span></td>
+    <td class="col-num" data-label="Total"><span class="celda-precio text-precio num">$<?=number_format($p["total"],2)?></span></td>
+    <td data-label="Estado"><span class="estado-<?=$p["estado"]?> chip-<?=match($p["estado"]){"pendiente"=>"warning","procesando"=>"info","entregado"=>"success",default=>"danger"} ?>"><?=ucfirst($p["estado"])?></span></td>
+    <td data-label="Fecha"><span class="celda-sub"><?=date("d/m/Y H:i",strtotime($p["creado_en"]))?></span></td>
+    <td class="col-acciones">
+      <div class="lista-acciones">
+        <a href="<?=APP_URL?>/admin/?mod=pedidos&action=detalle&id=<?=$p["id"]?>" class="accion-btn" title="Ver" aria-label="Ver el pedido #<?=(int)$p["id"]?>"><i aria-hidden="true" class="bi bi-eye"></i><span class="accion-texto">Ver</span></a>
+      </div>
+    </td>
   </tr>
   <?php endforeach; ?>
-  <?php if(empty($pedidos)): ?><tr><td colspan="8" class="text-center text-secondary py-4">No hay pedidos registrados aún.</td></tr><?php endif; ?>
+  <?php if(empty($pedidos)): ?><tr class="lista-vacia"><td colspan="6">No hay pedidos registrados aún.</td></tr><?php endif; ?>
   </tbody>
 </table>
-</div>
 </div>
 <?php $pagBase=APP_URL."/admin/"; include BASE_PATH."/app/Views/layouts/paginacion.php"; ?>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>

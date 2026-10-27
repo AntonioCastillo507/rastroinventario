@@ -1,23 +1,25 @@
 <?php $title="Roles"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="page-header mb-4">
-  <div><h1 class="h4 fw-bold text-white mb-0"><i aria-hidden="true" class="bi bi-shield-lock me-2 text-warning"></i>Roles y Permisos</h1></div>
-  <a href="<?=APP_URL?>/admin/?mod=roles&action=crear" class="btn btn-gold btn-sm"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nuevo Rol</a>
+<div class="panel-cabeza">
+  <h1 class="panel-titulo">Roles y permisos <span class="panel-titulo-cuenta">(<?=count($roles)?>)</span></h1>
+  <a href="<?=APP_URL?>/admin/?mod=roles&action=crear" class="btn btn-gold"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nuevo rol</a>
 </div>
-<div class="row g-3">
-<?php foreach($roles as $r): ?>
-<div class="col-md-4">
-  <div class="dark-card h-100 p-4">
-    <div class="d-flex align-items-start justify-content-between mb-3">
-      <div>
-        <span class="badge-role"><i aria-hidden="true" class="bi bi-shield-check me-1"></i><?=htmlspecialchars($r["nombre"])?></span>
-        <p class="text-secondary small mt-2 mb-0"><?=htmlspecialchars($r["descripcion"]??"")?></p>
+<div class="lista-card">
+<table class="lista-tabla">
+  <thead><tr><th scope="col">Rol</th><th scope="col">Descripción</th><th scope="col" class="col-acciones">Acciones</th></tr></thead>
+  <tbody>
+  <?php foreach($roles as $r): ?>
+  <tr>
+    <td class="celda-principal"><span class="celda-titulo"><?=htmlspecialchars($r["nombre"])?></span></td>
+    <td class="celda-texto" data-label="Descripción"><?=htmlspecialchars($r["descripcion"]??"")?></td>
+    <td class="col-acciones">
+      <div class="lista-acciones">
+        <a href="<?=APP_URL?>/admin/?mod=roles&action=editar&id=<?=$r["id"]?>" class="accion-btn" title="Editar permisos" aria-label="Editar permisos del rol <?=htmlspecialchars($r["nombre"])?>"><i aria-hidden="true" class="bi bi-pencil-square"></i><span class="accion-texto">Editar permisos</span></a>
       </div>
-    </div>
-    <a href="<?=APP_URL?>/admin/?mod=roles&action=editar&id=<?=$r["id"]?>" class="btn btn-outline-warning btn-sm w-100">
-      <i aria-hidden="true" class="bi bi-pencil me-1"></i>Editar Permisos
-    </a>
-  </div>
-</div>
-<?php endforeach; ?>
+    </td>
+  </tr>
+  <?php endforeach; ?>
+  <?php if(empty($roles)): ?><tr class="lista-vacia"><td colspan="3">No hay roles.</td></tr><?php endif; ?>
+  </tbody>
+</table>
 </div>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>
