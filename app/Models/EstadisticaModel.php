@@ -7,14 +7,39 @@
 class EstadisticaModel extends BaseModel {
     protected string $table = "pedidos";
 
-    public const RANGOS  = [7, 30, 90, 365];
+    /** 0 = «Todo»: el historial completo desde la primera venta, sin periodo anterior */
+    public const TODO    = 0;
+    public const RANGOS  = [7, 30, 90, 365, self::TODO];
     public const ESTADOS = ["pendiente", "procesando", "entregado", "cancelado"];
     private const MAX_SEGMENTOS = 5;
 
     /** Rango pedido (cualquier valor raro cae en 30 días) */
     public static function rangoValido(mixed $dias, int $defecto = 30): int {
+        if ((string)$dias === "todo") return self::TODO;
         $d = (int)$dias;
-        return in_array($d, self::RANGOS, true) ? $d : $defecto;
+        return $d !== self::TODO && in_array($d, self::RANGOS, true) ? $d : $defecto;
+    }
+
+    /**
+     * Periodo «Todo»: del primer día del mes de la primera venta (o del mes actual si no hay ventas) hasta hoy.
+     * No tiene anterior: anteriorDesde es null.
+     * @return array{dias:int,desde:string,hasta:string,anteriorDesde:null}
+     */
+    public static function periodoTodo(?string $primeraVenta, ?DateTimeImmutable $hoy = null): array {
+        $hoy   = ($hoy ?? new DateTimeImmutable("today"))->setTime(0, 0);
+        $desde = (new DateTimeImmutable($primeraVenta ?? $hoy->format("Y-m-d")))->modify("first day of this month")->setTime(0, 0);
+        return ["dias" => self::TODO, "desde" => $desde->format("Y-m-d H:i:s"), "hasta" => $hoy->modify("+1 day")->format("Y-m-d H:i:s"), "anteriorDesde" => null];
+    }
+
+    /** Fecha de la primera venta (pedido entregado), o null si aún no hay */
+    public function primeraVenta(): ?string {
+        $v = $this->db->query("SELECT MIN(creado_en) FROM pedidos WHERE estado='entregado'")->fetchColumn();
+        return $v ?: null;
+    }
+
+    /** Piezas activas agotadas (0 unidades) */
+    public function contarAgotadas(): int {
+        return (int)$this->db->query("SELECT COUNT(*) FROM partes WHERE activo = 1 AND cantidad <= 0")->fetchColumn();
     }
 
     /**

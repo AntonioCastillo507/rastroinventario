@@ -57,7 +57,7 @@ final class DashboardAdminTest extends BaseDatos {
             $this->assertSame(1, $activo->length, "un solo rango activo con r=" . var_export($r, true));
             $this->assertStringContainsString("r=$esperado", $activo->item(0)->getAttribute("href"));
         }
-        $this->assertSame(4, Html::contar($this->pantalla(), '//*[contains(@class,"dash-rango-op")]'));
+        $this->assertSame(5, Html::contar($this->pantalla(), '//*[contains(@class,"dash-rango-op")]'));
         $x = $this->pantalla("30");
         $this->assertStringContainsString("r=30", $x->query('//*[@aria-current="true" and contains(@class,"dash-rango-op")]')->item(0)->getAttribute("href"));
     }
@@ -120,5 +120,70 @@ final class DashboardAdminTest extends BaseDatos {
         $this->assertStringContainsString("--chart-otras", $js);
         $css = (string)file_get_contents(BASE_PATH . "/assets/css/dashboard.css");
         $this->assertDoesNotMatchRegularExpression('/#[0-9a-fA-F]{3,6}\b/', $css, "dashboard.css solo usa tokens");
+    }
+
+    public function testElRangoTodoNoCompara(): void {
+        $x = $this->pantalla("todo");
+        $this->assertSame(5, Html::contar($x, '//*[contains(@class,"dash-rango-op")]'));
+        $this->assertStringContainsString("r=todo", $x->query('//*[contains(@class,"dash-rango-op") and @aria-current="true"]')->item(0)->getAttribute("href"));
+        $this->assertSame(0, Html::contar($x, '//*[contains(@class,"dash-var")]'), "sin variación");
+        $this->assertSame(0, Html::contar($x, '//*[contains(@class,"punteado")]'), "sin leyenda del periodo anterior");
+        $this->assertStringContainsString("sin comparar", $x->document->textContent);
+        $this->assertSame([], $this->datos($x)["serie"]["anterior"]);
+    }
+
+    public function testLosAvisosSonAccionesSeparadasConIconoNumeroYBoton(): void {
+        $x = $this->pantalla();
+        $items = $x->query('//ul[contains(@class,"dash-avisos")]/li');
+        $this->assertGreaterThanOrEqual(2, $items->length);
+        foreach ($items as $li) {
+            $q = new \DOMXPath($li->ownerDocument);
+            $this->assertSame(1, $q->query('.//i[@aria-hidden="true" and contains(@class,"dash-aviso-icono")]', $li)->length, "icono decorativo");
+            $this->assertGreaterThan(0, $q->query('.//b[contains(@class,"num")]', $li)->length, "número en negrita");
+        }
+        $this->assertStringContainsString("pedidos por atender", $x->document->textContent);
+        $this->assertSame(1, Html::contar($x, '//li[contains(@class,"dash-aviso-err")]'), "con agotadas, el aviso de stock es de error");
+        $this->assertMatchesRegularExpression('/\d+ agotadas?/', preg_replace('/\s+/', ' ', $x->query('//li[contains(@class,"dash-aviso-err")]')->item(0)->textContent), "dice cuántas agotadas, no solo color");
+        foreach (["Atender pedidos", "Reponer"] as $b) {
+            $this->assertSame(1, Html::contar($x, '//ul[contains(@class,"dash-avisos")]//a[contains(@class,"btn") and normalize-space()="' . $b . '"]'), $b);
+        }
+        $css = (string)file_get_contents(BASE_PATH . "/assets/css/dashboard.css");
+        $this->assertDoesNotMatchRegularExpression('/.dash-aviso[^{]*{[^}]*border-left/', $css, "sin la línea de color al borde izquierdo");
+    }
+
+    public function testSinPendientesNiStockBajoSaleTodoAlDiaSinBoton(): void {
+        $this->pantalla(); // crea los datos de pantalla antes de ajustarlos
+        $this->db->exec("UPDATE pedidos SET estado='entregado'");
+        $this->db->exec("UPDATE partes SET cantidad=50");
+        $this->db->exec("DELETE FROM comentarios");
+        $x = $this->pantalla();
+        $items = $x->query('//ul[contains(@class,"dash-avisos")]/li');
+        $this->assertSame(1, $items->length);
+        $this->assertStringContainsString("Todo al día", $items->item(0)->textContent);
+        $this->assertStringContainsString("dash-aviso-ok", $items->item(0)->getAttribute("class"));
+        $this->assertSame(0, Html::contar($x, '//ul[contains(@class,"dash-avisos")]//a'), "sin botón");
+        $this->assertGreaterThan(0, Html::contar($x, '//li[contains(@class,"dash-aviso-ok")]//i[contains(@class,"bi-check-circle")]'));
+    }
+
+    public function testLosColoresDeLosAvisosCumplenAAEnLosDosModos(): void {
+        $css = (string)file_get_contents(BASE_PATH . "/assets/css/tema.css");
+        foreach (["dark", "light"] as $modo) {
+            $v = \TemaGenerador::leerVariables($css, $modo);
+            $this->assertGreaterThanOrEqual(4.5, \TemaGenerador::contraste($v["text"], $v["surface"]), "texto del aviso en $modo");
+            foreach (["warning-text", "danger-text", "success-text", "alert-info-border", "text-muted"] as $t) {
+                $this->assertGreaterThanOrEqual(3.0, \TemaGenerador::contraste($v[$t], $v["surface"]), "icono $t sobre la tarjeta en $modo");
+            }
+            $this->assertGreaterThanOrEqual(4.5, \TemaGenerador::contraste($v["text-muted"], $v["surface"]), "texto secundario del comentario en $modo");
+        }
+    }
+
+    public function testElTextoDelComentarioEsSecundarioYMasPequenoQueElNombre(): void {
+        $css = (string)file_get_contents(BASE_PATH . "/assets/css/lista.css");
+        preg_match('/\.comentario-texto \{([^}]*)\}/', $css, $m);
+        $this->assertStringContainsString("color: var(--text-muted)", $m[1]);
+        $this->assertStringContainsString("font-size: var(--type-body-sm-size)", $m[1]);
+        $this->assertMatchesRegularExpression('/\.lista-comentarios th\.col-acciones[^{]*\{[^}]*text-align: center/', $css, "Acciones centrado bajo su cabecera");
+        $this->assertStringContainsString("vertical-align: middle", $css);
+        $this->assertStringContainsString('class="lista-tabla lista-comentarios"', (string)file_get_contents(BASE_PATH . "/app/Views/admin/comentarios/index.php"));
     }
 }

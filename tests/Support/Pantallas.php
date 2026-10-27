@@ -53,6 +53,7 @@ final class Pantallas {
             "admin_dashboard"   => ["admin", fn($f) => (new \DashboardController())->index()],
             "admin_dashboard_r7"   => ["admin", function ($f) use ($get) { $get(["r" => "7"]); (new \DashboardController())->index(); }],
             "admin_dashboard_r30"  => ["admin", function ($f) use ($get) { $get(["r" => "30"]); (new \DashboardController())->index(); }],
+            "admin_dashboard_rtodo" => ["admin", function ($f) use ($get) { $get(["r" => "todo"]); (new \DashboardController())->index(); }],
             "admin_dashboard_r999" => ["admin", function ($f) use ($get) { $get(["r" => "999"]); (new \DashboardController())->index(); }],
             "admin_partes"      => ["admin", fn($f) => (new \ParteController())->index()],
             "admin_partes_crear"  => ["admin", fn($f) => (new \ParteController())->crear()],

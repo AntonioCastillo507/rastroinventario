@@ -25,7 +25,7 @@ $cols=$puedeModerar?5:4;
   </select>
 </form>
 <div class="lista-card">
-<table class="lista-tabla">
+<table class="lista-tabla lista-comentarios">
   <thead><tr>
     <th scope="col">Comentario</th>
     <th scope="col" aria-sort="<?=$ordenCol==="rating"?($ordenDir==="asc"?"ascending":"descending"):"none"?>"><a class="orden-enlace" href="<?=htmlspecialchars($uRating)?>">Calificación<?php if($ordenCol==="rating"): ?><i aria-hidden="true" class="bi bi-arrow-<?=$ordenDir==="asc"?"up":"down"?>"></i><?php endif; ?></a></th>

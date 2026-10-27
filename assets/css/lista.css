@@ -85,7 +85,7 @@
 }
 
 /* ── Comentarios: texto en 2 líneas como máximo, estrellas, cabeceras que ordenan y fila entera enlazada a la pieza ── */
-.comentario-texto { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: var(--spacing-xxs); color: var(--text); }
+.comentario-texto { display: -webkit-box; font-size: var(--type-body-sm-size); line-height: var(--type-body-sm-line-height); -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: var(--spacing-xxs); color: var(--text-muted); }
 .estrellas { display: inline-flex; gap: 2px; color: var(--link); }
 .orden-enlace { display: inline-flex; align-items: center; gap: var(--spacing-xxs); min-height: 44px; color: inherit; font-weight: 600; text-decoration: none; }
 .orden-enlace:hover { color: var(--text-strong); text-decoration: underline; text-underline-offset: 3px; }
@@ -96,3 +96,10 @@
 .fila-enlazada .lista-acciones { position: relative; z-index: 2; } /* las acciones quedan por encima del enlace */
 .lista-orden-movil { display: none; margin-bottom: var(--spacing-md); }
 @media (max-width: 767.98px) { .lista-orden-movil { display: block; } }
+
+/* Comentarios del panel (escritorio): celdas centradas en vertical, cada columna alineada con su cabecera y el icono de acción centrado bajo «Acciones» */
+@media (min-width: 768px) {
+  .lista-comentarios th, .lista-comentarios td { vertical-align: middle; text-align: left; }
+  .lista-comentarios th.col-acciones, .lista-comentarios td.col-acciones { text-align: center; }
+  .lista-comentarios .col-acciones .lista-acciones { justify-content: center; }
+}

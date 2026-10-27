@@ -59,6 +59,36 @@ final class EstadisticaModelTest extends BaseDatos {
         $this->assertSame("2031-03-02 00:00:00", $p["anteriorDesde"]);
     }
 
+    // ── Rango «Todo» ────────────────────────────────────────────────────────
+
+    public function testRangoTodoSePideConLaPalabraYElCeroNoValeComoRango(): void {
+        $this->assertSame(\EstadisticaModel::TODO, \EstadisticaModel::rangoValido("todo"));
+        $this->assertSame(30, \EstadisticaModel::rangoValido("0"));
+        $this->assertSame(30, \EstadisticaModel::rangoValido(0));
+        $this->assertContains(\EstadisticaModel::TODO, \EstadisticaModel::RANGOS);
+    }
+
+    public function testPeriodoTodoEmpiezaElPrimerDiaDelMesDeLaPrimeraVentaYNoTieneAnterior(): void {
+        $p = \EstadisticaModel::periodoTodo("2031-03-17 10:00:00", new \DateTimeImmutable("2031-05-02 08:00"));
+        $this->assertSame(0, $p["dias"]);
+        $this->assertSame("2031-03-01 00:00:00", $p["desde"]);
+        $this->assertSame("2031-05-03 00:00:00", $p["hasta"]);
+        $this->assertNull($p["anteriorDesde"]);
+        $sin = \EstadisticaModel::periodoTodo(null, new \DateTimeImmutable("2031-05-02"));
+        $this->assertSame("2031-05-01 00:00:00", $sin["desde"], "sin ventas, el mes actual");
+    }
+
+    public function testLaPrimeraVentaEsLaMasAntiguaEntregadaYLaSerieTodoVaPorMes(): void {
+        $this->pedido("cancelado", "1998-01-05 10:00:00", [[null, "A", 9.0, 1]]);
+        $this->pedido("entregado", "1999-05-17 10:00:00", [[null, "A", 10.0, 1]]);
+        $this->pedido("entregado", "1999-07-02 10:00:00", [[null, "A", 30.0, 1]]);
+        $this->assertSame("1999-05-17 10:00:00", $this->m->primeraVenta(), "los cancelados no cuentan");
+        $p = \EstadisticaModel::periodoTodo($this->m->primeraVenta(), new \DateTimeImmutable("1999-08-20"));
+        $s = $this->m->ventasPorPeriodo($p["desde"], $p["hasta"], "mes");
+        $this->assertSame(["1999-05", "1999-06", "1999-07", "1999-08"], array_column($s, "clave"));
+        $this->assertSame([10.0, 0.0, 30.0, 0.0], array_column($s, "total"));
+    }
+
     // ── Resumen ─────────────────────────────────────────────────────────────
 
     public function testResumenSoloCuentaEntregadosYRespetaLimites(): void {

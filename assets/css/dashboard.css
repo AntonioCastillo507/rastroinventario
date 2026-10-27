@@ -9,10 +9,16 @@
 .dash-rango-op:hover { background: var(--surface-elevated); color: var(--text-strong); }
 .dash-rango-op.activo { background: var(--btn-primary-bg); color: var(--btn-primary-fg); font-weight: 700; }
 
-.dash-aviso { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-xs) var(--spacing-md); margin-bottom: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); background: var(--surface); border: 1px solid var(--hairline); border-left: 3px solid var(--warning-text); border-radius: var(--rounded-lg); }
-.dash-aviso.ok { border-left-color: var(--success-text); }
-.dash-aviso b { font-family: var(--font-numeric); color: var(--text-strong); }
-.dash-aviso a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; color: var(--link); }
+.dash-avisos { display: grid; gap: var(--spacing-xs); margin: 0 0 var(--spacing-md); padding: 0; list-style: none; }
+.dash-aviso { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-xs) var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-lg); color: var(--text); }
+.dash-aviso-icono { flex: none; font-size: 20px; line-height: 1; color: var(--text-muted); }
+.dash-aviso-adv .dash-aviso-icono { color: var(--warning-text); }
+.dash-aviso-err .dash-aviso-icono { color: var(--danger-text); }
+.dash-aviso-info .dash-aviso-icono { color: var(--alert-info-border); }
+.dash-aviso-ok .dash-aviso-icono { color: var(--success-text); }
+.dash-aviso-texto { flex: 1 1 160px; min-width: 0; }
+.dash-aviso b { font-family: var(--font-numeric); font-weight: 700; color: var(--text-strong); }
+.dash-aviso-btn { flex: 1 1 100%; min-height: 44px; }
 
 .dash-kpis, .dash-fila { display: grid; gap: var(--spacing-md); margin-bottom: var(--spacing-md); grid-template-columns: minmax(0, 1fr); }
 .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -59,6 +65,8 @@
 .dash-vacio { padding: var(--spacing-lg) var(--spacing-xs); text-align: center; }
 
 @media (min-width: 768px) {
+  .dash-avisos { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
+  .dash-aviso-btn { flex: none; min-height: 40px; }
   .dash-cabeza { align-items: center; }
   .dash-acciones { width: auto; flex-wrap: nowrap; }
   .dash-rango { width: auto; }

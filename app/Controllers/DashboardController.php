@@ -25,28 +25,29 @@ class DashboardController extends BaseController {
         ];
 
         $dias = EstadisticaModel::rangoValido($_GET["r"] ?? null, EstadisticaModel::rangoValido(Marca::get("dashboard.rango_defecto", 365), 365));
-        $p    = EstadisticaModel::periodo($dias);
         $em   = new EstadisticaModel();
-        $d    = ["w" => $w, "botones" => $botones, "dias" => $dias, "rangos" => EstadisticaModel::RANGOS];
+        $todo = $dias === EstadisticaModel::TODO;
+        $p    = $todo ? EstadisticaModel::periodoTodo($em->primeraVenta()) : EstadisticaModel::periodo($dias);
+        $d    = ["w" => $w, "botones" => $botones, "dias" => $dias, "todo" => $todo, "rangos" => EstadisticaModel::RANGOS];
         $d["desdeTexto"] = self::fecha(substr($p["desde"], 0, 10), "dia") . " " . date("Y", strtotime($p["desde"]));
         $d["hastaTexto"] = self::fecha(date("Y-m-d", strtotime($p["hasta"] . " -1 day")), "dia") . " " . date("Y", strtotime($p["hasta"] . " -1 day"));
 
         $d["kpis"] = [];
         if ($w["ventas"]) {
             $act = $em->resumen($p["desde"], $p["hasta"]);
-            $ant = $em->resumen($p["anteriorDesde"], $p["desde"]);
-            $d["kpis"][] = ["etiqueta" => "Ventas", "valor" => $act["ventas"], "dinero" => true, "var" => EstadisticaModel::variacion($act["ventas"], $ant["ventas"]), "nota" => $act["pedidos"] ? "Pedidos entregados" : "Sin ventas en este periodo"];
-            $d["kpis"][] = ["etiqueta" => "Pedidos entregados", "valor" => $act["pedidos"], "dinero" => false, "var" => EstadisticaModel::variacion($act["pedidos"], $ant["pedidos"]), "nota" => $act["pedidos"] ? "Cerrados en el periodo" : "Sin pedidos entregados"];
-            $d["kpis"][] = ["etiqueta" => "Ticket promedio", "valor" => $act["ticket"], "dinero" => true, "var" => EstadisticaModel::variacion($act["ticket"], $ant["ticket"]), "nota" => "Venta media por pedido"];
+            $ant = $todo ? null : $em->resumen($p["anteriorDesde"], $p["desde"]);
+            $d["kpis"][] = ["etiqueta" => "Ventas", "valor" => $act["ventas"], "dinero" => true, "var" => $ant ? EstadisticaModel::variacion($act["ventas"], $ant["ventas"]) : null, "nota" => $act["pedidos"] ? "Pedidos entregados" : "Sin ventas en este periodo"];
+            $d["kpis"][] = ["etiqueta" => "Pedidos entregados", "valor" => $act["pedidos"], "dinero" => false, "var" => $ant ? EstadisticaModel::variacion($act["pedidos"], $ant["pedidos"]) : null, "nota" => $act["pedidos"] ? "Cerrados en el periodo" : "Sin pedidos entregados"];
+            $d["kpis"][] = ["etiqueta" => "Ticket promedio", "valor" => $act["ticket"], "dinero" => true, "var" => $ant ? EstadisticaModel::variacion($act["ticket"], $ant["ticket"]) : null, "nota" => "Venta media por pedido"];
 
-            $agr   = $dias === 365 ? "mes" : "dia";
+            $agr   = ($dias === 365 || $todo) ? "mes" : "dia";
             $serie = $em->ventasPorPeriodo($p["desde"], $p["hasta"], $agr);
-            $prev  = $em->ventasPorPeriodo($p["anteriorDesde"], $p["desde"], $agr);
+            $prev  = $todo ? [] : $em->ventasPorPeriodo($p["anteriorDesde"], $p["desde"], $agr);
             $d["serie"] = [
                 "labels"   => array_map(fn($s) => self::fecha($s["clave"], $agr), $serie),
                 "actual"   => array_column($serie, "total"),
                 "anterior" => array_slice(array_column($prev, "total"), 0, count($serie)),
-                "total"    => $act["ventas"], "totalAnterior" => $ant["ventas"],
+                "total"    => $act["ventas"], "totalAnterior" => $ant ? $ant["ventas"] : null,
             ];
             $d["categorias"] = $em->ventasPorCategoria($p["desde"], $p["hasta"]);
             $d["partes"]     = $em->topPartes($p["desde"], $p["hasta"]);
@@ -62,6 +63,7 @@ class DashboardController extends BaseController {
             $d["kpis"][]       = ["etiqueta" => "Piezas activas", "valor" => $pm->countAll(), "dinero" => false, "var" => null, "nota" => $pm->countStockBajo() . " con poco stock"];
             $d["stockBajo"]    = $em->stockBajo(5);
             $d["totalStockBajo"] = $pm->countStockBajo();
+            $d["totalAgotadas"]  = $em->contarAgotadas();
         }
         if ($w["comentarios"]) {
             $d["comentarios"]      = $em->comentariosRecientes(3);

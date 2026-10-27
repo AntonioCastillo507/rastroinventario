@@ -3,8 +3,8 @@ $title = "Dashboard";
 include BASE_PATH . "/app/Views/layouts/admin_header.php";
 $money  = fn($n) => "$" . number_format((float)$n, 2);
 $pct    = fn($n) => str_replace(".", ",", number_format(abs((float)$n), 1)) . " %";
-$rangoTexto = [7 => "7 días", 30 => "30 días", 90 => "90 días", 365 => "Año"];
-$rangoLargo = [7 => "los últimos 7 días", 30 => "los últimos 30 días", 90 => "los últimos 90 días", 365 => "el último año"];
+$rangoTexto = [7 => "7 días", 30 => "30 días", 90 => "90 días", 365 => "Año", 0 => "Todo"];
+$rangoLargo = [7 => "los últimos 7 días", 30 => "los últimos 30 días", 90 => "los últimos 90 días", 365 => "el último año", 0 => "todo el historial"];
 $hayVentas  = !empty($serie) && array_sum($serie["actual"]) > 0;
 $grafica = [];
 if ($w["ventas"]) {
@@ -16,14 +16,23 @@ if ($w["ventas"]) {
 if ($w["pedidos"]) $grafica["estados"] = $estados;
 $pendientes = $w["pedidos"] ? (int)$totalPorAtender : 0;
 $pocoStock  = $w["partes"] ? (int)$totalStockBajo : 0;
+$agotadas   = $w["partes"] ? (int)$totalAgotadas : 0;
+$nComent    = $w["comentarios"] ? (int)$comentariosSemana : 0;
+// Avisos de la franja: cada uno es una acción. estado = adv (aviso), err (error), info, neu (neutro), ok (éxito)
+$avisos = [];
+if ($pendientes) $avisos[] = ["estado" => "adv", "icono" => "bag-check", "n" => $pendientes, "texto" => $pendientes === 1 ? "pedido por atender" : "pedidos por atender", "extra" => 0, "url" => APP_URL . "/admin/?mod=pedidos", "boton" => "Atender pedidos"];
+elseif ($w["pedidos"]) $avisos[] = ["estado" => "neu", "icono" => "bag-check", "n" => 0, "texto" => "pedidos por atender", "extra" => 0, "url" => "", "boton" => ""];
+if ($pocoStock) $avisos[] = ["estado" => $agotadas ? "err" : "adv", "icono" => $agotadas ? "exclamation-octagon" : "exclamation-triangle", "n" => $pocoStock, "texto" => $pocoStock === 1 ? "pieza con poco stock" : "piezas con poco stock", "extra" => $agotadas, "url" => APP_URL . "/admin/?mod=partes&filtro=stock_bajo", "boton" => "Reponer"];
+if ($nComent) $avisos[] = ["estado" => "info", "icono" => "chat-dots", "n" => $nComent, "texto" => $nComent === 1 ? "comentario en los últimos 7 días" : "comentarios en los últimos 7 días", "extra" => 0, "url" => APP_URL . "/admin/?mod=comentarios", "boton" => "Moderar"];
+if (($w["pedidos"] || $w["partes"] || $w["comentarios"]) && !$pendientes && !$pocoStock && !$nComent) $avisos = [["estado" => "ok", "icono" => "check-circle", "n" => null, "texto" => "Todo al día", "extra" => 0, "url" => "", "boton" => ""]];
 ?>
 <h1 class="visually-hidden">Dashboard</h1>
 <div class="panel-cabeza dash-cabeza">
-  <p class="dash-sub"><span class="num"><?=htmlspecialchars($desdeTexto)?></span> a <span class="num"><?=htmlspecialchars($hastaTexto)?></span> · frente al periodo anterior de igual duración</p>
+  <p class="dash-sub"><span class="num"><?=htmlspecialchars($desdeTexto)?></span> a <span class="num"><?=htmlspecialchars($hastaTexto)?></span> · <?=$todo?"historial completo, sin comparar con otro periodo":"frente al periodo anterior de igual duración"?></p>
   <div class="dash-acciones">
     <?php if($w["ventas"] || $w["pedidos"]): ?>
     <nav class="dash-rango" aria-label="Rango de fechas">
-      <?php foreach($rangos as $r): ?><a href="<?=APP_URL?>/admin/?r=<?=(int)$r?>" class="dash-rango-op<?=$r===$dias?" activo":""?>"<?=$r===$dias?' aria-current="true"':""?>><?=htmlspecialchars($rangoTexto[$r])?></a><?php endforeach; ?>
+      <?php foreach($rangos as $r): ?><a href="<?=APP_URL?>/admin/?r=<?=$r===0?"todo":(int)$r?>" class="dash-rango-op<?=$r===$dias?" activo":""?>"<?=$r===$dias?' aria-current="true"':""?>><?=htmlspecialchars($rangoTexto[$r])?></a><?php endforeach; ?>
     </nav>
     <?php endif; ?>
     <?php if($botones["venta"]): ?><a class="btn btn-outline-secondary" href="<?=APP_URL?>/admin/?mod=ventas&action=crear"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nueva venta</a><?php endif; ?>
@@ -31,17 +40,16 @@ $pocoStock  = $w["partes"] ? (int)$totalStockBajo : 0;
   </div>
 </div>
 
-<?php if($w["pedidos"] || $w["partes"]): ?>
-<div class="dash-aviso dash-rv<?=($pendientes||$pocoStock)?"":" ok"?>" style="--i:1">
-  <?php if($w["pedidos"]): ?>
-    <?php if($pendientes): ?><span><b class="num"><?=(int)$pendientes?></b> <?=$pendientes===1?"pedido por atender":"pedidos por atender"?></span><a href="<?=APP_URL?>/admin/?mod=pedidos">Atender pedidos</a>
-    <?php else: ?><span>No hay pedidos por atender</span><?php endif; ?>
-  <?php endif; ?>
-  <?php if($w["partes"]): ?>
-    <?php if($pocoStock): ?><span><b class="num"><?=(int)$pocoStock?></b> <?=$pocoStock===1?"pieza con poco stock":"piezas con poco stock"?></span><a href="<?=APP_URL?>/admin/?mod=partes&filtro=stock_bajo">Reponer</a>
-    <?php else: ?><span>Todo el inventario tiene stock</span><?php endif; ?>
-  <?php endif; ?>
-</div>
+<?php if($avisos): ?>
+<ul class="dash-avisos dash-rv" style="--i:1" aria-label="Avisos del día">
+  <?php foreach($avisos as $a): ?>
+  <li class="dash-aviso dash-aviso-<?=htmlspecialchars($a["estado"])?>">
+    <i aria-hidden="true" class="bi bi-<?=htmlspecialchars($a["icono"])?> dash-aviso-icono"></i>
+    <span class="dash-aviso-texto"><?php if($a["n"] !== null): ?><b class="num"><?=(int)$a["n"]?></b> <?php endif; ?><?=htmlspecialchars($a["texto"])?><?php if($a["extra"]): ?> <span class="dash-aviso-extra">· <b class="num"><?=(int)$a["extra"]?></b> <?=$a["extra"]===1?"agotada":"agotadas"?></span><?php endif; ?></span>
+    <?php if($a["url"] !== ""): ?><a class="btn btn-outline-secondary dash-aviso-btn" href="<?=htmlspecialchars($a["url"])?>"><?=htmlspecialchars($a["boton"])?></a><?php endif; ?>
+  </li>
+  <?php endforeach; ?>
+</ul>
 <?php endif; ?>
 
 <?php if($kpis): ?>
@@ -64,10 +72,10 @@ $pocoStock  = $w["partes"] ? (int)$totalStockBajo : 0;
   <section class="dash-card dash-rv" style="--i:6" aria-labelledby="dgVentas">
     <div class="dash-card-cabeza">
       <div><h2 class="dash-card-titulo" id="dgVentas">Ventas por periodo</h2><p class="dash-card-sub">Pedidos entregados, <?=htmlspecialchars($rangoLargo[$dias])?></p></div>
-      <?php if($hayVentas): ?><ul class="dash-leyenda"><li><i class="dash-trazo"></i>Periodo actual</li><li><i class="dash-trazo punteado"></i>Periodo anterior</li></ul><?php endif; ?>
+      <?php if($hayVentas): ?><ul class="dash-leyenda"><li><i class="dash-trazo"></i><?=$todo?"Ventas por mes":"Periodo actual"?></li><?php if(!$todo): ?><li><i class="dash-trazo punteado"></i>Periodo anterior</li><?php endif; ?></ul><?php endif; ?>
     </div>
     <?php if($hayVentas): ?>
-    <div class="dash-lienzo"><canvas id="dgLinea" role="img" aria-label="Ventas de <?=htmlspecialchars($rangoLargo[$dias])?>: <?=htmlspecialchars($money($serie["total"]))?>. Periodo anterior: <?=htmlspecialchars($money($serie["totalAnterior"]))?>."></canvas></div>
+    <div class="dash-lienzo"><canvas id="dgLinea" role="img" aria-label="Ventas de <?=htmlspecialchars($rangoLargo[$dias])?>: <?=htmlspecialchars($money($serie["total"]))?>. <?=$serie["totalAnterior"] !== null ? "Periodo anterior: ".htmlspecialchars($money($serie["totalAnterior"])).".":""?>"></canvas></div>
     <table class="visually-hidden"><caption>Ventas por periodo</caption><tr><th scope="col">Periodo</th><th scope="col">Actual</th><th scope="col">Anterior</th></tr>
       <?php foreach($serie["labels"] as $i => $l): ?><tr><td><?=htmlspecialchars($l)?></td><td class="num"><?=htmlspecialchars($money($serie["actual"][$i]))?></td><td class="num"><?=isset($serie["anterior"][$i])?htmlspecialchars($money($serie["anterior"][$i])):"—"?></td></tr><?php endforeach; ?>
     </table>

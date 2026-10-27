@@ -67,7 +67,7 @@
 
     var s = datos.serie, el = lienzo("dgLinea");
     if (s && el) {
-      var sets = [{ label: "Periodo actual", data: s.actual, borderColor: c.acento, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: c.acento, pointHoverBorderColor: c.superficie, pointHoverBorderWidth: 2, tension: 0.3 }];
+      var sets = [{ label: "Periodo actual", data: s.actual, borderColor: c.acento, borderWidth: 2, pointRadius: s.labels.length <= 2 ? 4 : 0, pointHoverRadius: 5, pointHoverBackgroundColor: c.acento, pointHoverBorderColor: c.superficie, pointHoverBorderWidth: 2, tension: 0.3 }];
       if (s.anterior && s.anterior.length) sets.push({ label: "Periodo anterior", data: s.anterior, borderColor: c.tenue, borderDash: [5, 4], borderWidth: 2, pointRadius: 0, tension: 0.3 });
       graficas.push(new Chart(el, {
         type: "line", data: { labels: s.labels, datasets: sets },
