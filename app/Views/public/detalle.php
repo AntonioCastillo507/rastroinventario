@@ -93,7 +93,7 @@ function starsHtml(float $n,int $sz=16): string {
 
   <!-- ════ RESEÑAS Y COMENTARIOS ════════════════════════════════════ -->
   <hr style="border-color:var(--border)" class="mb-5">
-  <div style="max-width:820px;margin:0 auto">
+  <div id="comentarios" style="max-width:820px;margin:0 auto">
 
     <!-- Encabezado -->
     <div class="text-center mb-4">

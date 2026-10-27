@@ -21,7 +21,7 @@ final class ListasPanelTest extends BaseDatos {
             "partes" => ["admin_partes", "partes", ["Pieza", "Precio", "Stock", "Acciones"], "Inventario de partes"],
             "pedidos" => ["admin_pedidos", "pedidos", ["Pedido", "Cliente", "Total", "Estado", "Fecha", "Acciones"], "Pedidos de la tienda"],
             "usuarios" => ["admin_usuarios", "usuarios", ["Usuario", "Roles", "Estado", "Creado", "Acciones"], "Usuarios del sistema"],
-            "comentarios" => ["admin_comentarios", "comentarios", ["Comentario", "Estado", "Fecha", "Acciones"], "Moderación de comentarios"],
+            "comentarios" => ["admin_comentarios", "comentarios", ["Comentario", "Calificación", "Estado", "Fecha", "Acciones"], "Moderación de comentarios"],
             "roles" => ["admin_roles", "roles", ["Rol", "Descripción", "Acciones"], "Roles y permisos"],
             "autos" => ["admin_autos", "autos", ["Auto", "Año", "Estado", "Acciones"], "Catálogo de autos"],
             "secciones" => ["admin_secciones", "secciones", ["Sección", "Estado", "Acciones"], "Secciones del almacén"],
@@ -123,8 +123,13 @@ final class ListasPanelTest extends BaseDatos {
     public function testElEstadoVacioUsaElComponenteYOcupaTodasLasColumnasDeSuLista(): void {
         foreach (self::listas() as [$pantalla, $vista, $columnas]) {
             $src = (string)file_get_contents(BASE_PATH . "/app/Views/admin/$vista/index.php");
-            $this->assertSame(1, preg_match('/\$vaciaColspan=(\d+); \$vaciaTitulo=/', $src, $m), "$vista: estado vacío con el componente");
-            $this->assertSame(count($columnas), (int)$m[1], "$vista: colspan igual al número de columnas");
+            if ($vista === "comentarios") { // sin Acciones para quien no es Administrador: 4 o 5 columnas
+                $this->assertStringContainsString('$cols=$puedeModerar?5:4;', $src);
+                $this->assertStringContainsString('$vaciaColspan=$cols; $vaciaTitulo=', $src);
+            } else {
+                $this->assertSame(1, preg_match('/\$vaciaColspan=(\d+); \$vaciaTitulo=/', $src, $m), "$vista: estado vacío con el componente");
+                $this->assertSame(count($columnas), (int)$m[1], "$vista: colspan igual al número de columnas");
+            }
             $this->assertStringContainsString('include BASE_PATH."/app/Views/layouts/lista_vacia.php"', $src, $vista);
             $this->assertStringNotContainsString("text-center text-secondary", $src, "$vista: sin la fila vieja");
         }

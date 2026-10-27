@@ -189,7 +189,12 @@ final class PaginacionConsultasTest extends BaseDatos {
         $this->assertGreaterThanOrEqual(12, count($m[0]), "se esperan los 7 órdenes del panel y los 5 del catálogo");
         foreach ($m[0] as $orden) $this->assertStringContainsString("p.id DESC", $orden, $orden);
         // Solo cuenta la cláusula ORDER BY de la consulta, no un comentario que mencione el desempate
-        foreach (["VentaModel" => "v.id DESC", "PedidoModel" => "p.id DESC", "ComentarioModel" => "c.id DESC", "UserModel" => "u.id DESC"] as $clase => $desempate) {
+        // ComentarioModel ordena con una lista blanca (ORDENES): cada orden termina en el id de c
+        $comentarios = (string)file_get_contents(BASE_PATH . "/app/Models/ComentarioModel.php");
+        preg_match_all('/=> "(c\.[^"]*)",?/', $comentarios, $ord);
+        $this->assertCount(6, $ord[1], "seis órdenes: fecha, calificación y estado, en los dos sentidos");
+        foreach ($ord[1] as $o) $this->assertMatchesRegularExpression('/, c\.id (ASC|DESC)$/', $o, "ComentarioModel: $o");
+        foreach (["VentaModel" => "v.id DESC", "PedidoModel" => "p.id DESC", "UserModel" => "u.id DESC"] as $clase => $desempate) {
             $this->assertMatchesRegularExpression('/ORDER BY [^"]*' . preg_quote($desempate, "/") . '"/', file_get_contents(BASE_PATH . "/app/Models/$clase.php"), $clase);
         }
     }

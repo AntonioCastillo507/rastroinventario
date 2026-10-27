@@ -114,13 +114,16 @@ final class ModalConfirmarVistasTest extends BaseDatos {
     }
 
     public function testLasListasSinFilasEnLosDatosDePruebaTienenSuModalEnElCodigo(): void {
-        $esperado = ["autos/index.php" => "Desactivar «", "secciones/index.php" => "Desactivar «", "comentarios/index.php" => "Eliminar el comentario de «"];
+        $esperado = ["autos/index.php" => "Desactivar «", "secciones/index.php" => "Desactivar «"];
         foreach ($esperado as $vista => $inicio) {
             $src = (string)file_get_contents(BASE_PATH . "/app/Views/admin/$vista");
             $this->assertStringContainsString('Confirmar::attrs(["titulo"=>"' . $inicio, $src, $vista);
             $this->assertStringContainsString('"peligro"=>true', $src, $vista);
         }
-        $this->assertStringContainsString("para siempre", (string)file_get_contents(BASE_PATH . "/app/Views/admin/comentarios/index.php"), "eliminar un comentario es definitivo y lo dice");
+        $c = (string)file_get_contents(BASE_PATH . "/app/Views/admin/comentarios/index.php");
+        $this->assertStringContainsString('"titulo"=>"Ocultar el comentario de «"', $c, "ocultar pregunta");
+        $this->assertStringContainsString('"titulo"=>"Mostrar el comentario de «"', $c, "mostrar también");
+        $this->assertStringNotContainsString("para siempre", $c, "ya no se borra nada desde el panel");
     }
 
     // ── Hoja de estilos del componente ──
