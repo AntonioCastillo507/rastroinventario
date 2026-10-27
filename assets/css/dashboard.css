@@ -39,9 +39,9 @@
 .dash-leyenda { display: flex; flex-wrap: wrap; gap: var(--spacing-md); margin: 0; padding: 0; list-style: none; font-size: var(--type-body-sm-size); color: var(--text); }
 .dash-trazo { display: inline-block; width: 16px; margin-right: var(--spacing-xs); vertical-align: middle; border-top: 2px solid var(--chart-1); }
 .dash-trazo.punteado { border-top: 2px dashed var(--text-muted); }
-.dash-lienzo { position: relative; height: 220px; }
+.dash-lienzo { position: relative; height: 220px; overflow: visible; }
 .dash-lienzo-barras { height: 200px; margin-top: var(--spacing-sm); }
-.dash-dona { position: relative; height: 170px; margin-top: var(--spacing-sm); }
+.dash-dona { position: relative; height: 200px; margin-top: var(--spacing-sm); overflow: visible; }
 .dash-dona-centro { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; pointer-events: none; }
 .dash-dona-centro b { display: block; font-family: var(--font-numeric); font-size: 20px; font-weight: 700; color: var(--text-strong); }
 .dash-dona-centro span { font-size: var(--type-caption-size); color: var(--text-muted); }
@@ -102,8 +102,9 @@
 
 /* Reseñas recientes: avatar con inicial, estrellas (.estrellas de lista.css), pieza y texto en 2 líneas */
 .dash-resenas { margin: 0; padding: 0; list-style: none; }
-.dash-resena { display: flex; align-items: flex-start; gap: var(--spacing-sm); padding: var(--spacing-sm) 0; border-top: 1px solid var(--hairline); }
+.dash-resena { display: flex; align-items: flex-start; gap: var(--spacing-sm); padding: var(--spacing-md) 0; border-top: 1px solid var(--hairline); }
 .dash-resena:first-child { border-top: 0; padding-top: 0; }
+.dash-resena:last-child { padding-bottom: 0; }
 .dash-avatar { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: var(--rounded-full); background: var(--surface-elevated); color: var(--text-strong); font-weight: 700; }
 .dash-resena-cuerpo { flex: 1 1 auto; min-width: 0; }
 .dash-resena-linea { display: flex; align-items: baseline; justify-content: space-between; gap: var(--spacing-xs); }

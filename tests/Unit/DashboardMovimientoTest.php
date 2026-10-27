@@ -35,4 +35,20 @@ final class DashboardMovimientoTest extends TestCase {
         $this->assertStringContainsString("hoverOffset", $js, "la dona resalta el segmento");
         $this->assertStringContainsString("hoverBorderWidth", $js, "las barras resaltan");
     }
+
+    public function testLaDonaTieneHolguraParaElResalteYElTooltipNoTapaElCentro(): void {
+        $js = self::js();
+        preg_match('/hoverOffset:\s*(\d+)/', $js, $h);
+        preg_match('/cutout: "68%", layout: \{ padding: (\d+) \}/', $js, $p);
+        $this->assertGreaterThanOrEqual((int)$h[1], (int)$p[1], "el padding de la dona cubre el hoverOffset");
+        $this->assertStringContainsString('position: "cursor"', $js);
+        $this->assertMatchesRegularExpression('/\.dash-dona\s*\{[^}]*overflow:\s*visible/', self::css());
+    }
+
+    public function testLasResenasLlevanSeparadorEntreSiYNoAlBorde(): void {
+        $css = self::css();
+        $this->assertMatchesRegularExpression('/\.dash-resena\s*\{[^}]*border-top:\s*1px solid var\(--hairline\)/', $css);
+        $this->assertMatchesRegularExpression('/\.dash-resena:first-child\s*\{\s*border-top:\s*0/', $css, "sin línea antes de la primera");
+        $this->assertMatchesRegularExpression('/\.dash-resena:last-child\s*\{\s*padding-bottom:\s*0/', $css, "nada después de la última");
+    }
 }

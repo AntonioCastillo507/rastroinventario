@@ -30,6 +30,9 @@
     });
   }
 
+  // El tooltip de la dona sale junto al cursor y no en el centroide del arco: así no tapa el total del centro
+  if (typeof Chart !== "undefined") Chart.Tooltip.positioners.cursor = function (items, pos) { return pos; };
+
   function lienzo(id) { var c = document.getElementById(id); return c ? c : null; }
 
   function barras(id, nombres, valores, unidad, c) {
@@ -39,7 +42,7 @@
       type: "bar",
       data: { labels: nombres, datasets: [{ data: valores, backgroundColor: c.acento, borderRadius: 4, borderSkipped: false, barThickness: 14, hoverBorderColor: c.fuerte, hoverBorderWidth: 2 }] },
       options: {
-        indexAxis: "y", maintainAspectRatio: false, interaction: { mode: "nearest", axis: "y", intersect: false },
+        indexAxis: "y", maintainAspectRatio: false, layout: { padding: { top: 3, right: 6, bottom: 3 } }, interaction: { mode: "nearest", axis: "y", intersect: false },
         plugins: {
           legend: { display: false },
           tooltip: { callbacks: { title: function (it) { return nombres[it[0].dataIndex]; }, label: function (it) { return it.parsed.x + " " + unidad; } } }
@@ -90,7 +93,7 @@
       graficas.push(new Chart(el, {
         type: "doughnut",
         data: { labels: cat.map(function (x) { return x.nombre; }), datasets: [{ data: cat.map(function (x) { return x.total; }), backgroundColor: colores, borderColor: c.superficie, borderWidth: 2, hoverOffset: 8, hoverBorderColor: c.fuerte }] },
-        options: { maintainAspectRatio: false, cutout: "68%", plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (it) { return it.label + ": " + dinero(it.parsed); } } } } }
+        options: { maintainAspectRatio: false, cutout: "68%", layout: { padding: 14 }, plugins: { legend: { display: false }, tooltip: { position: "cursor", caretPadding: 14, callbacks: { label: function (it) { return it.label + ": " + dinero(it.parsed); } } } } }
       }));
     }
 
