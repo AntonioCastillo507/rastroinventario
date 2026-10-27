@@ -146,27 +146,40 @@ class EstadisticaModel extends BaseModel {
         return $out;
     }
 
-    /** @return list<array{nombre:string,unidades:int}> */
-    public function topPartes(string $desde, string $hasta, int $limite = 5): array {
-        return $this->unidades(
-            "SELECT i.parte_nombre AS nombre, SUM(i.cantidad) AS unidades
-             FROM pedido_items i JOIN pedidos p ON p.id = i.pedido_id
-             WHERE p.estado='entregado' AND p.creado_en >= ? AND p.creado_en < ?
-             GROUP BY i.parte_nombre ORDER BY unidades DESC, nombre ASC LIMIT " . max(1, $limite),
-            $desde, $hasta);
+    /** Color estable de cada marca: su lugar por primer aparición en autos (marca normalizada), módulo 6; 0 = sin color propio */
+    public function coloresDeMarcas(): array {
+        $ks = $this->db->query("SELECT LOWER(TRIM(marca)) AS k FROM autos GROUP BY LOWER(TRIM(marca)) ORDER BY MIN(id) ASC")->fetchAll(PDO::FETCH_COLUMN);
+        $out = [];
+        foreach ($ks as $pos => $k) $out[(string)$k] = ($pos % self::COLORES) + 1;
+        return $out;
     }
 
-    /** @return list<array{nombre:string,unidades:int}> */
+    /** Cada pieza con el color de su categoría (el mismo mapa de la dona); sin sección, 0 @return list<array{nombre:string,unidades:int,color:int}> */
+    public function topPartes(string $desde, string $hasta, int $limite = 5): array {
+        $rows = $this->query(
+            "SELECT i.parte_nombre AS nombre, SUM(i.cantidad) AS unidades, MAX(pa.seccion_id) AS sec
+             FROM pedido_items i JOIN pedidos p ON p.id = i.pedido_id
+             LEFT JOIN partes pa ON pa.id = i.parte_id
+             WHERE p.estado='entregado' AND p.creado_en >= ? AND p.creado_en < ?
+             GROUP BY i.parte_nombre ORDER BY unidades DESC, nombre ASC LIMIT " . max(1, $limite),
+            [$desde, $hasta]);
+        $colores = $this->coloresDeCategorias();
+        return array_map(fn($r) => ["nombre" => $r["nombre"], "unidades" => (int)$r["unidades"], "color" => $r["sec"] === null ? 0 : ($colores[(int)$r["sec"]] ?? 0)], $rows);
+    }
+
+    /** Marcas agrupadas sin distinguir mayúsculas ni espacios de los bordes ("Honda " = "honda"). @return list<array{nombre:string,unidades:int,color:int}> */
     public function topMarcas(string $desde, string $hasta, int $limite = 5): array {
-        return $this->unidades(
-            "SELECT COALESCE(a.marca, 'Sin marca') AS nombre, SUM(i.cantidad) AS unidades
+        $rows = $this->query(
+            "SELECT COALESCE(LOWER(TRIM(a.marca)), 'sin marca') AS k, COALESCE(MIN(TRIM(a.marca)), 'Sin marca') AS nombre, SUM(i.cantidad) AS unidades
              FROM pedido_items i
              JOIN pedidos p ON p.id = i.pedido_id
              LEFT JOIN partes pa ON pa.id = i.parte_id
              LEFT JOIN autos a ON a.id = pa.auto_id
              WHERE p.estado='entregado' AND p.creado_en >= ? AND p.creado_en < ?
-             GROUP BY nombre ORDER BY unidades DESC, nombre ASC LIMIT " . max(1, $limite),
-            $desde, $hasta);
+             GROUP BY k ORDER BY unidades DESC, nombre ASC LIMIT " . max(1, $limite),
+            [$desde, $hasta]);
+        $colores = $this->coloresDeMarcas();
+        return array_map(fn($r) => ["nombre" => $r["nombre"], "unidades" => (int)$r["unidades"], "color" => $colores[(string)$r["k"]] ?? 0], $rows);
     }
 
     /** Pedidos por atender (pendientes y en proceso), el más antiguo primero */

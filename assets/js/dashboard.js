@@ -35,12 +35,16 @@
 
   function lienzo(id) { var c = document.getElementById(id); return c ? c : null; }
 
-  function barras(id, nombres, valores, unidad, c) {
+  // Colores de las barras: las categorías y marcas usan --chart-N (el mismo mapa de la dona; 0 = gris); los estados, los tokens de las insignias del pedido
+  var ESTADO_TOKEN = { pendiente: "--warning-text", procesando: "--alert-info-border", entregado: "--success-text", cancelado: "--danger-text" };
+  function porColor(lista) { return lista.map(function (x) { return token(x.color ? "--chart-" + x.color : "--chart-otras"); }); }
+
+  function barras(id, nombres, valores, unidad, c, colores) {
     var el = lienzo(id);
     if (!el) return;
     graficas.push(new Chart(el, {
       type: "bar",
-      data: { labels: nombres, datasets: [{ data: valores, backgroundColor: c.acento, borderRadius: 4, borderSkipped: false, barThickness: 14, hoverBorderColor: c.fuerte, hoverBorderWidth: 2 }] },
+      data: { labels: nombres, datasets: [{ data: valores, backgroundColor: colores || c.acento, borderRadius: 4, borderSkipped: false, barThickness: 14, hoverBorderColor: c.fuerte, hoverBorderWidth: 2 }] },
       options: {
         indexAxis: "y", maintainAspectRatio: false, layout: { padding: { top: 3, right: 6, bottom: 3 } }, interaction: { mode: "nearest", axis: "y", intersect: false },
         plugins: {
@@ -97,9 +101,9 @@
       }));
     }
 
-    if (datos.partes) barras("dgPartes", datos.partes.map(function (x) { return x.nombre; }), datos.partes.map(function (x) { return x.unidades; }), "unidades", c);
-    if (datos.marcas) barras("dgMarcas", datos.marcas.map(function (x) { return x.nombre; }), datos.marcas.map(function (x) { return x.unidades; }), "unidades", c);
-    if (datos.estados) barras("dgEstados", datos.estados.map(function (x) { return x.nombre; }), datos.estados.map(function (x) { return x.n; }), "pedidos", c);
+    if (datos.partes) barras("dgPartes", datos.partes.map(function (x) { return x.nombre; }), datos.partes.map(function (x) { return x.unidades; }), "unidades", c, porColor(datos.partes));
+    if (datos.marcas) barras("dgMarcas", datos.marcas.map(function (x) { return x.nombre; }), datos.marcas.map(function (x) { return x.unidades; }), "unidades", c, porColor(datos.marcas));
+    if (datos.estados) barras("dgEstados", datos.estados.map(function (x) { return x.nombre; }), datos.estados.map(function (x) { return x.n; }), "pedidos", c, datos.estados.map(function (x) { return token(ESTADO_TOKEN[x.estado] || "--chart-otras"); }));
   }
 
   dibujar();

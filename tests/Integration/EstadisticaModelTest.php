@@ -256,9 +256,9 @@ final class EstadisticaModelTest extends BaseDatos {
         $this->pedido("entregado", self::D . "11 10:00:00", [[$h, "Faro", 5.0, 1]]);
         $this->pedido("pendiente", self::D . "11 10:00:00", [[$n, "Bomba", 5.0, 50]]);
         $d = self::D . "01 00:00:00"; $h2 = self::D . "30 00:00:00";
-        $this->assertSame([["nombre" => "Faro", "unidades" => 5], ["nombre" => "Espejo", "unidades" => 4], ["nombre" => "Bomba", "unidades" => 2]], $this->m->topPartes($d, $h2));
-        $this->assertSame([["nombre" => "Faro", "unidades" => 5]], $this->m->topPartes($d, $h2, 1));
-        $this->assertSame([["nombre" => "Honda", "unidades" => 5], ["nombre" => "Kia", "unidades" => 4], ["nombre" => "Sin marca", "unidades" => 2]], $this->m->topMarcas($d, $h2));
+        $this->assertSame([["nombre" => "Faro", "unidades" => 5], ["nombre" => "Espejo", "unidades" => 4], ["nombre" => "Bomba", "unidades" => 2]], array_map(fn($r) => array_diff_key($r, ["color" => 1]), $this->m->topPartes($d, $h2)));
+        $this->assertSame([["nombre" => "Faro", "unidades" => 5]], array_map(fn($r) => array_diff_key($r, ["color" => 1]), $this->m->topPartes($d, $h2, 1)));
+        $this->assertSame([["nombre" => "Honda", "unidades" => 5], ["nombre" => "Kia", "unidades" => 4], ["nombre" => "Sin marca", "unidades" => 2]], array_map(fn($r) => array_diff_key($r, ["color" => 1]), $this->m->topMarcas($d, $h2)));
     }
 
     public function testEmpateTotalSeResuelveSiempreIgual(): void {

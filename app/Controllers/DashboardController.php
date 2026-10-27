@@ -54,7 +54,7 @@ class DashboardController extends BaseController {
             $d["marcas"]     = $em->topMarcas($p["desde"], $p["hasta"]);
         }
         if ($w["pedidos"]) {
-            $d["estados"] = array_map(fn($e) => ["nombre" => self::ESTADOS[$e["estado"]], "n" => $e["pedidos"]], $em->pedidosPorEstado($p["desde"], $p["hasta"]));
+            $d["estados"] = array_map(fn($e) => ["nombre" => self::ESTADOS[$e["estado"]], "n" => $e["pedidos"], "estado" => $e["estado"]], $em->pedidosPorEstado($p["desde"], $p["hasta"]));
             $d["porAtender"]       = $em->porAtender(5);
             $d["totalPorAtender"]  = $em->contarPorAtender();
         }
