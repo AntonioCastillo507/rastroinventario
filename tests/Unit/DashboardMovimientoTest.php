@@ -45,10 +45,17 @@ final class DashboardMovimientoTest extends TestCase {
         $this->assertMatchesRegularExpression('/\.dash-dona\s*\{[^}]*overflow:\s*visible/', self::css());
     }
 
-    public function testLasResenasLlevanSeparadorEntreSiYNoAlBorde(): void {
+    public function testLasResenasLlevanSeparadorSoloEntreSi(): void {
         $css = self::css();
-        $this->assertMatchesRegularExpression('/\.dash-resena-item \+ \.dash-resena-item\s*\{[^}]*border-top:\s*1px solid var\(--hairline\)/', $css);
-        $this->assertMatchesRegularExpression('/\.dash-resena-item:first-child > \.dash-resena\s*\{\s*padding-top:\s*0/', $css, "sin línea antes de la primera");
-        $this->assertMatchesRegularExpression('/\.dash-resena-item:last-child > \.dash-resena\s*\{\s*padding-bottom:\s*0/', $css, "nada después de la última");
+        $this->assertMatchesRegularExpression('/\.dash-resena-item \+ \.dash-resena-item\s*\{[^}]*border-top:\s*1px solid var\(--hairline\)/', $css, "línea solo entre una reseña y la siguiente: ni antes de la primera ni después de la última");
+        $this->assertDoesNotMatchRegularExpression('/\.dash-resena\s*\{[^}]*border-top/', $css);
+    }
+
+    public function testLaTarjetaDeResenaTieneRellenoSimetricoYAvatarConBorde(): void {
+        $css = self::css();
+        $this->assertMatchesRegularExpression('/\.dash-resena\s*\{[^}]*padding:\s*var\(--spacing-sm\) 0;/', $css, "mismo relleno arriba y abajo");
+        $this->assertMatchesRegularExpression('/\.dash-resena \.comentario-texto\s*\{\s*margin:\s*var\(--spacing-xxs\) 0 0;/', $css, "sin margen inferior sobrante");
+        $this->assertMatchesRegularExpression('/\.dash-avatar\s*\{[^}]*border:\s*1px solid var\(--border-strong\)/', $css);
+        $this->assertMatchesRegularExpression('/\.dash-resena-enlace:hover \.dash-avatar\s*\{\s*background:\s*var\(--surface\)/', $css, "en hover el avatar no iguala el fondo");
     }
 }
