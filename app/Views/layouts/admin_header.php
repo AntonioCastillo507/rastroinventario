@@ -8,7 +8,7 @@ $menuGrupos = [
   ["General",        [["dashboard","Dashboard","speedometer2","/admin/",null]]],
   ["Catálogo",       [["partes","Partes","box-seam","/admin/?mod=partes","partes"],["autos","Autos","car-front","/admin/?mod=autos","autos"],["secciones","Secciones","diagram-3","/admin/?mod=secciones","secciones"]]],
   ["Ventas",         [["pedidos","Pedidos","bag-check","/admin/?mod=pedidos","pedidos"],["ventas","Ventas","cart-check","/admin/?mod=ventas","ventas"],["reportes","Reportes","file-earmark-bar-graph","/admin/?mod=reportes","ventas"],["comentarios","Comentarios","chat-dots","/admin/?mod=comentarios","comentarios"]]],
-  ["Administración", [["usuarios","Usuarios","people","/admin/?mod=usuarios","usuarios"],["roles","Roles","shield-lock","/admin/?mod=roles","roles"]]],
+  ["Administración", [["usuarios","Usuarios","people","/admin/?mod=usuarios","usuarios"],["roles","Roles","shield-lock","/admin/?mod=roles","roles"],["seguridad","Seguridad","shield-check","/admin/?mod=seguridad","seguridad"]]],
 ];
 $uidPanel = (int)($_SESSION["user"]["id"] ?? 0);
 $modulosVisibles = $uidPanel ? (new UserModel())->modulosVisibles($uidPanel) : [];

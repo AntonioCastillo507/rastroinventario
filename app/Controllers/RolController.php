@@ -1,7 +1,7 @@
 <?php
 class RolController extends BaseController {
     private RolModel $rm;
-    const MODULOS = ["usuarios","roles","partes","autos","secciones","ventas","comentarios","pedidos"];
+    const MODULOS = ["usuarios","roles","partes","autos","secciones","ventas","comentarios","pedidos","seguridad"];
     public function __construct() { $this->rm = new RolModel(); }
 
     /** Solo módulos conocidos: ignora cualquier clave inventada en el POST */

@@ -69,6 +69,8 @@ final class Pantallas {
             "admin_roles_crear" => ["admin", fn($f) => (new \RolController())->crear()],
             "admin_roles_editar" => ["admin", function ($f) use ($get) { $get(["id" => (string)$f["rol"]]); (new \RolController())->editar(); }],
             "admin_ventas"      => ["admin", fn($f) => (new \VentaController())->index()],
+            "admin_seguridad"   => ["admin", fn($f) => (new \SeguridadController())->index()],
+            "admin_seguridad_p2" => ["admin", function ($f) use ($get) { $get(["page" => "2"]); (new \SeguridadController())->index(); }],
             "admin_ventas_crear" => ["admin", fn($f) => (new \VentaController())->crear()],
             "admin_pedidos"     => ["admin", fn($f) => (new \PedidoAdminController())->index()],
             "admin_pedido_detalle" => ["admin", function ($f) use ($get) { $get(["id" => (string)$f["pedido"]]); (new \PedidoAdminController())->detalle(); }],

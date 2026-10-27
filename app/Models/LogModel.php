@@ -22,4 +22,12 @@ class LogModel extends BaseModel {
              ORDER BY ll.fecha DESC LIMIT ?", [$limit]
         );
     }
+    /** Una página de la bitácora, la más reciente primero (el id desempata las del mismo segundo) */
+    public function pagina(Paginador $pag): array {
+        return $this->query(
+            "SELECT ll.*, u.nombre FROM login_logs ll
+             LEFT JOIN usuarios u ON u.id=ll.usuario_id
+             ORDER BY ll.fecha DESC, ll.id DESC" . $pag->sql()
+        );
+    }
 }

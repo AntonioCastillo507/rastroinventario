@@ -25,6 +25,7 @@ JOIN (
   UNION ALL SELECT 'Administrador', 'secciones',   1, 1, 1, 1
   UNION ALL SELECT 'Administrador', 'usuarios',    1, 1, 1, 1
   UNION ALL SELECT 'Administrador', 'ventas',      1, 1, 1, 1
+  UNION ALL SELECT 'Administrador', 'seguridad',   1, 0, 0, 0
   UNION ALL SELECT 'Vendedor', 'autos',       1, 0, 0, 0
   UNION ALL SELECT 'Vendedor', 'comentarios', 1, 0, 0, 0
   UNION ALL SELECT 'Vendedor', 'partes',      1, 0, 0, 0

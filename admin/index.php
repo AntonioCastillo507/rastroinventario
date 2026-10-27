@@ -29,6 +29,7 @@ $map = [
     "comentarios" => ComentarioController::class,
     "pedidos"     => PedidoAdminController::class,
     "reportes"    => ReporteController::class,
+    "seguridad"   => SeguridadController::class,
     "factura"     => FacturaController::class,
 ];
 

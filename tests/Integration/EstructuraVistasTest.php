@@ -196,16 +196,16 @@ final class EstructuraVistasTest extends BaseDatos {
         }
     }
 
-    public function testLaMatrizDePermisosTiene32CasillasConNombre(): void {
+    public function testLaMatrizDePermisosTiene36CasillasConNombre(): void {
         $x = $this->html("admin_roles_editar");
         $cajas = $x->query("//input[@type='checkbox' and starts-with(@name,'permisos[')]");
-        $this->assertSame(32, $cajas->length);
+        $this->assertSame(36, $cajas->length);
         $nombres = [];
         foreach ($cajas as $c) {
             $nombres[] = $c->getAttribute("aria-label");
             $this->assertMatchesRegularExpression('/^(Ver|Crear|Editar|Borrar) en .+/', $c->getAttribute("aria-label"));
         }
-        $this->assertSame(32, count(array_unique($nombres)), "Cada casilla tiene un nombre distinto");
+        $this->assertSame(36, count(array_unique($nombres)), "Cada casilla tiene un nombre distinto");
     }
 
     public function testElAvisoDeErrorNoSeCierraSoloYElDeExitoSi(): void {
