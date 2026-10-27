@@ -38,7 +38,7 @@ class DashboardController extends BaseController {
             $ant = $todo ? null : $em->resumen($p["anteriorDesde"], $p["desde"]);
             $d["kpis"][] = ["etiqueta" => "Ventas", "valor" => $act["ventas"], "dinero" => true, "var" => $ant ? EstadisticaModel::variacion($act["ventas"], $ant["ventas"]) : null, "nota" => $act["pedidos"] ? "Pedidos entregados" : "Sin ventas en este periodo"];
             $d["kpis"][] = ["etiqueta" => "Pedidos entregados", "valor" => $act["pedidos"], "dinero" => false, "var" => $ant ? EstadisticaModel::variacion($act["pedidos"], $ant["pedidos"]) : null, "nota" => $act["pedidos"] ? "Cerrados en el periodo" : "Sin pedidos entregados"];
-            $d["kpis"][] = ["etiqueta" => "Ticket promedio", "valor" => $act["ticket"], "dinero" => true, "var" => $ant ? EstadisticaModel::variacion($act["ticket"], $ant["ticket"]) : null, "nota" => "Venta media por pedido"];
+            $d["kpis"][] = ["etiqueta" => "Ticket promedio", "valor" => $act["ticket"], "dinero" => true, "var" => $ant ? EstadisticaModel::variacion($act["ticket"], $ant["ticket"]) : null, "nota" => "Lo que gasta cada cliente por pedido"];
 
             $agr   = ($dias === 365 || $todo) ? "mes" : "dia";
             $serie = $em->ventasPorPeriodo($p["desde"], $p["hasta"], $agr);
