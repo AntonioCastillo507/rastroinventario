@@ -27,7 +27,7 @@ final class DashboardResenasTest extends BaseDatos {
         $x = $this->pantalla();
         $li = '//section[@aria-labelledby="dgCom"]//li[contains(@class,"dash-resena")]';
         $this->assertSame(1, Html::contar($x, $li));
-        $this->assertSame("Z", trim($x->query("$li/span[contains(@class,'dash-avatar')]")->item(0)->textContent), "inicial en mayúscula");
+        $this->assertSame("Z", trim($x->query("$li//span[contains(@class,'dash-avatar')]")->item(0)->textContent), "inicial en mayúscula");
         $this->assertSame(1, Html::contar($x, "$li//span[contains(@class,'estrellas')][@role='img'][@aria-label='3 de 5 estrellas']"), "texto accesible");
         $this->assertSame(3, Html::contar($x, "$li//i[contains(@class,'bi-star-fill')]"));
         $this->assertSame(2, Html::contar($x, "$li//i[contains(@class,'bi-star')][not(contains(@class,'bi-star-fill'))]"));
@@ -63,5 +63,24 @@ final class DashboardResenasTest extends BaseDatos {
         $html = Pantallas::render($this->db, "admin_dashboard");
         $this->assertStringNotContainsString("<script>alert(1)</script>", $html);
         $this->assertStringContainsString("&lt;script&gt;", $html);
+    }
+
+    public function testLaTarjetaEsUnEnlaceAlaPiezaYSinPiezaVisibleEsTexto(): void {
+        $this->pantalla();
+        $parte = (int)$this->db->query("SELECT id FROM partes WHERE activo=1 LIMIT 1")->fetchColumn();
+        $this->db->exec("DELETE FROM comentarios");
+        $this->resena($parte, "Ana", 4, date("Y-m-d H:i:s", time() - 60));
+        $x = $this->pantalla();
+        $a = $x->query('//section[@aria-labelledby="dgCom"]//li/a[contains(@class,"dash-resena")]');
+        $this->assertSame(1, $a->length);
+        $this->assertSame(APP_URL . "/?action=detalle&id=$parte#comentarios", $a->item(0)->getAttribute("href"), "misma URL que la lista de Comentarios");
+        $this->assertStringStartsWith("Reseña de Ana sobre ", $a->item(0)->getAttribute("aria-label"));
+        $this->assertStringEndsWith("4 de 5 estrellas", $a->item(0)->getAttribute("aria-label"));
+        $this->assertSame(0, Html::contar($x, '//section[@aria-labelledby="dgCom"]//a//a'), "sin enlaces anidados");
+        $this->assertSame(0, Html::contar($x, '//section[@aria-labelledby="dgCom"]//li//a[normalize-space(.)="Ver todos"]'), "Ver todos queda fuera de las tarjetas");
+        $this->db->exec("UPDATE partes SET activo=0 WHERE id=$parte");
+        $x = $this->pantalla();
+        $this->assertSame(0, Html::contar($x, '//section[@aria-labelledby="dgCom"]//li//a'), "pieza no visible: sin enlace");
+        $this->assertSame(1, Html::contar($x, '//section[@aria-labelledby="dgCom"]//li/div[contains(@class,"dash-resena")]'));
     }
 }

@@ -140,7 +140,9 @@ if (($w["pedidos"] || $w["partes"] || $w["comentarios"]) && !$pendientes && !$po
     <div class="dash-card-cabeza"><div><h2 class="dash-card-titulo" id="dgCom">Comentarios recientes</h2><p class="dash-card-sub"><span class="num"><?=(int)$comentariosSemana?></span> en los últimos 7 días</p></div><a class="dash-ver" href="<?=APP_URL?>/admin/?mod=comentarios">Ver todos</a></div>
     <?php if($comentarios): ?>
     <ul class="dash-resenas"><?php foreach($comentarios as $c): $rt=(int)$c["rating"]; $quien=trim((string)$c["nombre_visitante"]); $ini=mb_strtoupper(mb_substr($quien!==""?$quien:"?",0,1)); ?>
-      <li class="dash-resena">
+      <li class="dash-resena-item">
+        <?php $enlazada=(int)$c["parte_activo"]===1; $etq="Reseña de ".$quien." sobre ".$c["parte"].($rt>=1&&$rt<=5?", ".$rt." de 5 estrellas":""); ?>
+        <<?=$enlazada?'a href="'.APP_URL.'/?action=detalle&amp;id='.(int)$c["parte_id"].'#comentarios" aria-label="'.htmlspecialchars($etq).'"':'div'?> class="dash-resena<?=$enlazada?" dash-resena-enlace":""?>">
         <span class="dash-avatar" aria-hidden="true"><?=htmlspecialchars($ini)?></span>
         <div class="dash-resena-cuerpo">
           <div class="dash-resena-linea"><b class="dash-resena-nombre"><?=htmlspecialchars($quien)?></b><time class="dash-resena-fecha" datetime="<?=htmlspecialchars((string)$c["creado_en"])?>"><?=htmlspecialchars($haceTiempo((string)$c["creado_en"]))?></time></div>
@@ -148,6 +150,7 @@ if (($w["pedidos"] || $w["partes"] || $w["comentarios"]) && !$pendientes && !$po
           <p class="dash-resena-pieza">sobre <?=htmlspecialchars((string)$c["parte"])?></p>
           <p class="comentario-texto"><?=htmlspecialchars((string)$c["comentario"])?></p>
         </div>
+        </<?=$enlazada?"a":"div"?>>
       </li>
     <?php endforeach; ?></ul>
     <?php else: ?><div class="vacio dash-vacio"><p class="vacio-titulo">Aún no hay comentarios</p><p class="vacio-texto">Cuando un cliente califique una pieza, su reseña aparecerá aquí.</p></div><?php endif; ?>

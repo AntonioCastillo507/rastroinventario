@@ -193,7 +193,7 @@ class EstadisticaModel extends BaseModel {
     /** Comentarios publicados, el más reciente primero */
     public function comentariosRecientes(int $limite = 3): array {
         return $this->query(
-            "SELECT c.id, c.nombre_visitante, c.comentario, c.rating, c.creado_en, p.nombre AS parte
+            "SELECT c.id, c.nombre_visitante, c.comentario, c.rating, c.creado_en, c.parte_id, p.activo AS parte_activo, p.nombre AS parte
              FROM comentarios c JOIN partes p ON p.id = c.parte_id
              WHERE c.publicado = 1
              ORDER BY c.creado_en DESC, c.id DESC LIMIT " . max(1, $limite));

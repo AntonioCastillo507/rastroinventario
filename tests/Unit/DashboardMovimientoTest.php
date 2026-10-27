@@ -47,8 +47,8 @@ final class DashboardMovimientoTest extends TestCase {
 
     public function testLasResenasLlevanSeparadorEntreSiYNoAlBorde(): void {
         $css = self::css();
-        $this->assertMatchesRegularExpression('/\.dash-resena\s*\{[^}]*border-top:\s*1px solid var\(--hairline\)/', $css);
-        $this->assertMatchesRegularExpression('/\.dash-resena:first-child\s*\{\s*border-top:\s*0/', $css, "sin línea antes de la primera");
-        $this->assertMatchesRegularExpression('/\.dash-resena:last-child\s*\{\s*padding-bottom:\s*0/', $css, "nada después de la última");
+        $this->assertMatchesRegularExpression('/\.dash-resena-item \+ \.dash-resena-item\s*\{[^}]*border-top:\s*1px solid var\(--hairline\)/', $css);
+        $this->assertMatchesRegularExpression('/\.dash-resena-item:first-child > \.dash-resena\s*\{\s*padding-top:\s*0/', $css, "sin línea antes de la primera");
+        $this->assertMatchesRegularExpression('/\.dash-resena-item:last-child > \.dash-resena\s*\{\s*padding-bottom:\s*0/', $css, "nada después de la última");
     }
 }
