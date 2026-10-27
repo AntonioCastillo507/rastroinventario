@@ -486,7 +486,7 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .catalogo-layout { display: block; }
 .filtros-form { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rounded-xl); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
 .filtro-grupo { margin: 0; padding: 0; border: 0; min-width: 0; }
-.filtros-form .filter-label { float: none; width: auto; padding: 0; margin: 0 0 var(--spacing-xs); font-size: var(--type-body-md-size); font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text-strong); }
+.filtros-form .filter-label { margin: 0 0 var(--spacing-xs); font-size: var(--type-body-md-size); font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text-strong); }
 .filtros-form .form-check { display: flex; align-items: center; gap: var(--spacing-xs); min-height: 32px; margin: 0; padding: 0; }
 .filtros-form .form-check-input { float: none; margin: 0; flex-shrink: 0; }
 .filtros-form .form-check-label { flex: 1; padding: 4px 0; color: var(--text); font-size: var(--type-body-md-size); }
@@ -632,7 +632,7 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .carrito-nota { margin: var(--spacing-sm) 0 0; font-size: var(--type-body-sm-size); color: var(--text-muted); }
 .carrito-continuar, .carrito-confirmar { width: 100%; min-height: 48px; margin-top: var(--spacing-md); display: inline-flex; align-items: center; justify-content: center; font-weight: 600; }
 .carrito-bloque { margin: 0 0 var(--spacing-md); padding: var(--spacing-md); background: var(--surface); border: 1px solid var(--border); border-radius: var(--rounded-xl); min-width: 0; }
-.carrito-bloque-titulo { float: none; width: auto; margin: 0 0 var(--spacing-sm); padding: 0; font-size: var(--type-title-md-size); font-weight: 600; line-height: 1.35; color: var(--text-strong); }
+.carrito-bloque-titulo { margin: 0 0 var(--spacing-sm); padding: 0; font-size: var(--type-title-md-size); font-weight: 600; line-height: 1.35; color: var(--text-strong); }
 .carrito-identidad, .carrito-ayuda { margin: 0 0 var(--spacing-sm); font-size: var(--type-body-md-size); color: var(--text); }
 .carrito-ayuda a { color: var(--link); }
 .resumen-lineas { list-style: none; margin: 0 0 var(--spacing-sm); padding: 0; display: flex; flex-direction: column; gap: var(--spacing-xs); max-height: min(240px, calc(100vh - 360px)); overflow-y: auto; }
@@ -704,3 +704,7 @@ select, .form-select {
 select:hover, select:focus, select:focus-visible, .form-select:hover, .form-select:focus, .form-select:focus-visible { --flecha: var(--text-strong); }
 select:focus, select:focus-visible, .form-select:focus, .form-select:focus-visible { border-color: var(--btn-primary-bg) !important; }
 select:disabled, .form-select:disabled { cursor: not-allowed; --flecha: var(--text-muted); opacity: .6; }
+
+/* ── fieldset y legend: el título queda DENTRO del recuadro, no montado sobre su borde (flota a todo el ancho y lo siguiente lo despeja) ── */
+legend { float: left; width: 100%; padding: 0; margin: 0 0 var(--spacing-sm); }
+legend + * { clear: both; }

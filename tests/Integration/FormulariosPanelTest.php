@@ -104,6 +104,24 @@ final class FormulariosPanelTest extends BaseDatos {
         $this->assertMatchesRegularExpression('/\.admin-contenido > \.alert\s*\{[^}]*border-radius:\s*var\(--rounded-lg\)/', $css, "alert: radio lg");
     }
 
+    public function testElTituloDeCadaFieldsetQuedaDentroDelRecuadro(): void {
+        $css = (string)file_get_contents(BASE_PATH . "/assets/css/base.css");
+        preg_match('/(?:^|
+)legend\s*\{([^}]*)\}/', $css, $l);
+        $this->assertMatchesRegularExpression('/float:\s*left/', $l[1] ?? "", "el legend flota y deja de montarse sobre el borde");
+        $this->assertMatchesRegularExpression('/width:\s*100%/', $l[1]);
+        $this->assertMatchesRegularExpression('/padding:\s*0;/', $l[1]);
+        $this->assertMatchesRegularExpression('/margin:\s*0 0 var\(--spacing-sm\)/', $l[1], "separación inferior de DESIGN.md (12 px)");
+        $this->assertMatchesRegularExpression('/legend \+ \*\s*\{\s*clear:\s*both/', $css, "lo que sigue al legend lo despeja");
+        $this->assertDoesNotMatchRegularExpression('/(carrito-bloque-titulo|filter-label)\s*\{[^}]*float:\s*none/', $css, "ninguna regla del sitio vuelve a anular el flotado");
+        foreach (["carrito_cliente", "carrito_invitado", "carrito_datos_invitado", "carrito_datos_cliente", "catalogo", "admin_usuarios_crear"] as $n) {
+            $x = Html::xpath(Pantallas::render($this->db, $n));
+            foreach ($x->query("//fieldset") as $f) {
+                $this->assertSame("legend", $x->query("./*[1]", $f)->item(0)->nodeName, "$n: el legend es lo primero del fieldset");
+            }
+        }
+    }
+
     // ── Acceso: «Volver…» como enlace ──
 
     /** @return array<string,array{0:string,1:string,2:string}> */
