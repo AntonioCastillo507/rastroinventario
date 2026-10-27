@@ -70,7 +70,7 @@ final class EnlacesRenderizadosTest extends BaseDatos {
 
     public function testSalirDelPanelNoLlevaTargetYTiendaSeAbreEnLaMismaPestana(): void {
         $x = Html::xpath(Pantallas::render($this->db, "admin_dashboard"));
-        $tienda = $x->query("//nav//a[normalize-space()='Tienda']");
+        $tienda = $x->query("//header//a[normalize-space()='Ver la tienda']");
         $this->assertSame(1, $tienda->length);
         $this->assertSame("", $tienda->item(0)->getAttribute("target"), "Tienda abre en la misma pestaña");
     }

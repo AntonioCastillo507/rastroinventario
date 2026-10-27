@@ -36,6 +36,12 @@ class UserModel extends BaseModel {
         $s=$this->db->prepare("SELECT 1 FROM permisos p INNER JOIN usuario_roles ur ON ur.rol_id = p.rol_id WHERE ur.usuario_id = ? LIMIT 1");
         $s->execute([$uid]); return (bool)$s->fetchColumn();
     }
+    /** Módulos que la persona puede ver (puede_ver en alguno de sus roles): el menú lateral del panel solo lista esos
+     *  @return list<string> */
+    public function modulosVisibles(int $uid): array {
+        $s=$this->db->prepare("SELECT p.modulo FROM permisos p INNER JOIN usuario_roles ur ON ur.rol_id=p.rol_id WHERE ur.usuario_id=? GROUP BY p.modulo HAVING MAX(p.puede_ver)=1");
+        $s->execute([$uid]); return array_map('strval',$s->fetchAll(\PDO::FETCH_COLUMN));
+    }
     /** Nombre del rol que manda en el sistema (el código lo busca por nombre, como el de Cliente) */
     public const ROL_ADMIN = "Administrador";
     public function esAdministrador(int $uid): bool {

@@ -148,17 +148,6 @@ small,.small { color:var(--text-2); }
    ADMIN NAV + LAYOUT
    ══════════════════════════════════════════════════ */
 .admin-body { background:var(--bg-0)!important;min-height:100vh; }
-.admin-nav  { background:var(--bg-1)!important;border-bottom:1px solid var(--border);height:60px; }
-.admin-nav .navbar-brand { color:#fff!important;font-weight:700; }
-.admin-nav .nav-link {
-  color:var(--text-2)!important;border-radius:var(--radius-sm);
-  padding:.35rem .75rem;font-size:.87rem;transition:background .15s,color .15s;
-}
-.admin-nav .nav-link:hover,.admin-nav .nav-link.active {
-  background:var(--bg-2)!important;color:var(--text-1)!important;
-}
-.admin-content { padding-top:1.5rem; }
-.admin-footer { background:var(--bg-1)!important;border-top:1px solid var(--border);color:var(--text-3);font-size:.78rem; }
 
 /* ══════════════════════════════════════════════════
    PUBLIC NAV + FOOTER

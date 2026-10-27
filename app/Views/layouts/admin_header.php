@@ -1,11 +1,27 @@
 <?php
 if(empty($title))$title="Panel Admin";
-// Opción activa del menú: el módulo que enruta admin/index.php (?mod=). Los cuatro primeros más Usuarios van siempre
-// a la vista; el resto, en "Más" desde 1200 px y en la lista del menú plegable por debajo.
+// Módulo activo: el que enruta admin/index.php (?mod=). "Mi contraseña" es de la cuenta, no de un módulo.
 $modActivo = (string)($_GET["mod"] ?? "dashboard");
-$menuPrincipal = [["dashboard","Dashboard","speedometer2","/admin/"],["partes","Partes","box-seam","/admin/?mod=partes"],["pedidos","Pedidos","bag-check","/admin/?mod=pedidos"],["ventas","Ventas","cart-check","/admin/?mod=ventas"],["usuarios","Usuarios","people","/admin/?mod=usuarios"]];
-$menuMas = [["autos","Autos","car-front","/admin/?mod=autos"],["secciones","Secciones","diagram-3","/admin/?mod=secciones"],["roles","Roles","shield-lock","/admin/?mod=roles"],["comentarios","Comentarios","chat-dots","/admin/?mod=comentarios"],["reportes","Reportes","file-earmark-bar-graph","/admin/?mod=reportes"]];
-$masActivo = in_array($modActivo, array_column($menuMas, 0), true);
+$esMiClave = $modActivo==="usuarios" && (string)($_GET["action"] ?? "")==="mi_clave";
+// Menú lateral agrupado: [grupo, [[clave, texto, icono, ruta, permiso que lo muestra (null = siempre)]]]
+$menuGrupos = [
+  ["General",        [["dashboard","Dashboard","speedometer2","/admin/",null]]],
+  ["Catálogo",       [["partes","Partes","box-seam","/admin/?mod=partes","partes"],["autos","Autos","car-front","/admin/?mod=autos","autos"],["secciones","Secciones","diagram-3","/admin/?mod=secciones","secciones"]]],
+  ["Ventas",         [["pedidos","Pedidos","bag-check","/admin/?mod=pedidos","pedidos"],["ventas","Ventas","cart-check","/admin/?mod=ventas","ventas"],["reportes","Reportes","file-earmark-bar-graph","/admin/?mod=reportes","ventas"],["comentarios","Comentarios","chat-dots","/admin/?mod=comentarios","comentarios"]]],
+  ["Administración", [["usuarios","Usuarios","people","/admin/?mod=usuarios","usuarios"],["roles","Roles","shield-lock","/admin/?mod=roles","roles"]]],
+];
+$uidPanel = (int)($_SESSION["user"]["id"] ?? 0);
+$modulosVisibles = $uidPanel ? (new UserModel())->modulosVisibles($uidPanel) : [];
+$tituloPanel = $esMiClave ? "Mi contraseña" : $title;
+foreach ($menuGrupos as $pgi => $pg) {
+  $pg[1] = array_values(array_filter($pg[1], fn($pm) => $pm[4] === null || in_array($pm[4], $modulosVisibles, true)));
+  $menuGrupos[$pgi] = $pg;
+  foreach ($pg[1] as $pm) if (!$esMiClave && $pm[0] === $modActivo) $tituloPanel = $pm[1];
+}
+$menuGrupos = array_values(array_filter($menuGrupos, fn($pg) => $pg[1] !== []));
+unset($pgi, $pg, $pm);
+$nombrePanel = (string)($_SESSION["user"]["nombre"] ?? "");
+$inicialPanel = mb_strtoupper(mb_substr($nombrePanel !== "" ? $nombrePanel : "?", 0, 1));
 ?>
 <!DOCTYPE html><html lang="es" data-theme="dark" data-bs-theme="dark">
 <head>
@@ -15,37 +31,53 @@ $masActivo = in_array($modActivo, array_column($menuMas, 0), true);
 <link rel="stylesheet" href="<?=Assets::url("css/style.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/extra.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/base.css")?>">
+<link rel="stylesheet" href="<?=Assets::url("css/panel.css")?>">
+<script src="<?=Assets::url("js/panel.js")?>"></script>
 </head>
 <body class="admin-body">
 <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
-<nav class="navbar navbar-expand-xl admin-nav px-3" aria-label="Panel">
-  <a class="navbar-brand marca marca-panel" href="<?=APP_URL?>/admin/"><?php $marcaLema=false; include __DIR__."/marca_bloque.php"; ?></a>
-  <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navA" aria-controls="navA" aria-expanded="false" aria-label="Abrir o cerrar el menú"><span class="navbar-toggler-icon" aria-hidden="true"></span></button>
-  <div class="collapse navbar-collapse" id="navA">
-<ul class="navbar-nav me-auto ms-3 gap-1">
-      <?php foreach($menuPrincipal as [$clave,$texto,$icono,$ruta]): $act=$modActivo===$clave; ?>
-      <li class="nav-item"><a class="nav-link<?=$act?" active":""?>" href="<?=APP_URL.htmlspecialchars($ruta)?>"<?=$act?' aria-current="page"':""?>><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($icono)?> me-1"></i><?=htmlspecialchars($texto)?></a></li>
-      <?php endforeach; ?>
-      <?php foreach($menuMas as [$clave,$texto,$icono,$ruta]): $act=$modActivo===$clave; ?>
-      <li class="nav-item d-xl-none"><a class="nav-link<?=$act?" active":""?>" href="<?=APP_URL.htmlspecialchars($ruta)?>"<?=$act?' aria-current="page"':""?>><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($icono)?> me-1"></i><?=htmlspecialchars($texto)?></a></li>
-      <?php endforeach; ?>
-      <li class="nav-item dropdown d-none d-xl-block">
-        <a class="nav-link dropdown-toggle<?=$masActivo?" active":""?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Más</a>
-        <ul class="dropdown-menu">
-          <?php foreach($menuMas as [$clave,$texto,$icono,$ruta]): $act=$modActivo===$clave; ?>
-          <li><a class="dropdown-item<?=$act?" active":""?>" href="<?=APP_URL.htmlspecialchars($ruta)?>"<?=$act?' aria-current="page"':""?>><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($icono)?> me-2"></i><?=htmlspecialchars($texto)?></a></li>
+<div class="admin-shell">
+  <aside class="offcanvas-lg offcanvas-start admin-sidebar" tabindex="-1" id="panelMenu" aria-labelledby="panelMenuTitulo">
+    <div class="admin-sidebar-cabeza">
+      <a class="marca marca-panel" id="panelMenuTitulo" href="<?=APP_URL?>/admin/"><?php $marcaLema=false; include __DIR__."/marca_bloque.php"; ?></a>
+      <button type="button" class="btn-close d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#panelMenu" aria-label="Cerrar el menú"></button>
+    </div>
+    <nav class="admin-sidebar-nav" aria-label="Módulos del panel">
+      <?php foreach($menuGrupos as $pgi => [$pgrupo,$pmodulos]): ?>
+      <div class="admin-grupo">
+        <p class="admin-grupo-titulo" id="grupo<?=(int)$pgi?>"><?=htmlspecialchars($pgrupo)?></p>
+        <ul class="admin-grupo-lista" aria-labelledby="grupo<?=(int)$pgi?>">
+          <?php foreach($pmodulos as [$pclave,$ptexto,$picono,$pruta]): $pact=!$esMiClave && $modActivo===$pclave; ?>
+          <li><a class="admin-enlace<?=$pact?" activo":""?>" href="<?=APP_URL.htmlspecialchars($pruta)?>"<?=$pact?' aria-current="page"':""?>><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($picono)?>"></i><span class="admin-enlace-texto"><?=htmlspecialchars($ptexto)?></span></a></li>
           <?php endforeach; ?>
         </ul>
-      </li>
-    </ul>
-    <ul class="navbar-nav ms-auto align-items-center gap-2">
-      <li class="nav-item"><button type="button" class="btn btn-sm btn-outline-secondary tema-toggle" data-tema-toggle aria-label="Cambiar a modo claro" title="Cambiar a modo claro"><i aria-hidden="true" class="bi bi-sun"></i></button></li>
-      <li class="nav-item"><span class="text-warning small fw-semibold"><i aria-hidden="true" class="bi bi-person-circle me-1"></i><?=htmlspecialchars($_SESSION["user"]["nombre"]??"")?></span></li>
-      <li class="nav-item"><a href="<?=APP_URL?>/admin/?mod=usuarios&action=mi_clave" class="btn btn-sm btn-outline-warning" title="Cambiar mi contraseña" aria-label="Cambiar mi contraseña"><i aria-hidden="true" class="bi bi-key"></i></a></li>
-      <li class="nav-item"><a href="<?=APP_URL?>/" class="btn btn-sm btn-outline-secondary"><i aria-hidden="true" class="bi bi-shop me-1"></i>Tienda</a></li>
-      <li class="nav-item"><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="btn btn-sm btn-danger" aria-label="Cerrar sesión" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right"></i></button></form></li>
-    </ul>
-  </div>
-</nav>
-<main id="contenido" tabindex="-1" class="admin-content container-fluid py-4 px-4">
+      </div>
+      <?php endforeach; ?>
+    </nav>
+    <div class="admin-sidebar-pie d-none d-lg-block">
+      <button type="button" class="admin-enlace admin-colapsar" data-panel-menu-toggle aria-expanded="true" aria-controls="panelMenu"><i aria-hidden="true" class="bi bi-layout-sidebar"></i><span class="admin-enlace-texto">Contraer menú</span></button>
+    </div>
+  </aside>
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button type="button" class="admin-icono d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#panelMenu" aria-controls="panelMenu" aria-label="Abrir el menú"><i aria-hidden="true" class="bi bi-list"></i></button>
+      <p class="admin-topbar-titulo"><?=htmlspecialchars($tituloPanel)?></p>
+      <div class="admin-topbar-acciones">
+        <button type="button" class="admin-icono tema-toggle" data-tema-toggle aria-label="Cambiar a modo claro" title="Cambiar a modo claro"><i aria-hidden="true" class="bi bi-sun"></i></button>
+        <div class="dropdown">
+          <button type="button" class="admin-cuenta" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menú de la cuenta de <?=htmlspecialchars($nombrePanel)?>">
+            <span class="admin-cuenta-inicial" aria-hidden="true"><?=htmlspecialchars($inicialPanel)?></span>
+            <span class="admin-cuenta-nombre"><?=htmlspecialchars($nombrePanel)?></span>
+            <i aria-hidden="true" class="bi bi-chevron-down admin-cuenta-flecha"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end admin-cuenta-menu">
+            <li><a class="dropdown-item" href="<?=APP_URL?>/admin/?mod=usuarios&amp;action=mi_clave"<?=$esMiClave?' aria-current="page"':""?>><i aria-hidden="true" class="bi bi-key me-2"></i>Cambiar mi contraseña</a></li>
+            <li><a class="dropdown-item" href="<?=APP_URL?>/"><i aria-hidden="true" class="bi bi-shop me-2"></i>Ver la tienda</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="dropdown-item" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Salir</button></form></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+<main id="contenido" tabindex="-1" class="admin-contenido">
 <?php if(!empty($_SESSION["flash"])){$f=$_SESSION["flash"];unset($_SESSION["flash"]);$icons=["success"=>"check-circle-fill","danger"=>"exclamation-triangle-fill","warning"=>"exclamation-circle-fill","info"=>"info-circle-fill"];$ic=$icons[$f["type"]]??"info-circle-fill";$rol=in_array($f["type"],["danger","warning"],true)?"alert":"status";echo"<div class=\"alert alert-{$f["type"]} alert-dismissible fade show d-flex align-items-center gap-2\" role=\"{$rol}\"><i aria-hidden=\"true\" class=\"bi bi-{$ic}\"></i><span>".htmlspecialchars($f["msg"])."</span><button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Cerrar aviso\"></button></div>";} ?>

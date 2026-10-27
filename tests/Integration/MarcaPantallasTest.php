@@ -103,7 +103,7 @@ final class MarcaPantallasTest extends BaseDatos {
     public function testElPanelUsaLaMarcaEnLaCabeceraYElPie(): void {
         foreach (["admin_dashboard", "admin_partes"] as $n) {
             $x = Html::xpath(Pantallas::render($this->db, $n));
-            $this->assertStringContainsString("Taller Cambiado Zeta", trim($x->query("//a[contains(@class,'navbar-brand')]")->item(0)->textContent), $n);
+            $this->assertStringContainsString("Taller Cambiado Zeta", trim($x->query("//aside//a[contains(@class,'marca-panel')]")->item(0)->textContent), $n);
             $this->assertSame("Pie cambiado Taller Cambiado Zeta Paisandu", trim($x->query("//footer")->item(0)->textContent), $n);
         }
     }

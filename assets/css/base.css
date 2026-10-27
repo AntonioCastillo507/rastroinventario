@@ -107,7 +107,7 @@ body:focus-visible, main:focus, main:focus-visible { outline: none; }
    (los colores fijos de style.css y extra.css pasan a los tokens)
    ══════════════════════════════════════════════════ */
 body { color: var(--text); }
-.text-white, .admin-nav .navbar-brand { color: var(--text-strong) !important; }
+.text-white { color: var(--text-strong) !important; }
 .public-nav .nav-link.active { color: var(--text-strong) !important; }
 .text-primary { color: var(--link) !important; }
 ::selection { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
@@ -253,10 +253,6 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 /* Información: solo como icono (DESIGN.md), nunca como texto sobre claro */
 .icon-info, .stat-icon.blue { color: var(--color-info); }
 
-/* Barra del panel: "Más" muestra lo que no cabe a la vista; el menú activo lo marca PHP */
-.admin-nav .dropdown-menu { min-width: 12rem; }
-.admin-nav .dropdown-item.active, .admin-nav .dropdown-item:active { background: var(--surface-elevated); color: var(--text-strong); }
-.admin-nav .dropdown-item { font-size: var(--type-nav-link-size); }
 
 /* Buscador del menú público: más estrecho entre 992 y 1199 px para que las acciones no salten de línea */
 
@@ -398,7 +394,6 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
   .public-nav .nav-cuenta { order: 4; flex-wrap: nowrap; padding: 0; }
 }
 @media (min-width: 1200px) { .public-nav .nav-buscador { flex-basis: 280px; } }
-.admin-nav { min-height: 64px; }
 
 /* ── Pie (footer-dark / footer-light de DESIGN.md): fondo un paso distinto al de la página con línea superior, marca ancha con redes
    circulares, tres columnas de enlaces con títulos pequeños y barra inferior con el copyright y «Volver arriba». Solo tokens de tema.css. ── */

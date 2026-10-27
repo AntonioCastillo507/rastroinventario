@@ -122,7 +122,9 @@ final class MarcaEncabezadoTest extends BaseDatos {
 
     public function testLasBarrasMiden64Px(): void {
         $this->assertMatchesRegularExpression('/min-height:\s*64px/', self::regla(".public-nav"), "tienda");
-        $this->assertMatchesRegularExpression('/min-height:\s*64px/', self::regla(".admin-nav"), "panel");
+        $panel = (string)file_get_contents(BASE_PATH . "/assets/css/panel.css");
+        $this->assertMatchesRegularExpression('/--panel-barra-alto:\s*64px/', $panel, "panel");
+        $this->assertMatchesRegularExpression('/\.admin-topbar\s*\{[^}]*height:\s*var\(--panel-barra-alto\)/', $panel, "panel: el encabezado usa ese alto");
         $this->assertMatchesRegularExpression('/min-height:\s*64px/', self::regla(".public-nav .nav-fila", "@media (min-width: 992px)"));
         $this->assertMatchesRegularExpression('/min-height:\s*56px/', self::regla(".public-nav .nav-fila"), "fila de 56 px en móvil");
         $this->assertMatchesRegularExpression('/margin-block:\s*6px/', self::regla(".public-nav .nav-fila > .marca, .public-nav .nav-fila > .nav-carrito, .public-nav .nav-fila > .navbar-toggler"), "44 de objetivo + 12 de aire = 56");
@@ -261,7 +263,7 @@ final class MarcaEncabezadoTest extends BaseDatos {
     public function testElPanelMuestraElBloqueDeMarcaDe32PxSinLema(): void {
         foreach (["admin_dashboard", "admin_partes"] as $n) {
             $x = Html::xpath(Pantallas::render($this->db, $n));
-            $a = $x->query("//nav//a[contains(@class,'navbar-brand') and contains(@class,'marca-panel')]");
+            $a = $x->query("//aside//a[contains(@class,'marca-panel')]");
             $this->assertSame(1, $a->length, $n);
             $q = new \DOMXPath($a->item(0)->ownerDocument);
             $this->assertSame(1, $q->query(".//svg[contains(@class,'marca-logo')]", $a->item(0))->length, $n);

@@ -35,10 +35,11 @@ final class HamburguesaTest extends TestCase {
         }
     }
 
-    public function testLosDosEncabezadosUsanElBotonConSuIcono(): void {
-        foreach (["public_header.php", "admin_header.php"] as $h) {
-            $php = (string)file_get_contents(BASE_PATH . "/app/Views/layouts/$h");
-            $this->assertMatchesRegularExpression('/<button class="navbar-toggler[^"]*"[^>]*aria-label="Abrir o cerrar el men[úu]"[^>]*><span class="navbar-toggler-icon" aria-hidden="true"><\/span><\/button>/u', $php, "$h: botón con nombre accesible");
-        }
+    public function testLosDosEncabezadosAbrenSuMenuConUnBotonConNombre(): void {
+        $php = (string)file_get_contents(BASE_PATH . "/app/Views/layouts/public_header.php");
+        $this->assertMatchesRegularExpression('/<button class="navbar-toggler[^"]*"[^>]*aria-label="Abrir o cerrar el men[úu]"[^>]*><span class="navbar-toggler-icon" aria-hidden="true"><\/span><\/button>/u', $php, "tienda: botón con nombre accesible");
+        // el panel (S5.1) abre su cajón con un botón de icono de Bootstrap Icons, con nombre accesible; lo cubre PanelEstructuraTest
+        $panel = (string)file_get_contents(BASE_PATH . "/app/Views/layouts/admin_header.php");
+        $this->assertMatchesRegularExpression('/<button[^>]*data-bs-toggle="offcanvas"[^>]*aria-label="Abrir el men[úu]"[^>]*><i aria-hidden="true" class="bi bi-list"><\/i><\/button>/u', $panel, "panel: botón con nombre accesible");
     }
 }
