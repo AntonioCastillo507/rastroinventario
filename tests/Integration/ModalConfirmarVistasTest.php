@@ -2,6 +2,7 @@
 namespace Tests\Integration;
 
 use Tests\Support\BaseDatos;
+use Tests\Support\Datos;
 use Tests\Support\Html;
 use Tests\Support\Pantallas;
 
@@ -73,6 +74,8 @@ final class ModalConfirmarVistasTest extends BaseDatos {
     }
 
     public function testUsuariosPideConfirmacionSoloAlDesactivarNoAlActivar(): void {
+        Pantallas::render($this->db, "admin_usuarios"); // crea los datos de apoyo (después, la cuenta nueva queda en la primera página)
+        $this->db->prepare("UPDATE usuarios SET activo = 0 WHERE id = ?")->execute([Datos::usuario($this->db)]); // hace falta una cuenta inactiva en la lista
         $x = Html::xpath(Pantallas::render($this->db, "admin_usuarios"));
         $vistos = ["Desactivar" => 0, "Activar" => 0];
         foreach ($x->query("//form[contains(@action,'action=toggle')]") as $f) {
@@ -89,6 +92,7 @@ final class ModalConfirmarVistasTest extends BaseDatos {
             $this->assertSame(1, $x->query(".//input[@name='csrf_token']", $f)->length);
         }
         $this->assertGreaterThan(0, $vistos["Desactivar"]);
+        $this->assertGreaterThan(0, $vistos["Activar"], "la lista trae una cuenta inactiva para comprobar que activar no pregunta");
     }
 
     public function testElPedidoPreguntaAlEntregarYAlCancelarYNoAlProcesar(): void {
