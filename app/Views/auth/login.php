@@ -42,7 +42,7 @@
     <a href="<?=APP_URL?>/registro.php" class="acceso-enlace text-warning small fw-semibold">Crear cuenta</a>
   </div>
   <div>
-    <a href="<?=APP_URL?>/" class="acceso-enlace text-secondary small">Volver a la tienda</a>
+    <a href="<?=APP_URL?>/" class="acceso-enlace enlace-volver"><i aria-hidden="true" class="bi bi-arrow-left"></i>Volver a la tienda</a>
   </div>
 </main>
 <script src="<?=Assets::url("js/envio.js")?>"></script>

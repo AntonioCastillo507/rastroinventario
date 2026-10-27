@@ -252,7 +252,7 @@ final class PanelEstructuraTest extends BaseDatos {
         $this->assertSame(["transition: transform 250ms ease-out;"], $m[0], "una sola transición: el deslizamiento del cajón, 250 ms ease-out");
         preg_match_all('/animation\s*:[^;{}]*;/', $css, $an);
         $this->assertSame(["animation: modal-entra 200ms ease-out;"], $an[0], "una sola animación: la aparición del modal de confirmación (S5.2)");
-        preg_match('/@keyframes modal-entra\s*\{(.*)\}\s*$/s', $css, $kf);
+        preg_match('/@keyframes modal-entra\s*\{((?:[^{}]*\{[^}]*\})+)\s*\}/', $css, $kf);
         $this->assertDoesNotMatchRegularExpression('/width|height|padding|margin|shadow/', $kf[1] ?? "x", "los fotogramas solo mueven opacidad y transform");
         $this->assertDoesNotMatchRegularExpression('/transition[^;]*(width|height|padding|grid)/', $css);
     }

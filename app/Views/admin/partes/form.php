@@ -1,13 +1,12 @@
 <?php $edit=!empty($parte); $d=$edit?$parte:($viejo??[]); $title=$edit?"Editar Parte":"Nueva Parte"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="page-header mb-4">
-  <div class="d-flex align-items-center gap-3">
-    <a href="<?=APP_URL?>/admin/?mod=partes" class="btn-back" aria-label="Volver"><i aria-hidden="true" class="bi bi-arrow-left"></i></a>
-    <h1 class="h4 fw-bold text-white mb-0"><?=$title?></h1>
+<div class="panel-cabeza">
+  <div>
+    <a href="<?=APP_URL?>/admin/?mod=partes" class="enlace-volver"><i aria-hidden="true" class="bi bi-arrow-left"></i>Volver a partes</a>
+    <h1 class="panel-titulo"><?=$title?></h1>
   </div>
 </div>
-<?php if($error??""): ?><div role="alert" class="alert-dark-danger d-flex gap-2 mb-4"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill text-danger"></i><?=htmlspecialchars($error)?></div><?php endif; ?>
-<div class="dark-card">
-<div class="card-body p-4">
+<?php if($error??""): ?><div role="alert" class="alert alert-danger d-flex align-items-center gap-2 mb-4"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill"></i><span><?=htmlspecialchars($error)?></span></div><?php endif; ?>
+<div class="form-panel"><div class="form-card">
 <form action="<?=APP_URL?>/admin/?mod=partes&action=<?=$edit?"editar&id=".$id:"crear"?>" method="POST" enctype="multipart/form-data">
   <?=CsrfToken::field()?>
   <div class="row g-4">
@@ -61,7 +60,7 @@
       </div>
     </div>
   </div>
-  <div class="mt-4 d-flex gap-3">
+  <div class="form-acciones">
     <button type="submit" class="btn btn-gold fw-bold px-4">
       <i aria-hidden="true" class="bi bi-save me-2"></i><?=$edit?"Guardar Cambios":"Crear Parte"?>
     </button>

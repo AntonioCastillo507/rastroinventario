@@ -1,13 +1,12 @@
 <?php $title="Nueva Venta"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="page-header mb-4">
-  <div class="d-flex align-items-center gap-3">
-    <a href="<?=APP_URL?>/admin/?mod=ventas" class="btn-back" aria-label="Volver"><i aria-hidden="true" class="bi bi-arrow-left"></i></a>
-    <h1 class="h4 fw-bold text-white mb-0">Registrar Venta</h1>
+<div class="panel-cabeza">
+  <div>
+    <a href="<?=APP_URL?>/admin/?mod=ventas" class="enlace-volver"><i aria-hidden="true" class="bi bi-arrow-left"></i>Volver a ventas</a>
+    <h1 class="panel-titulo">Registrar Venta</h1>
   </div>
 </div>
-<?php if($error??""): ?><div role="alert" class="alert-dark-danger d-flex gap-2 mb-4"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill text-danger"></i><?=htmlspecialchars($error)?></div><?php endif; ?>
-<div class="dark-card" style="max-width:580px">
-<div class="card-body p-4">
+<?php if($error??""): ?><div role="alert" class="alert alert-danger d-flex align-items-center gap-2 mb-4"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill"></i><span><?=htmlspecialchars($error)?></span></div><?php endif; ?>
+<div class="form-panel"><div class="form-card">
 <form action="<?=APP_URL?>/admin/?mod=ventas&action=crear" method="POST">
   <?=CsrfToken::field()?>
   <div class="mb-4">
@@ -36,9 +35,10 @@
   <div id="totalPreview" class="total-preview mb-4 d-none">
     Total estimado: <span id="totalVal" class="text-precio fw-bold"></span>
   </div>
-  <button type="submit" class="btn btn-gold fw-bold w-100 py-2">
-    <i aria-hidden="true" class="bi bi-cart-check me-2"></i>Confirmar y Registrar Venta
-  </button>
+  <div class="form-acciones">
+    <button type="submit" class="btn btn-gold fw-bold"><i aria-hidden="true" class="bi bi-cart-check me-2"></i>Confirmar y registrar venta</button>
+    <a href="<?=APP_URL?>/admin/?mod=ventas" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
 </form>
 </div>
 </div>

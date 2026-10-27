@@ -3,14 +3,14 @@ $edit=!empty($rol); $title=$edit?"Editar Rol":"Nuevo Rol";
 include BASE_PATH."/app/Views/layouts/admin_header.php";
 $ML=["usuarios"=>"Usuarios","roles"=>"Roles","partes"=>"Partes/Inventario","autos"=>"Autos","secciones"=>"Secciones","ventas"=>"Ventas","comentarios"=>"Comentarios","pedidos"=>"Pedidos"];
 ?>
-<div class="page-header mb-4">
-  <div class="d-flex align-items-center gap-3">
-    <a href="<?=APP_URL?>/admin/?mod=roles" class="btn-back" aria-label="Volver"><i aria-hidden="true" class="bi bi-arrow-left"></i></a>
-    <h1 class="h4 fw-bold text-white mb-0"><?=$title?></h1>
+<div class="panel-cabeza">
+  <div>
+    <a href="<?=APP_URL?>/admin/?mod=roles" class="enlace-volver"><i aria-hidden="true" class="bi bi-arrow-left"></i>Volver a roles</a>
+    <h1 class="panel-titulo"><?=$title?></h1>
   </div>
 </div>
-<?php if($error??""): ?><div role="alert" class="alert-dark-danger d-flex gap-2 mb-4"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill text-danger"></i><?=htmlspecialchars($error)?></div><?php endif; ?>
-<div class="dark-card"><div class="card-body p-4">
+<?php if($error??""): ?><div role="alert" class="alert alert-danger d-flex align-items-center gap-2 mb-4"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill"></i><span><?=htmlspecialchars($error)?></span></div><?php endif; ?>
+<div class="form-panel"><div class="form-card">
 <form action="<?=APP_URL?>/admin/?mod=roles&action=<?=$edit?"editar&id=".$id:"crear"?>" method="POST">
   <?=CsrfToken::field()?>
   <div class="row g-4 mb-4">
@@ -23,7 +23,7 @@ $ML=["usuarios"=>"Usuarios","roles"=>"Roles","partes"=>"Partes/Inventario","auto
       <input id="f-descripcion" type="text" name="descripcion" class="form-control dark-input" value="<?=htmlspecialchars($rol["descripcion"]??"")?>">
     </div>
   </div>
-  <h2 class="h6 text-warning mb-3"><i aria-hidden="true" class="bi bi-table me-2"></i>Matriz de Permisos por Módulo</h2>
+  <h2 class="form-subtitulo">Matriz de permisos por módulo</h2>
   <div class="table-responsive">
   <table class="table dark-table mb-4">
     <thead><tr><th>Módulo</th><th class="text-center">Ver</th><th class="text-center">Crear</th><th class="text-center">Editar</th><th class="text-center">Borrar</th></tr></thead>
@@ -41,7 +41,7 @@ $ML=["usuarios"=>"Usuarios","roles"=>"Roles","partes"=>"Partes/Inventario","auto
     </tbody>
   </table>
   </div>
-  <div class="d-flex gap-3">
+  <div class="form-acciones">
     <button type="submit" class="btn btn-gold fw-bold px-4"><i aria-hidden="true" class="bi bi-save me-2"></i>Guardar Rol</button>
     <a href="<?=APP_URL?>/admin/?mod=roles" class="btn btn-outline-secondary">Cancelar</a>
   </div>

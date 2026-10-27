@@ -659,3 +659,8 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .input-group > .form-control, .hero-buscar > .form-control { flex: 1 1 auto; width: 1%; min-width: 0; border-radius: var(--rounded-lg) 0 0 var(--rounded-lg) !important; }
 .input-group > .btn, .hero-buscar > .btn { flex: 0 0 auto; margin-left: -1px; border-radius: 0 var(--rounded-lg) var(--rounded-lg) 0 !important; }
 .input-group > .form-control:focus, .hero-buscar > .form-control:focus { position: relative; z-index: 3; }
+
+/* ── Enlace de volver (acceso y formularios del panel): flecha a la izquierda, peso 600, color de enlace, subrayado al pasar el cursor, zona de 44 px ── */
+.enlace-volver { display: inline-flex; align-items: center; gap: var(--spacing-xs); min-height: 44px; font-weight: 600; color: var(--link); text-decoration: none; }
+.enlace-volver i { flex-shrink: 0; font-size: 18px; line-height: 1; }
+.enlace-volver:hover, .enlace-volver:focus-visible { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }

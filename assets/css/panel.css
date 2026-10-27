@@ -87,3 +87,17 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
 .modal-confirmar-acciones .btn { min-height: 44px; }
 @media (min-width: 576px) { .modal-confirmar-acciones { flex-direction: row; justify-content: flex-end; } .modal-confirmar-acciones .btn { min-height: 40px; } }
 @keyframes modal-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── Formularios del panel (UX 5.8): columna de 720 px, etiquetas visibles sin mayúsculas forzadas, barra de acciones.
+   En móvil la barra de acciones queda fija abajo mientras se desplaza el formulario. ── */
+.form-panel { max-width: 720px; margin-inline: auto; }
+.form-panel-estrecho { max-width: 480px; }
+.form-card { padding: var(--spacing-md); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); }
+@media (min-width: 768px) { .form-card { padding: var(--spacing-lg); } }
+.form-label-dark { display: block; margin-bottom: var(--spacing-xs); font-size: var(--type-body-md-size); font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--text); }
+.form-subtitulo { margin: 0 0 var(--spacing-sm); font-size: var(--type-title-sm-size); font-weight: var(--type-title-sm-weight); line-height: var(--type-title-sm-line-height); color: var(--text-strong); }
+.form-acciones { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
+@media (max-width: 767.98px) {
+  .form-acciones { position: sticky; bottom: 0; z-index: 5; margin: var(--spacing-lg) calc(-1 * var(--spacing-md)) calc(-1 * var(--spacing-md)); padding: var(--spacing-sm) var(--spacing-md); background: var(--surface); border-top: 1px solid var(--hairline); border-radius: 0 0 var(--rounded-xl) var(--rounded-xl); }
+  .form-acciones .btn { flex: 1; min-height: 44px; }
+}

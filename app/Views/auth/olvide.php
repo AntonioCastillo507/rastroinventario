@@ -31,7 +31,7 @@
   </form>
   <?php endif; ?>
   <div class="mt-3">
-    <a href="<?=APP_URL?>/login.php" class="acceso-enlace text-warning small fw-semibold">Volver a iniciar sesión</a>
+    <a href="<?=APP_URL?>/login.php" class="acceso-enlace enlace-volver"><i aria-hidden="true" class="bi bi-arrow-left"></i>Volver a iniciar sesión</a>
   </div>
 </main>
 <script src="<?=Assets::url("js/envio.js")?>"></script>
