@@ -17,6 +17,16 @@ if ($w["pedidos"]) $grafica["estados"] = $estados;
 $pendientes = $w["pedidos"] ? (int)$totalPorAtender : 0;
 $pocoStock  = $w["partes"] ? (int)$totalStockBajo : 0;
 $agotadas   = $w["partes"] ? (int)$totalAgotadas : 0;
+// Fecha relativa corta para las reseñas: «hace 5 min», «hace 3 d», o la fecha si pasó un mes
+$haceTiempo = function (string $f): string {
+  $t = strtotime($f); if (!$t) return "";
+  $d = max(0, time() - $t);
+  if ($d < 60) return "ahora";
+  if ($d < 3600) return "hace " . intdiv($d, 60) . " min";
+  if ($d < 86400) return "hace " . intdiv($d, 3600) . " h";
+  if ($d < 2592000) return "hace " . intdiv($d, 86400) . " d";
+  return date("d/m/Y", $t);
+};
 $nComent    = $w["comentarios"] ? (int)$comentariosSemana : 0;
 // Avisos de la franja: cada uno es una acción. estado = adv (aviso), err (error), info, neu (neutro), ok (éxito)
 $avisos = [];
@@ -129,10 +139,18 @@ if (($w["pedidos"] || $w["partes"] || $w["comentarios"]) && !$pendientes && !$po
   <section class="dash-card dash-rv" style="--i:10" aria-labelledby="dgCom">
     <div class="dash-card-cabeza"><div><h2 class="dash-card-titulo" id="dgCom">Comentarios recientes</h2><p class="dash-card-sub"><span class="num"><?=(int)$comentariosSemana?></span> en los últimos 7 días</p></div><a class="dash-ver" href="<?=APP_URL?>/admin/?mod=comentarios">Ver todos</a></div>
     <?php if($comentarios): ?>
-    <ul class="dash-filas"><?php foreach($comentarios as $c): ?>
-      <li><div class="dash-fila-txt"><b><?=htmlspecialchars($c["nombre_visitante"])?><?php if($c["rating"]): ?> · <span class="num"><?=(int)$c["rating"]?> de 5</span><?php endif; ?></b><small><?=htmlspecialchars(mb_strimwidth((string)$c["comentario"], 0, 70, "…"))?> — <?=htmlspecialchars($c["parte"])?></small></div></li>
+    <ul class="dash-resenas"><?php foreach($comentarios as $c): $rt=(int)$c["rating"]; $quien=trim((string)$c["nombre_visitante"]); $ini=mb_strtoupper(mb_substr($quien!==""?$quien:"?",0,1)); ?>
+      <li class="dash-resena">
+        <span class="dash-avatar" aria-hidden="true"><?=htmlspecialchars($ini)?></span>
+        <div class="dash-resena-cuerpo">
+          <div class="dash-resena-linea"><b class="dash-resena-nombre"><?=htmlspecialchars($quien)?></b><time class="dash-resena-fecha" datetime="<?=htmlspecialchars((string)$c["creado_en"])?>"><?=htmlspecialchars($haceTiempo((string)$c["creado_en"]))?></time></div>
+          <?php if($rt>=1 && $rt<=5): ?><span class="estrellas" role="img" aria-label="<?=(int)$rt?> de 5 estrellas"><?php for($i=1;$i<=5;$i++): ?><i aria-hidden="true" class="bi bi-star<?=$i<=$rt?"-fill":""?>"></i><?php endfor; ?></span><?php endif; ?>
+          <p class="dash-resena-pieza">sobre <?=htmlspecialchars((string)$c["parte"])?></p>
+          <p class="comentario-texto"><?=htmlspecialchars((string)$c["comentario"])?></p>
+        </div>
+      </li>
     <?php endforeach; ?></ul>
-    <?php else: ?><div class="vacio dash-vacio"><p class="vacio-titulo">Sin comentarios</p><p class="vacio-texto">Los comentarios de la tienda aparecen aquí.</p></div><?php endif; ?>
+    <?php else: ?><div class="vacio dash-vacio"><p class="vacio-titulo">Aún no hay comentarios</p><p class="vacio-texto">Cuando un cliente califique una pieza, su reseña aparecerá aquí.</p></div><?php endif; ?>
   </section>
   <?php endif; ?>
 </div>

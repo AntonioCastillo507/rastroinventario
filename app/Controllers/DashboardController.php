@@ -66,7 +66,7 @@ class DashboardController extends BaseController {
             $d["totalAgotadas"]  = $em->contarAgotadas();
         }
         if ($w["comentarios"]) {
-            $d["comentarios"]      = $em->comentariosRecientes(3);
+            $d["comentarios"]      = $em->comentariosRecientes(5);
             $d["comentariosSemana"] = $em->contarComentariosDesde(date("Y-m-d H:i:s", strtotime("-7 days")));
         }
         $this->view("admin/dashboard", $d);
