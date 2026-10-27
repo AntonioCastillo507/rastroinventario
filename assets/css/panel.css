@@ -105,3 +105,47 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
 /* ── Avisos de éxito y error del panel (flash): arriba del contenido, texto de 14 px, con icono y botón de cierre de 44 px ── */
 .admin-contenido > .alert { margin-bottom: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--rounded-lg); font-size: var(--type-body-md-size); }
 .admin-contenido > .alert .btn-close { margin-left: auto; }
+
+/* ── Detalle del pedido (S6b.1): cabecera con acciones, línea de estado y dos columnas ── */
+.pedido-titulo { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-sm); }
+.pedido-estado { display: inline-flex; align-items: center; padding: var(--spacing-xxs) var(--spacing-sm); border: 1px solid; border-radius: var(--rounded-pill); font-size: var(--type-body-sm-size); font-weight: 600; }
+.pedido-acciones { display: flex; flex-direction: column; gap: var(--spacing-xs); width: 100%; }
+.pedido-acciones .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.pedido-estado-form { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+.pedido-estado-form .form-select { min-height: 44px; }
+@media (min-width: 768px) {
+  .pedido-acciones { flex-direction: row; width: auto; align-items: center; }
+  .pedido-estado-form { flex-direction: row; }
+  .pedido-estado-form .form-select { width: 200px; }
+}
+.pedido-nota { display: flex; align-items: center; gap: var(--spacing-xs); margin: 0 0 var(--spacing-md); font-size: var(--type-body-md-size); color: var(--text-muted); }
+.pedido-linea { display: flex; flex-wrap: wrap; gap: var(--spacing-xs) var(--spacing-lg); margin: 0 0 var(--spacing-lg); padding: 0; list-style: none; }
+.pedido-paso { display: inline-flex; align-items: center; gap: var(--spacing-xs); font-size: var(--type-body-md-size); color: var(--text-muted); }
+.pedido-paso-num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid var(--border-strong); border-radius: var(--rounded-pill); font-size: 12px; font-weight: 600; }
+.pedido-paso.hecho { color: var(--text); }
+.pedido-paso.hecho .pedido-paso-num { border-color: var(--btn-primary-bg); background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
+.pedido-paso.actual { color: var(--text-strong); font-weight: 600; }
+.pedido-paso.cancelado { color: var(--danger-text); }
+.pedido-paso.cancelado .pedido-paso-num { border-color: var(--danger-text); }
+.pedido-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-md); align-items: start; }
+@media (min-width: 992px) { .pedido-grid { grid-template-columns: minmax(0, 1fr) 360px; gap: var(--spacing-lg); } }
+.pedido-lateral { display: grid; gap: var(--spacing-md); }
+.pedido-card { padding: var(--spacing-md); }
+@media (min-width: 768px) { .pedido-card { padding: var(--spacing-lg); } }
+.pedido-card-titulo { margin: 0 0 var(--spacing-md); font-size: var(--type-title-md-size); font-weight: 600; line-height: 1.35; color: var(--text-strong); }
+.pedido-lineas { margin: 0; padding: 0; list-style: none; }
+.pedido-linea-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--hairline); }
+.pedido-linea-item:first-child { padding-top: 0; }
+.pedido-linea-texto { flex: 1; min-width: 0; }
+.pedido-linea-texto .celda-titulo { display: block; font-weight: 600; color: var(--text-strong); overflow-wrap: anywhere; }
+.pedido-linea-subtotal { font-weight: 600; white-space: nowrap; }
+.pedido-resumen { margin: var(--spacing-md) 0 0 auto; max-width: 320px; }
+.pedido-resumen > div { display: flex; justify-content: space-between; gap: var(--spacing-lg); padding: var(--spacing-xxs) 0; color: var(--text-muted); }
+.pedido-resumen dt, .pedido-resumen dd { margin: 0; font-weight: 400; }
+.pedido-resumen .pedido-resumen-total { margin-top: var(--spacing-xs); padding-top: var(--spacing-xs); border-top: 1px solid var(--hairline); color: var(--text-strong); }
+.pedido-resumen .pedido-resumen-total dt, .pedido-resumen .pedido-resumen-total dd { font-weight: 700; }
+.pedido-datos { margin: 0; display: grid; gap: var(--spacing-sm); }
+.pedido-datos dt { font-size: var(--type-body-sm-size); color: var(--text-muted); font-weight: 400; }
+.pedido-datos dd { margin: 0; color: var(--text-strong); overflow-wrap: anywhere; }
+.pedido-datos a { display: inline-flex; align-items: center; min-height: 44px; color: var(--link); }
+.pedido-mensaje { margin: 0; color: var(--text); overflow-wrap: anywhere; }

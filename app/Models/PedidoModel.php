@@ -14,8 +14,9 @@ class PedidoModel extends BaseModel {
         $p = $this->findById($id);
         if (!$p) return false;
         $p["items"] = $this->query(
-            "SELECT pi.*, pa.thumbnail FROM pedido_items pi
-             LEFT JOIN partes pa ON pa.id=pi.parte_id WHERE pi.pedido_id=?",[$id]
+            "SELECT pi.*, pa.thumbnail, au.marca, au.modelo FROM pedido_items pi
+             LEFT JOIN partes pa ON pa.id=pi.parte_id
+             LEFT JOIN autos au ON au.id=pa.auto_id WHERE pi.pedido_id=?",[$id]
         );
         return $p;
     }

@@ -90,6 +90,6 @@ final class MenusYCifrasTest extends BaseDatos {
         $v = Html::xpath(Pantallas::render($this->db, "admin_ventas"));
         $this->assertGreaterThan(0, Html::contar($v, "//td[contains(@class,'num')]"));
         $p = Html::xpath(Pantallas::render($this->db, "admin_pedido_detalle"));
-        $this->assertGreaterThan(0, Html::contar($p, "//td[contains(@class,'num')][not(contains(.,'$'))]"), "la cantidad de cada línea del pedido");
+        $this->assertGreaterThan(0, Html::contar($p, "//*[contains(@class,'pedido-linea-texto')]//span[contains(@class,'num')][not(contains(.,'$'))]"), "la cantidad de cada línea del pedido");
     }
 }

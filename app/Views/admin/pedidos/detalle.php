@@ -1,83 +1,96 @@
-<?php $title="Pedido #".$pedido["id"]; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="page-header mb-4">
-  <div class="d-flex align-items-center gap-3">
-    <a href="<?=APP_URL?>/admin/?mod=pedidos" class="btn-back" aria-label="Volver"><i aria-hidden="true" class="bi bi-arrow-left"></i></a>
-    <div>
-      <h1 class="h4 fw-bold text-white mb-0">Pedido #<?=str_pad($pedido["id"],6,"0",STR_PAD_LEFT)?></h1>
-      <p class="text-secondary small mb-0"><?=date("d/m/Y H:i",strtotime($pedido["creado_en"]))?> — Panamá</p>
+<?php
+$title="Pedido #".$pedido["id"]; include BASE_PATH."/app/Views/layouts/admin_header.php";
+$chip=match($pedido["estado"]){"pendiente"=>"warning","procesando"=>"info","entregado"=>"success",default=>"danger"};
+$siguientes=PedidoModel::transicionesPermitidas($pedido["estado"]);
+$monto=Itbms::dePedido($pedido);
+$tel=preg_replace('/[^0-9+]/',"",(string)$pedido["cliente_telefono"]);
+$pasos=["pendiente"=>"Pendiente","procesando"=>"Procesando","entregado"=>"Entregado"];
+$cancelado=$pedido["estado"]==="cancelado";
+$pasoActual=array_search($pedido["estado"],array_keys($pasos),true);
+?>
+<div class="panel-cabeza pedido-cabeza">
+  <div>
+    <a href="<?=APP_URL?>/admin/?mod=pedidos" class="enlace-volver"><i aria-hidden="true" class="bi bi-arrow-left"></i>Volver a pedidos</a>
+    <div class="pedido-titulo">
+      <h1 class="panel-titulo">Pedido #<?=(int)$pedido["id"]?></h1>
+      <span class="estado-<?=$pedido["estado"]?> chip-<?=htmlspecialchars($chip)?> pedido-estado"><?=ucfirst($pedido["estado"])?></span>
     </div>
+    <p class="panel-subtitulo"><?=date("d/m/Y H:i",strtotime($pedido["creado_en"]))?> — Panamá</p>
   </div>
-  <div class="d-flex gap-2">
-    <a href="<?=APP_URL?>/admin/?mod=factura&action=generar&id=<?=$pedido["id"]?>" class="btn btn-gold btn-sm" target="_blank" rel="noopener noreferrer">
-      <i aria-hidden="true" class="bi bi-file-earmark-pdf me-1"></i>Descargar Factura PDF<span class="visually-hidden"> (PDF, se abre en una pestaña nueva)</span>
+  <div class="pedido-acciones">
+    <?php if($siguientes): ?>
+    <form class="pedido-estado-form" action="<?=APP_URL?>/admin/?mod=pedidos&action=cambiarEstado&id=<?=$pedido["id"]?>" method="POST"<?=Confirmar::attrsPorCampo("estado",["entregado"=>["titulo"=>"Marcar el pedido #".$pedido["id"]." como entregado","texto"=>"Entregado es definitivo: no se podrá cambiar después.","boton"=>"Marcar como entregado","cancelar"=>"Volver"],"cancelado"=>["titulo"=>"Cancelar el pedido #".$pedido["id"],"texto"=>"Se devolverá el stock del pedido.","boton"=>"Cancelar el pedido","cancelar"=>"Conservar el pedido","peligro"=>true]])?>>
+      <?=CsrfToken::field()?>
+      <label for="f-estado" class="visually-hidden">Nuevo estado del pedido</label>
+      <select id="f-estado" name="estado" class="form-select dark-input" required>
+        <option value="" disabled selected>Actual: <?=ucfirst($pedido["estado"])?></option>
+        <?php foreach($siguientes as $e): ?>
+        <option value="<?=$e?>"><?=ucfirst($e)?></option>
+        <?php endforeach; ?>
+      </select>
+      <button type="submit" class="btn btn-gold fw-bold">Cambiar estado</button>
+    </form>
+    <?php endif; ?>
+    <a href="<?=APP_URL?>/admin/?mod=factura&action=generar&id=<?=$pedido["id"]?>" class="btn btn-outline-secondary" target="_blank" rel="noopener noreferrer">
+      <i aria-hidden="true" class="bi bi-file-earmark-pdf me-2"></i>Factura PDF<span class="visually-hidden"> (PDF, se abre en una pestaña nueva)</span>
     </a>
-    <span class="chip-<?=match($pedido["estado"]){"pendiente"=>"warning","procesando"=>"info","entregado"=>"success",default=>"danger"}?> fs-6"><?=ucfirst($pedido["estado"])?></span>
   </div>
 </div>
-<div class="row g-4">
-  <div class="col-md-8">
-    <div class="dark-card mb-4">
-      <div class="dark-card-header"><i aria-hidden="true" class="bi bi-box-seam me-2"></i>Artículos del Pedido</div>
-      <div class="table-responsive"><table class="table dark-table mb-0">
-        <thead><tr><th>Pieza</th><th>Precio Unit.</th><th>Cant.</th><th>Subtotal</th></tr></thead>
-        <tbody>
-        <?php foreach($pedido["items"] as $item): ?>
-        <tr>
-          <td class="fw-semibold text-white"><?=htmlspecialchars($item["parte_nombre"])?></td>
-          <td class="text-secondary num">$<?=number_format($item["precio_unitario"],2)?></td>
-          <td class="num"><?=$item["cantidad"]?></td>
-          <td class="fw-bold text-precio num">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></td>
-        </tr>
+<?php if(!$siguientes): ?>
+<p class="pedido-nota"><i aria-hidden="true" class="bi bi-lock"></i><?=$cancelado?"Este pedido fue cancelado.":"Este pedido ya fue entregado y no se puede cambiar."?></p>
+<?php endif; ?>
+<ol class="pedido-linea" aria-label="Avance del pedido">
+  <?php $i=0; foreach($pasos as $clave=>$texto): $hecho=!$cancelado&&$pasoActual!==false&&$i<=$pasoActual; $actual=!$cancelado&&$pedido["estado"]===$clave; ?>
+  <li class="pedido-paso<?=$hecho?" hecho":""?><?=$actual?" actual":""?>"<?=$actual?' aria-current="step"':""?>><span class="pedido-paso-num num"><?=$hecho?'<i aria-hidden="true" class="bi bi-check-lg"></i>':($i+1)?></span><span><?=htmlspecialchars($texto)?><?=$hecho&&!$actual?'<span class="visually-hidden"> (completado)</span>':""?></span></li>
+  <?php $i++; endforeach; ?>
+  <?php if($cancelado): ?><li class="pedido-paso cancelado actual" aria-current="step"><span class="pedido-paso-num"><i aria-hidden="true" class="bi bi-x-lg"></i></span><span>Cancelado</span></li><?php endif; ?>
+</ol>
+<div class="pedido-grid">
+  <div class="pedido-principal">
+    <section class="lista-card pedido-card" aria-labelledby="t-piezas">
+      <h2 id="t-piezas" class="pedido-card-titulo">Piezas</h2>
+      <ul class="pedido-lineas">
+        <?php foreach($pedido["items"] as $item):
+          $fotoParte=["imagen_grande"=>null,"thumbnail"=>$item["thumbnail"]??null];
+          $tieneFoto=ImageHelper::fuente(null,$item["thumbnail"]??null,"thumbnails")!=="";
+          $auto=trim(($item["marca"]??"")." ".($item["modelo"]??""));
+        ?>
+        <li class="pedido-linea-item">
+          <?php if($tieneFoto): $fotoTam="thumbnails"; $fotoClase="foto-64"; $fotoAlt=""; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; endif; ?>
+          <div class="pedido-linea-texto">
+            <span class="celda-titulo"><?=htmlspecialchars($item["parte_nombre"])?></span>
+            <?php if($auto!==""): ?><span class="celda-sub"><?=htmlspecialchars($auto)?></span><?php endif; ?>
+            <span class="celda-sub"><span class="num"><?=(int)$item["cantidad"]?></span> × <span class="num">$<?=number_format($item["precio_unitario"],2)?></span></span>
+          </div>
+          <span class="pedido-linea-subtotal text-precio num">$<?=number_format($item["precio_unitario"]*$item["cantidad"],2)?></span>
+        </li>
         <?php endforeach; ?>
-        </tbody>
-      </table></div>
-      <div class="p-3 border-top" style="border-color:var(--border)!important">
-        <?php $monto=Itbms::dePedido($pedido); ?>
-        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span>Subtotal:</span><span class="num">$<?=number_format($monto["subtotal"],2)?></span></div>
-        <div class="d-flex justify-content-end gap-4 text-secondary small mb-1"><span><?=htmlspecialchars(Marca::impuestoEtiqueta())?>:</span><span class="num">$<?=number_format($monto["itbms"],2)?></span></div>
-        <div class="d-flex justify-content-end gap-4 fw-bold text-white"><span>TOTAL:</span><span class="text-precio num">$<?=number_format($monto["total"],2)?></span></div>
-      </div>
-    </div>
-    <div class="dark-card">
-      <div class="dark-card-header"><i aria-hidden="true" class="bi bi-person me-2"></i>Datos del Cliente</div>
-      <div class="card-body p-4">
-        <div class="row g-3">
-          <div class="col-md-6"><div class="text-secondary small mb-1">Nombre</div><div class="text-white fw-semibold"><?=htmlspecialchars($pedido["cliente_nombre"])?></div></div>
-          <div class="col-md-6"><div class="text-secondary small mb-1">Teléfono</div><div class="text-white fw-semibold"><?=htmlspecialchars($pedido["cliente_telefono"])?></div></div>
-          <div class="col-md-6"><div class="text-secondary small mb-1">Correo</div><div class="text-white fw-semibold"><?=htmlspecialchars($pedido["cliente_email"])?></div></div>
-          <div class="col-md-6"><div class="text-secondary small mb-1">Cuenta</div><div><?=$pedido["usuario_id"]?"<span class=\"chip-success\">Usuario #".$pedido["usuario_id"]."</span>":"<span class=\"chip-neutral\">Sin cuenta</span>"?></div></div>
-          <div class="col-12"><div class="text-secondary small mb-1">Dirección de entrega</div><div class="text-white"><?=htmlspecialchars($pedido["cliente_direccion"])?></div></div>
-          <?php if($pedido["cliente_notas"]): ?><div class="col-12"><div class="text-secondary small mb-1">Notas</div><div class="text-secondary"><?=htmlspecialchars($pedido["cliente_notas"])?></div></div><?php endif; ?>
-        </div>
-      </div>
-    </div>
+      </ul>
+      <dl class="pedido-resumen">
+        <div><dt>Subtotal</dt><dd class="num">$<?=number_format($monto["subtotal"],2)?></dd></div>
+        <div><dt><?=htmlspecialchars(Marca::impuestoEtiqueta())?></dt><dd class="num">$<?=number_format($monto["itbms"],2)?></dd></div>
+        <div class="pedido-resumen-total"><dt>Total</dt><dd class="text-precio num">$<?=number_format($monto["total"],2)?></dd></div>
+      </dl>
+    </section>
   </div>
-  <div class="col-md-4">
-    <div class="dark-card mb-4">
-      <div class="dark-card-header"><i aria-hidden="true" class="bi bi-arrow-repeat me-2"></i>Actualizar Estado</div>
-      <div class="card-body p-4">
-        <?php $siguientes=PedidoModel::transicionesPermitidas($pedido["estado"]); ?>
-        <?php if($siguientes): ?>
-        <form action="<?=APP_URL?>/admin/?mod=pedidos&action=cambiarEstado&id=<?=$pedido["id"]?>" method="POST"<?=Confirmar::attrsPorCampo("estado",["entregado"=>["titulo"=>"Marcar el pedido #".$pedido["id"]." como entregado","texto"=>"Entregado es definitivo: no se podrá cambiar después.","boton"=>"Marcar como entregado","cancelar"=>"Volver"],"cancelado"=>["titulo"=>"Cancelar el pedido #".$pedido["id"],"texto"=>"Se devolverá el stock del pedido.","boton"=>"Cancelar el pedido","cancelar"=>"Conservar el pedido","peligro"=>true]])?>>
-          <?=CsrfToken::field()?>
-          <label for="f-estado" class="form-label-dark">Estado del pedido</label>
-          <select id="f-estado" name="estado" class="form-select dark-input mb-3" required>
-            <option value="" disabled selected>Actual: <?=ucfirst($pedido["estado"])?></option>
-            <?php foreach($siguientes as $e): ?>
-            <option value="<?=$e?>"><?=ucfirst($e)?></option>
-            <?php endforeach; ?>
-          </select>
-          <button type="submit" class="btn btn-gold fw-bold w-100"><i aria-hidden="true" class="bi bi-save me-2"></i>Guardar Estado</button>
-        </form>
-        <?php else: ?>
-        <div class="text-secondary small"><i aria-hidden="true" class="bi bi-lock me-1"></i>Este pedido ya fue entregado y no se puede cambiar.</div>
-        <?php endif; ?>
-        <div class="mt-3 text-secondary small"><i aria-hidden="true" class="bi bi-info-circle me-1"></i>
-          <strong>Entregado</strong> registra la venta y es definitivo. <strong>Cancelado</strong> devuelve el stock; si se reabre, se descuenta de nuevo (si hay stock).
-        </div>
-      </div>
-    </div>
-    <?php if($pedido["firma_digital"]): ?><div class="firma-badge mt-2"><i aria-hidden="true" class="bi bi-shield-check text-success"></i>Pedido firmado digitalmente</div><?php endif; ?>
-  </div>
+  <aside class="pedido-lateral">
+    <section class="lista-card pedido-card" aria-labelledby="t-cliente">
+      <h2 id="t-cliente" class="pedido-card-titulo">Cliente</h2>
+      <dl class="pedido-datos">
+        <div><dt>Nombre</dt><dd><?=htmlspecialchars($pedido["cliente_nombre"])?></dd></div>
+        <div><dt>Correo</dt><dd><a href="mailto:<?=htmlspecialchars($pedido["cliente_email"])?>"><?=htmlspecialchars($pedido["cliente_email"])?></a></dd></div>
+        <div><dt>Teléfono</dt><dd><a href="tel:<?=htmlspecialchars($tel)?>" class="num"><?=htmlspecialchars($pedido["cliente_telefono"])?></a></dd></div>
+        <div><dt>Dirección de entrega</dt><dd><?=htmlspecialchars($pedido["cliente_direccion"])?></dd></div>
+        <div><dt>Cuenta</dt><dd><?=$pedido["usuario_id"]?"<span class=\"chip-success\">Usuario #".(int)$pedido["usuario_id"]."</span>":"<span class=\"chip-neutral\">Sin cuenta</span>"?></dd></div>
+      </dl>
+    </section>
+    <?php if(trim((string)$pedido["cliente_notas"])!==""): ?>
+    <section class="lista-card pedido-card" aria-labelledby="t-mensaje">
+      <h2 id="t-mensaje" class="pedido-card-titulo">Mensaje del cliente</h2>
+      <p class="pedido-mensaje"><?=nl2br(htmlspecialchars($pedido["cliente_notas"]))?></p>
+    </section>
+    <?php endif; ?>
+    <?php if($pedido["firma_digital"]): ?><div class="firma-badge"><i aria-hidden="true" class="bi bi-shield-check text-success"></i>Pedido firmado digitalmente</div><?php endif; ?>
+  </aside>
 </div>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>
