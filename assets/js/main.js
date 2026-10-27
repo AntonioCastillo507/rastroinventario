@@ -50,6 +50,22 @@ document.addEventListener("DOMContentLoaded", function () {
     seccionesPortada.forEach(function(s){ s.classList.add("rv"); vigia.observe(s); });
   }
 
+  // Tarjetas de pieza, filas de las listas y tarjetas de formulario entran escalonadas al aparecer (0 a 300 ms, de 50 en 50); sin movimiento reducido
+  var itemsRv = document.querySelectorAll(".tarjeta-pieza:not(.portada-seccion .tarjeta-pieza), .lista-tabla tbody tr:not(.lista-vacia), .form-card");
+  if (!sinMovimiento && "IntersectionObserver" in window && itemsRv.length) {
+    var vigiaItems = new IntersectionObserver(function(entradas){
+      var n = 0;
+      entradas.forEach(function(e){
+        if (!e.isIntersecting) return;
+        e.target.style.setProperty("--rv-retraso", Math.min(n * 50, 300) + "ms");
+        e.target.classList.add("rv-visto");
+        vigiaItems.unobserve(e.target);
+        n++;
+      });
+    }, { threshold: 0.05 });
+    itemsRv.forEach(function(i){ i.classList.add("rv-item"); vigiaItems.observe(i); });
+  }
+
   // El menú plegable se cierra al elegir una opción (las anclas de la portada no recargan la página)
   document.querySelectorAll(".navbar-collapse").forEach(function(menu){
     menu.addEventListener("click", function(e){

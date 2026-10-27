@@ -565,6 +565,9 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 ### Formularios
 - **`search-input-on-dark` / `text-input-on-light`**: borde fino, 40 px de alto en escritorio y 44 px en táctil, texto a 16 px. Foco con el anillo sólido. Etiqueta **siempre visible** y asociada al campo (`for`/`id`); el marcador del campo no sustituye a la etiqueta. Error: borde y mensaje en `{colors.danger}` (o `-on-light`), con icono y texto, junto al campo.
 - Atributos `autocomplete` correctos en nombre, correo, teléfono y dirección.
+- **Desplegables (`select`)**: todos llevan una flecha (chevron) propia a la derecha, con 44 px de relleno derecho para que el texto no la pise: texto secundario (`--text-muted`) en reposo y titular (`--text-strong`) al pasar el cursor y en foco; el borde pasa al amarillo de marca (`--btn-primary-bg`) en foco; cursor de mano. Se define una sola vez en la regla global de `select` y `.form-select` de `base.css`, con tokens y dos degradados, sin imágenes ni JavaScript. Misma altura que los demás campos (40 px; 44 en táctil).
+- **Enlace de volver** (`.enlace-volver`): flecha `bi-arrow-left` a la izquierda del texto, peso 600, color de enlace (`--link`), subrayado al pasar el cursor y zona de 44 px; se usa en el acceso («Volver a la tienda», «Volver a iniciar sesión») y sobre el título de los formularios del panel.
+- **Formularios del panel**: columna de 720 px (480 la de «Cambiar mi contraseña»), etiquetas visibles sin mayúsculas forzadas y barra de acciones que en móvil queda fija abajo con botones de 44 px.
 
 ### Avisos y confirmaciones
 - **`alert`**: éxito, error, aviso e información, con icono, texto y `role` adecuado; el cierre es un botón con nombre accesible. Los avisos no desaparecen solos si contienen un error.
@@ -590,6 +593,12 @@ Movimiento sutil y barato, autorizado por Tony el 2026-10-26. Solo para dar cont
 | Propiedades | `transform` y `opacity`; en el hover también el color del borde. **Nada de animar tamaño** (`width`, `height`, `padding`) **ni sombras pesadas** |
 | Desplazamiento | hover de tarjeta: 2 px hacia arriba y borde en `{colors.primary}`; flecha de la tarjeta de marca: 4 px a la derecha; botón principal: 1 px hacia arriba |
 | Aparición | el texto del hero sube 8 px y aparece al cargar la página (250 ms); cada sección de la portada sube 12 px y aparece al entrar en pantalla (`IntersectionObserver` en `main.js`, sin librerías; sin JavaScript el contenido ya está visible) |
+| Contenido principal | todo el `<main>` (menos la portada, que ya tiene su hero) sube 8 px y aparece al cargar la página (250 ms, `ease-out`) |
+| Aparición escalonada | las tarjetas de pieza, las filas de las listas del panel y las tarjetas de formulario entran con 8 px de subida y opacidad al aparecer en pantalla, con retraso de 0 a 300 ms (de 50 en 50 dentro de cada lote); el mismo `IntersectionObserver` de `main.js`, que solo añade `.rv-item` (sin JavaScript todo se ve) |
+| Botones | 1 px hacia arriba al pasar el cursor y de vuelta al pulsar (150 ms); los pegados a un campo (`.input-group`, buscador del hero) y los del modal no se mueven |
+| Menús desplegables | aparecen en 150 ms (opacidad y 4 px) |
+| Cajón del panel y modal de confirmación | el cajón se desliza en 250 ms (`transform`); el modal entra en 200 ms (opacidad y 8 px). La barra lateral contraída cambia al instante: no se anima tamaño |
+| Fuera de alcance | contadores y entrada de los gráficos del dashboard: se harán en S6a (la tarjeta KPI conserva por ahora su sombra animada) |
 | Movimiento reducido | con `prefers-reduced-motion: reduce` no hay aparición, ni desplazamiento en hover ni animaciones (regla global de `base.css`); los cambios de color y de borde siguen, sin transición |
 
 ## Qué hacer y qué no
@@ -676,6 +685,7 @@ La derivación la hace un **script de línea de comandos** que recibe el color p
 | 30 | E8: componentes del carrito en dos pasos (`checkout-steps`, cantidad − / + de la línea y resumen del pedido), hechos solo con tokens existentes. Aprobada por Tony (2026-10-25) | La compra pasa a dos pasos ("Carrito" y "Tus datos"); ninguno de los tres componentes existía. No añaden colores ni medidas nuevas (ver "Carrito en dos pasos") |
 | 31 | El icono del logo va en `{colors.primary}` (amarillo de marca) en los dos modos, token `--logo`; excepción documentada a la regla de contraste porque el nombre va escrito al lado. Decisión de Tony (2026-10-26) | En claro el bronce `link-on-light` no gustaba; el amarillo sobre el suelo claro da ~1,4:1, aceptado por ser un logotipo con el nombre al lado |
 | 32 | Controles de 40 px en escritorio y 44 px en táctil, aplicado en la regla global de `base.css` (antes campos de 36 px y botones de 28 a 32 px). Corrección de implementación, no cambia el diseño | DESIGN.md ya lo pedía (`button-primary`, `search-input-on-dark`, `text-input-on-light`) |
+| 33 | S5.4: movimiento extendido a todo el sitio (contenido principal, aparición escalonada, botones, menús, cajón y modal), flecha propia en todos los `select`, `.enlace-volver` y formularios del panel a 720 px. Pedido por Tony (2026-10-26) | Hasta S4.5 solo la portada se movía y los desplegables parecían texto fijo; las reglas de duración, propiedades y movimiento reducido son las de la sección «Movimiento» |
 
 ## Guía de iteración
 

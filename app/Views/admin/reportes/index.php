@@ -33,7 +33,7 @@
           <input type="hidden" name="action" value="excel_inventario">
           <div class="mb-3">
             <label for="f-seccion" class="form-label-dark">Filtrar por Sección (opcional)</label>
-            <select id="f-seccion" name="seccion" class="form-select dark-input form-select-sm">
+            <select id="f-seccion" name="seccion" class="form-select dark-input">
               <option value="">Todas las secciones</option>
               <?php foreach($secciones as $s): ?>
               <option value="<?=$s["id"]?>"><?=htmlspecialchars($s["nombre"])?></option>

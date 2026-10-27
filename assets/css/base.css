@@ -61,8 +61,9 @@ body:focus-visible, main:focus, main:focus-visible { outline: none; }
     scroll-behavior: auto !important;
   }
   .tarjeta-pieza:hover, .stat-card:hover, a.stat-card:hover, .btn-gold:hover, .btn-warning:hover,
-  .cat-baldosa:hover, .marca-tarjeta:hover, .marca-tarjeta:hover .marca-flecha,
+  .cat-baldosa:hover, .marca-tarjeta:hover, .marca-tarjeta:hover .marca-flecha, .btn:hover, .btn:active,
   .tarjeta-pieza:hover .foto-baldosa { transform: none !important; }
+  .rv-item { opacity: 1 !important; animation: none !important; }
 }
 
 /* ── Tamaño de los controles: 40 px en escritorio (button-primary y campos de DESIGN.md) ───────────── */
@@ -331,6 +332,26 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
   .hero-texto { animation: hero-entra .25s ease-out both; }
   .portada-seccion.rv { opacity: 0; transform: translateY(12px); transition: opacity .25s ease-out, transform .25s ease-out; }
   .portada-seccion.rv.rv-visto { opacity: 1; transform: none; }
+
+  /* Todo el sitio: el contenido principal aparece al cargar (la portada ya lo hace con su hero y sus secciones) */
+  @keyframes pagina-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  main:not(:has(.hero-section)) { animation: pagina-entra .25s ease-out backwards; }
+
+  /* Tarjetas de pieza, filas de las listas y tarjetas de formulario entran escalonadas al aparecer en pantalla (main.js pone .rv-item y,
+     al entrar, .rv-visto y el retraso --rv-retraso de 0 a 300 ms, de 50 en 50). Con backwards el hover y el resto siguen funcionando después. */
+  @keyframes item-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .rv-item { opacity: 0; }
+  .rv-item.rv-visto { opacity: 1; animation: item-entra .25s ease-out var(--rv-retraso, 0ms) backwards; }
+
+  /* Menús desplegables: aparecen en 150 ms */
+  @keyframes menu-entra { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .dropdown-menu.show { animation: menu-entra .15s ease-out; }
+
+  /* Botones: 1 px hacia arriba al pasar el cursor y de vuelta al pulsar; los pegados a un campo no se mueven */
+  .btn { transition: transform .15s ease-out, color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out; }
+  .btn:hover:not(:disabled):not(.disabled) { transform: translateY(-1px); }
+  .btn:active:not(:disabled):not(.disabled) { transform: none; }
+  .input-group .btn, .hero-buscar .btn, .modal-confirmar-acciones .btn { transform: none !important; }
 }
 
 .portada-confianza { padding-block: var(--spacing-md); border-bottom: 1px solid var(--hairline); }
@@ -664,3 +685,22 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .enlace-volver { display: inline-flex; align-items: center; gap: var(--spacing-xs); min-height: 44px; font-weight: 600; color: var(--link); text-decoration: none; }
 .enlace-volver i { flex-shrink: 0; font-size: 18px; line-height: 1; }
 .enlace-volver:hover, .enlace-volver:focus-visible { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── Desplegables (select): flecha propia a la derecha en todo el sitio, con el relleno que evita que el texto la pise.
+   La flecha es un chevron hecho con dos degradados del color --flecha (texto secundario; titular al pasar el cursor y en foco);
+   el borde pasa al amarillo de marca en foco. Mismas alturas que los demás campos (40 px; 44 en táctil, regla de los campos). ── */
+select, .form-select {
+  --flecha: var(--text-muted);
+  appearance: none; -webkit-appearance: none;
+  padding-right: 44px !important;
+  cursor: pointer;
+  background-image:
+    linear-gradient(to bottom right, transparent calc(50% - 1px), var(--flecha) calc(50% - 1px), var(--flecha) calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(to bottom left, transparent calc(50% - 1px), var(--flecha) calc(50% - 1px), var(--flecha) calc(50% + 1px), transparent calc(50% + 1px)) !important;
+  background-repeat: no-repeat !important;
+  background-size: 7px 7px, 7px 7px !important;
+  background-position: right 16px center, right 23px center !important;
+}
+select:hover, select:focus, select:focus-visible, .form-select:hover, .form-select:focus, .form-select:focus-visible { --flecha: var(--text-strong); }
+select:focus, select:focus-visible, .form-select:focus, .form-select:focus-visible { border-color: var(--btn-primary-bg) !important; }
+select:disabled, .form-select:disabled { cursor: not-allowed; --flecha: var(--text-muted); opacity: .6; }
