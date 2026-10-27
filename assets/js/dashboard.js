@@ -37,9 +37,9 @@
     if (!el) return;
     graficas.push(new Chart(el, {
       type: "bar",
-      data: { labels: nombres, datasets: [{ data: valores, backgroundColor: c.acento, borderRadius: 4, borderSkipped: false, barThickness: 14 }] },
+      data: { labels: nombres, datasets: [{ data: valores, backgroundColor: c.acento, borderRadius: 4, borderSkipped: false, barThickness: 14, hoverBorderColor: c.fuerte, hoverBorderWidth: 2 }] },
       options: {
-        indexAxis: "y", maintainAspectRatio: false,
+        indexAxis: "y", maintainAspectRatio: false, interaction: { mode: "nearest", axis: "y", intersect: false },
         plugins: {
           legend: { display: false },
           tooltip: { callbacks: { title: function (it) { return nombres[it[0].dataIndex]; }, label: function (it) { return it.parsed.x + " " + unidad; } } }
@@ -63,7 +63,7 @@
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     Chart.defaults.font.size = 12;
     Chart.defaults.color = c.tenue;
-    Chart.defaults.animation = sinMovimiento ? false : { duration: 700, easing: "easeOutQuart" };
+    Chart.defaults.animation = sinMovimiento ? false : { duration: 500, easing: "easeOutCubic" };
 
     var s = datos.serie, el = lienzo("dgLinea");
     if (s && el) {
@@ -87,7 +87,7 @@
       var colores = cat.map(function (x) { return token(x.color ? "--chart-" + x.color : "--chart-otras"); });
       graficas.push(new Chart(el, {
         type: "doughnut",
-        data: { labels: cat.map(function (x) { return x.nombre; }), datasets: [{ data: cat.map(function (x) { return x.total; }), backgroundColor: colores, borderColor: c.superficie, borderWidth: 2 }] },
+        data: { labels: cat.map(function (x) { return x.nombre; }), datasets: [{ data: cat.map(function (x) { return x.total; }), backgroundColor: colores, borderColor: c.superficie, borderWidth: 2, hoverOffset: 8, hoverBorderColor: c.fuerte }] },
         options: { maintainAspectRatio: false, cutout: "68%", plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (it) { return it.label + ": " + dinero(it.parsed); } } } } }
       }));
     }

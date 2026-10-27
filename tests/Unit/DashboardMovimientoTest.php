@@ -1,0 +1,36 @@
+<?php
+namespace Tests\Unit;
+
+use PHPUnit\Framework\TestCase;
+
+/** S6c.3: entrada escalonada, agrandado en hover y animación de las gráficas del Dashboard. */
+final class DashboardMovimientoTest extends TestCase {
+    private static function css(): string { return (string)file_get_contents(BASE_PATH . "/assets/css/dashboard.css"); }
+    private static function js(): string { return (string)file_get_contents(BASE_PATH . "/assets/js/dashboard.js"); }
+
+    public function testLaEntradaEsEscalonadaDe40MsYDura250MsSoloSinMovimientoReducido(): void {
+        $this->assertMatchesRegularExpression('/@media \(prefers-reduced-motion: no-preference\)\s*\{\s*\.dash-rv\s*\{[^}]*animation:\s*dash-entra 250ms ease-out backwards[^}]*calc\(var\(--i, 0\) \* 40ms\)/', self::css());
+        $this->assertMatchesRegularExpression('/@keyframes dash-entra\s*\{\s*from\s*\{\s*opacity:\s*0;\s*transform:\s*translateY\(8px\)/', self::css(), "fade y subida corta");
+    }
+
+    public function testElTransformDelHoverNoLoPisaElRellenoDeLaAnimacion(): void {
+        $this->assertDoesNotMatchRegularExpression('/\.dash-rv\s*\{[^}]*\b(both|forwards)\b/', self::css());
+    }
+
+    public function testElHoverAgrandaPocoSoloConRatonYSinMovimientoReducido(): void {
+        $css = self::css();
+        $this->assertMatchesRegularExpression('/@media \(hover: hover\) and \(pointer: fine\) and \(prefers-reduced-motion: no-preference\)\s*\{[^@]*\.dash-card:hover[^{]*\{[^}]*transform:\s*scale\(1\.02\)/', $css);
+        preg_match_all('/scale\(([\d.]+)\)/', $css, $m);
+        foreach ($m[1] as $v) $this->assertLessThanOrEqual(1.02, (float)$v, "el agrandado no pasa de 1,02");
+        $this->assertMatchesRegularExpression('/transition:\s*transform 180ms ease-out/', $css, "150 a 200 ms");
+        $this->assertDoesNotMatchRegularExpression('/transition:[^;}]*(width|height|padding|box-shadow)/', $css, "solo transform y opacity");
+    }
+
+    public function testLasGraficasAnimanAlCargarYResaltanAlPasarElCursor(): void {
+        $js = self::js();
+        $this->assertStringContainsString('{ duration: 500, easing: "easeOutCubic" }', $js);
+        $this->assertStringContainsString("sinMovimiento ? false", $js, "sin animación con movimiento reducido");
+        $this->assertStringContainsString("hoverOffset", $js, "la dona resalta el segmento");
+        $this->assertStringContainsString("hoverBorderWidth", $js, "las barras resaltan");
+    }
+}

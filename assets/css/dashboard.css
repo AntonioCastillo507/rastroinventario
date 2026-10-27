@@ -84,8 +84,21 @@
 @media (min-width: 768px) and (max-width: 1023.98px) {
   .dash-fila-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+/* Movimiento (S6c.3): entrada escalonada (40 ms entre piezas, 250 ms cada una) y agrandado en hover; solo transform y opacity.
+   «backwards» y no «both»: al terminar la entrada, el transform del hover vuelve a mandar. */
 @keyframes dash-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.dash-rv { animation: dash-entra 250ms ease-out both; animation-delay: calc(var(--i, 0) * 50ms); }
+@media (prefers-reduced-motion: no-preference) {
+  .dash-rv { animation: dash-entra 250ms ease-out backwards; animation-delay: calc(var(--i, 0) * 40ms); }
+}
+/* La elevación es una sombra en un pseudo-elemento cuya opacidad se anima (no se anima box-shadow) */
+.dash-card, .dash-aviso { position: relative; }
+.dash-card::after, .dash-aviso::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 6px 16px rgb(0 0 0 / 0.2); opacity: 0; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .dash-card, .dash-aviso { transition: transform 180ms ease-out; }
+  .dash-card::after, .dash-aviso::after { transition: opacity 180ms ease-out; }
+  .dash-card:hover, .dash-aviso:hover { transform: scale(1.02); z-index: 1; }
+  .dash-card:hover::after, .dash-aviso:hover::after { opacity: 1; }
+}
 
 /* Reseñas recientes: avatar con inicial, estrellas (.estrellas de lista.css), pieza y texto en 2 líneas */
 .dash-resenas { margin: 0; padding: 0; list-style: none; }

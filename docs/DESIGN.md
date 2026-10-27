@@ -610,6 +610,7 @@ Movimiento sutil y barato, autorizado por Tony el 2026-10-26. Solo para dar cont
 | Aparición | el texto del hero sube 8 px y aparece al cargar la página (250 ms); cada sección de la portada sube 12 px y aparece al entrar en pantalla (`IntersectionObserver` en `main.js`, sin librerías; sin JavaScript el contenido ya está visible) |
 | Contenido principal | todo el `<main>` (menos la portada, que ya tiene su hero) sube 8 px y aparece al cargar la página (250 ms, `ease-out`) |
 | Aparición escalonada | las tarjetas de pieza, las filas de las listas del panel y las tarjetas de formulario entran con 8 px de subida y opacidad al aparecer en pantalla, con retraso de 0 a 300 ms (de 50 en 50 dentro de cada lote); el mismo `IntersectionObserver` de `main.js`, que solo añade `.rv-item` (sin JavaScript todo se ve) |
+| Agrandado en panel (S6c.3) | las tarjetas y paneles del Dashboard se agrandan con `transform: scale(1.02)` (máx.) en 180 ms al pasar el cursor, con una sombra suave que solo cambia de opacidad; sin hover agrandado en táctil. Autorizado por Tony (2026-10-27) |
 | Botones | 1 px hacia arriba al pasar el cursor y de vuelta al pulsar (150 ms); los pegados a un campo (`.input-group`, buscador del hero) y los del modal no se mueven |
 | Menús desplegables | aparecen en 150 ms (opacidad y 4 px) |
 | Cajón del panel y modal de confirmación | el cajón se desliza en 250 ms (`transform`); el modal entra en 200 ms (opacidad y 8 px). La barra lateral contraída cambia al instante: no se anima tamaño |
