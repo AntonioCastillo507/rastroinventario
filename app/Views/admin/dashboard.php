@@ -1,65 +1,158 @@
-<?php $title="Dashboard"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div><h1 class="h4 fw-bold text-white mb-0 dash-title"><i aria-hidden="true" class="bi bi-speedometer2 me-2 text-warning"></i>Panel de Control</h1>
-  <p class="text-secondary small mb-0">Bienvenido, <?=htmlspecialchars($_SESSION["user"]["nombre"]??"")?></p></div>
-  <span class="badge-date"><?=date("d M Y, H:i")?></span>
+<?php
+$title = "Dashboard";
+include BASE_PATH . "/app/Views/layouts/admin_header.php";
+$money  = fn($n) => "$" . number_format((float)$n, 2);
+$pct    = fn($n) => str_replace(".", ",", number_format(abs((float)$n), 1)) . " %";
+$rangoTexto = [7 => "7 días", 30 => "30 días", 90 => "90 días", 365 => "Año"];
+$rangoLargo = [7 => "los últimos 7 días", 30 => "los últimos 30 días", 90 => "los últimos 90 días", 365 => "el último año"];
+$hayVentas  = !empty($serie) && array_sum($serie["actual"]) > 0;
+$grafica = [];
+if ($w["ventas"]) {
+  $grafica["serie"]      = $serie;
+  $grafica["categorias"] = $categorias;
+  $grafica["partes"]     = $partes;
+  $grafica["marcas"]     = $marcas;
+}
+if ($w["pedidos"]) $grafica["estados"] = $estados;
+$pendientes = $w["pedidos"] ? (int)$totalPorAtender : 0;
+$pocoStock  = $w["partes"] ? (int)$totalStockBajo : 0;
+?>
+<h1 class="visually-hidden">Dashboard</h1>
+<div class="panel-cabeza dash-cabeza">
+  <p class="dash-sub"><span class="num"><?=htmlspecialchars($desdeTexto)?></span> a <span class="num"><?=htmlspecialchars($hastaTexto)?></span> · frente al periodo anterior de igual duración</p>
+  <div class="dash-acciones">
+    <?php if($w["ventas"] || $w["pedidos"]): ?>
+    <nav class="dash-rango" aria-label="Rango de fechas">
+      <?php foreach($rangos as $r): ?><a href="<?=APP_URL?>/admin/?r=<?=(int)$r?>" class="dash-rango-op<?=$r===$dias?" activo":""?>"<?=$r===$dias?' aria-current="true"':""?>><?=htmlspecialchars($rangoTexto[$r])?></a><?php endforeach; ?>
+    </nav>
+    <?php endif; ?>
+    <?php if($botones["venta"]): ?><a class="btn btn-outline-secondary" href="<?=APP_URL?>/admin/?mod=ventas&action=crear"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nueva venta</a><?php endif; ?>
+    <?php if($botones["parte"]): ?><a class="btn btn-gold" href="<?=APP_URL?>/admin/?mod=partes&action=crear"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nueva parte</a><?php endif; ?>
+  </div>
 </div>
-<div class="row g-3 mb-4">
-  <div class="col-6 col-lg-3">
-    <a href="<?=APP_URL?>/admin/?mod=partes" class="stat-card d-block" style="text-decoration:none">
-      <div class="stat-icon gold"><i aria-hidden="true" class="bi bi-box-seam"></i></div>
-      <div class="stat-val"><?=$totalPartes?></div><div class="stat-lbl">Partes activas</div>
-    </a>
-  </div>
-  <div class="col-6 col-lg-3">
-    <a href="<?=APP_URL?>/admin/?mod=partes&filtro=stock_bajo" class="stat-card d-block" style="text-decoration:none">
-      <div class="stat-icon red"><i aria-hidden="true" class="bi bi-exclamation-triangle"></i></div>
-      <div class="stat-val red"><?=$totalStockBajo?></div><div class="stat-lbl">Stock bajo (≤5)</div>
-    </a>
-  </div>
-  <div class="col-6 col-lg-3">
-    <a href="<?=APP_URL?>/admin/?mod=pedidos" class="stat-card d-block" style="text-decoration:none">
-      <div class="stat-icon blue"><i aria-hidden="true" class="bi bi-bag-check"></i></div>
-      <div class="stat-val"><?=$pedidosPendientes?></div><div class="stat-lbl">Pedidos pendientes</div>
-    </a>
-  </div>
-  <div class="col-6 col-lg-3">
-    <a href="<?=APP_URL?>/admin/?mod=ventas" class="stat-card d-block" style="text-decoration:none">
-      <div class="stat-icon green"><i aria-hidden="true" class="bi bi-cash-coin"></i></div>
-      <div class="stat-val precio num">$<?=number_format($totalVendido,2)?></div><div class="stat-lbl">Total vendido</div>
-    </a>
-  </div>
+
+<?php if($w["pedidos"] || $w["partes"]): ?>
+<div class="dash-aviso dash-rv<?=($pendientes||$pocoStock)?"":" ok"?>" style="--i:1">
+  <?php if($w["pedidos"]): ?>
+    <?php if($pendientes): ?><span><b class="num"><?=(int)$pendientes?></b> <?=$pendientes===1?"pedido por atender":"pedidos por atender"?></span><a href="<?=APP_URL?>/admin/?mod=pedidos">Atender pedidos</a>
+    <?php else: ?><span>No hay pedidos por atender</span><?php endif; ?>
+  <?php endif; ?>
+  <?php if($w["partes"]): ?>
+    <?php if($pocoStock): ?><span><b class="num"><?=(int)$pocoStock?></b> <?=$pocoStock===1?"pieza con poco stock":"piezas con poco stock"?></span><a href="<?=APP_URL?>/admin/?mod=partes&filtro=stock_bajo">Reponer</a>
+    <?php else: ?><span>Todo el inventario tiene stock</span><?php endif; ?>
+  <?php endif; ?>
 </div>
-<div class="row g-4">
-  <div class="col-xl-8"><div class="dark-card">
-    <div class="dark-card-header"><i aria-hidden="true" class="bi bi-clock-history me-2 text-warning"></i>Bitácora de Accesos Recientes</div>
-    <div class="table-responsive"><table class="table dark-table mb-0">
-      <thead><tr><th>Email</th><th>IP</th><th>Resultado</th><th>Fecha</th></tr></thead>
-      <tbody><?php foreach($logs as $l): ?>
-      <tr>
-        <td class="small text-secondary"><?=htmlspecialchars($l["email_intento"])?></td>
-        <td><code class="text-warning small"><?=htmlspecialchars($l["ip"])?></code></td>
-        <td><?=$l["exitoso"]?"<span class=\"chip-success\"><i aria-hidden=\"true\" class=\"bi bi-check-circle me-1\"></i>OK</span>":"<span class=\"chip-danger\"><i aria-hidden=\"true\" class=\"bi bi-x-circle me-1\"></i>Fallido</span>"?></td>
-        <td class="small text-secondary"><?=$l["fecha"]?></td>
-      </tr>
-      <?php endforeach; ?>
-      <?php if(empty($logs)): ?><tr><td colspan="4" class="text-center text-secondary py-3">Sin registros.</td></tr><?php endif; ?>
-      </tbody>
-    </table></div>
-  </div></div>
-  <div class="col-xl-4"><div class="dark-card h-100">
-    <div class="dark-card-header"><i aria-hidden="true" class="bi bi-lightning-charge me-2 text-warning"></i>Accesos Rápidos</div>
-    <div>
-      <a href="<?=APP_URL?>/admin/?mod=partes&action=crear" class="quick-link"><i aria-hidden="true" class="bi bi-plus-circle text-success"></i><span>Agregar Parte</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
-      <a href="<?=APP_URL?>/admin/?mod=pedidos" class="quick-link">
-        <i aria-hidden="true" class="bi bi-bag-check text-warning"></i><span>Ver Pedidos</span>
-        <?php if($pedidosPendientes>0): ?><span class="badge bg-danger rounded-pill ms-auto me-2"><?=$pedidosPendientes?></span><?php endif; ?>
-        <i aria-hidden="true" class="bi bi-chevron-right text-secondary"></i>
-      </a>
-      <a href="<?=APP_URL?>/admin/?mod=ventas&action=crear" class="quick-link"><i aria-hidden="true" class="bi bi-cart-plus icon-info"></i><span>Registrar Venta</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
-      <a href="<?=APP_URL?>/admin/?mod=comentarios" class="quick-link"><i aria-hidden="true" class="bi bi-chat-dots icon-info"></i><span>Ver Comentarios</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
-      <a href="<?=APP_URL?>/admin/?mod=usuarios&action=crear" class="quick-link"><i aria-hidden="true" class="bi bi-person-plus text-warning"></i><span>Nuevo Usuario</span><i aria-hidden="true" class="bi bi-chevron-right text-secondary ms-auto"></i></a>
+<?php endif; ?>
+
+<?php if($kpis): ?>
+<div class="dash-kpis">
+  <?php foreach($kpis as $i => $k): ?>
+  <div class="dash-card dash-kpi dash-rv" style="--i:<?=$i+2?>">
+    <p class="dash-kpi-etiqueta"><?=htmlspecialchars($k["etiqueta"])?></p>
+    <p class="dash-kpi-valor num" data-contar="<?=htmlspecialchars($k["valor"])?>" data-formato="<?=$k["dinero"]?"dinero":"entero"?>"><?=htmlspecialchars($k["dinero"]?$money($k["valor"]):(string)(int)$k["valor"])?></p>
+    <?php if($k["var"] !== null): ?>
+      <p class="dash-var <?=$k["var"]>=0?"sube":"baja"?> num"><i aria-hidden="true" class="bi bi-caret-<?=$k["var"]>=0?"up":"down"?>-fill"></i><?=$k["var"]>=0?"Sube":"Baja"?> <?=htmlspecialchars($pct($k["var"]))?></p>
+    <?php endif; ?>
+    <p class="dash-kpi-nota"><?=htmlspecialchars($k["nota"])?></p>
+  </div>
+  <?php endforeach; ?>
+</div>
+<?php endif; ?>
+
+<?php if($w["ventas"]): ?>
+<div class="dash-fila dash-fila-2">
+  <section class="dash-card dash-rv" style="--i:6" aria-labelledby="dgVentas">
+    <div class="dash-card-cabeza">
+      <div><h2 class="dash-card-titulo" id="dgVentas">Ventas por periodo</h2><p class="dash-card-sub">Pedidos entregados, <?=htmlspecialchars($rangoLargo[$dias])?></p></div>
+      <?php if($hayVentas): ?><ul class="dash-leyenda"><li><i class="dash-trazo"></i>Periodo actual</li><li><i class="dash-trazo punteado"></i>Periodo anterior</li></ul><?php endif; ?>
     </div>
-  </div></div>
+    <?php if($hayVentas): ?>
+    <div class="dash-lienzo"><canvas id="dgLinea" role="img" aria-label="Ventas de <?=htmlspecialchars($rangoLargo[$dias])?>: <?=htmlspecialchars($money($serie["total"]))?>. Periodo anterior: <?=htmlspecialchars($money($serie["totalAnterior"]))?>."></canvas></div>
+    <table class="visually-hidden"><caption>Ventas por periodo</caption><tr><th scope="col">Periodo</th><th scope="col">Actual</th><th scope="col">Anterior</th></tr>
+      <?php foreach($serie["labels"] as $i => $l): ?><tr><td><?=htmlspecialchars($l)?></td><td class="num"><?=htmlspecialchars($money($serie["actual"][$i]))?></td><td class="num"><?=isset($serie["anterior"][$i])?htmlspecialchars($money($serie["anterior"][$i])):"—"?></td></tr><?php endforeach; ?>
+    </table>
+    <?php else: ?>
+    <div class="vacio dash-vacio"><p class="vacio-titulo">Sin ventas en este periodo</p><p class="vacio-texto">Cuando haya pedidos entregados, la línea aparece aquí.<?=$dias!==365?" Prueba con «Año».":""?></p></div>
+    <?php endif; ?>
+  </section>
+
+  <section class="dash-card dash-rv" style="--i:7" aria-labelledby="dgCat">
+    <h2 class="dash-card-titulo" id="dgCat">Ventas por categoría</h2><p class="dash-card-sub">Parte de las ventas del periodo</p>
+    <?php if($categorias): $totCat = array_sum(array_column($categorias, "total")); ?>
+    <div class="dash-dona"><canvas id="dgDona" role="img" aria-label="Ventas por categoría: <?=htmlspecialchars(implode(", ", array_map(fn($c) => $c["nombre"] . " " . round($c["total"] / max($totCat, 0.01) * 100) . " %", $categorias)))?>."></canvas>
+      <div class="dash-dona-centro"><div><b class="num"><?=htmlspecialchars($money($totCat))?></b><span>total</span></div></div></div>
+    <ul class="dash-lista-dona">
+      <?php foreach($categorias as $c): $pcCat = (int)round($c["total"]/max($totCat,0.01)*100); ?><li><i class="dash-muestra dash-c<?=(int)$c["color"]?>"></i><span class="dash-lista-nombre"><?=htmlspecialchars($c["nombre"])?></span><span class="num dash-lista-valor"><?=(int)$pcCat?> % · <?=htmlspecialchars($money($c["total"]))?></span></li><?php endforeach; ?>
+    </ul>
+    <?php else: ?>
+    <div class="vacio dash-vacio"><p class="vacio-titulo">Sin datos</p><p class="vacio-texto">Aparece cuando haya ventas en el periodo.</p></div>
+    <?php endif; ?>
+  </section>
 </div>
+<?php endif; ?>
+
+<?php if($w["pedidos"] || $w["partes"] || $w["comentarios"]): ?>
+<div class="dash-fila dash-fila-3">
+  <?php if($w["pedidos"]): ?>
+  <section class="dash-card dash-rv" style="--i:8" aria-labelledby="dgAtender">
+    <div class="dash-card-cabeza"><h2 class="dash-card-titulo" id="dgAtender">Pedidos por atender</h2><a class="dash-ver" href="<?=APP_URL?>/admin/?mod=pedidos">Ver pedidos</a></div>
+    <?php if($porAtender): ?>
+    <ul class="dash-filas"><?php foreach($porAtender as $p): ?>
+      <li><div class="dash-fila-txt"><b>#<?=(int)$p["id"]?> · <?=htmlspecialchars($p["cliente_nombre"])?></b><small class="num"><?=htmlspecialchars(date("d/m/Y H:i", strtotime($p["creado_en"])))?> · <?=htmlspecialchars($money($p["total"]))?></small></div>
+        <span class="chip-<?=$p["estado"]==="pendiente"?"warning":"info"?> dash-chip"><?=$p["estado"]==="pendiente"?"Pendiente":"Procesando"?></span>
+        <a class="dash-fila-enlace" href="<?=APP_URL?>/admin/?mod=pedidos&action=detalle&id=<?=(int)$p["id"]?>" aria-label="Abrir el pedido #<?=(int)$p["id"]?>">Abrir</a></li>
+    <?php endforeach; ?></ul>
+    <?php else: ?><div class="vacio dash-vacio"><p class="vacio-titulo">Todo al día</p><p class="vacio-texto">No hay pedidos pendientes ni en proceso.</p></div><?php endif; ?>
+  </section>
+  <?php endif; ?>
+  <?php if($w["partes"]): ?>
+  <section class="dash-card dash-rv" style="--i:9" aria-labelledby="dgStock">
+    <div class="dash-card-cabeza"><h2 class="dash-card-titulo" id="dgStock">Piezas con poco stock</h2><a class="dash-ver" href="<?=APP_URL?>/admin/?mod=partes&filtro=stock_bajo">Ver las <?=(int)$pocoStock?></a></div>
+    <?php if($stockBajo): ?>
+    <ul class="dash-filas"><?php foreach($stockBajo as $p): ?>
+      <li><div class="dash-fila-txt"><b><?=htmlspecialchars($p["nombre"])?></b><small><?=htmlspecialchars($p["seccion"]??"Sin categoría")?></small></div>
+        <span class="chip-<?=(int)$p["cantidad"]===0?"danger":"warning"?> dash-chip num"><?=(int)$p["cantidad"]===0?"Agotada":"Quedan ".(int)$p["cantidad"]?></span>
+        <a class="dash-fila-enlace" href="<?=APP_URL?>/admin/?mod=partes&action=editar&id=<?=(int)$p["id"]?>" aria-label="Editar <?=htmlspecialchars($p["nombre"])?>">Editar</a></li>
+    <?php endforeach; ?></ul>
+    <?php else: ?><div class="vacio dash-vacio"><p class="vacio-titulo">Stock al día</p><p class="vacio-texto">Ninguna pieza activa tiene 5 unidades o menos.</p></div><?php endif; ?>
+  </section>
+  <?php endif; ?>
+  <?php if($w["comentarios"]): ?>
+  <section class="dash-card dash-rv" style="--i:10" aria-labelledby="dgCom">
+    <div class="dash-card-cabeza"><div><h2 class="dash-card-titulo" id="dgCom">Comentarios recientes</h2><p class="dash-card-sub"><span class="num"><?=(int)$comentariosSemana?></span> en los últimos 7 días</p></div><a class="dash-ver" href="<?=APP_URL?>/admin/?mod=comentarios">Ver todos</a></div>
+    <?php if($comentarios): ?>
+    <ul class="dash-filas"><?php foreach($comentarios as $c): ?>
+      <li><div class="dash-fila-txt"><b><?=htmlspecialchars($c["nombre_visitante"])?><?php if($c["rating"]): ?> · <span class="num"><?=(int)$c["rating"]?> de 5</span><?php endif; ?></b><small><?=htmlspecialchars(mb_strimwidth((string)$c["comentario"], 0, 70, "…"))?> — <?=htmlspecialchars($c["parte"])?></small></div></li>
+    <?php endforeach; ?></ul>
+    <?php else: ?><div class="vacio dash-vacio"><p class="vacio-titulo">Sin comentarios</p><p class="vacio-texto">Los comentarios de la tienda aparecen aquí.</p></div><?php endif; ?>
+  </section>
+  <?php endif; ?>
+</div>
+<?php endif; ?>
+
+<?php if($w["ventas"] || $w["pedidos"]): ?>
+<div class="dash-fila dash-fila-3">
+  <?php
+  $barras = [];
+  if($w["ventas"]) { $barras[] = ["dgPartes","Piezas más vendidas","Unidades en el periodo","partes",$partes,11]; $barras[] = ["dgMarcas","Marcas más vendidas","Unidades en el periodo","marcas",$marcas,12]; }
+  if($w["pedidos"]) { $barras[] = ["dgEstados","Pedidos por estado","Pedidos creados en el periodo","estados",$estados,13]; }
+  foreach($barras as [$id,$tit,$sub,$clave,$datos,$ix]):
+    $nombres = array_column($datos, "nombre"); $vals = array_column($datos, $clave==="estados"?"n":"unidades");
+    $hay = $vals && array_sum($vals) > 0;
+  ?>
+  <section class="dash-card dash-rv" style="--i:<?=(int)$ix?>" aria-labelledby="<?=$id?>T">
+    <h2 class="dash-card-titulo" id="<?=$id?>T"><?=htmlspecialchars($tit)?></h2><p class="dash-card-sub"><?=htmlspecialchars($sub)?></p>
+    <?php if($hay): ?>
+    <div class="dash-lienzo dash-lienzo-barras"><canvas id="<?=$id?>" role="img" aria-label="<?=htmlspecialchars($tit)?>: <?=htmlspecialchars(implode(", ", array_map(fn($n,$v)=>"$n $v", $nombres, $vals)))?>."></canvas></div>
+    <table class="visually-hidden"><caption><?=htmlspecialchars($tit)?></caption><tr><th scope="col">Nombre</th><th scope="col">Cantidad</th></tr>
+      <?php foreach($nombres as $i=>$n): ?><tr><td><?=htmlspecialchars($n)?></td><td><?=(int)$vals[$i]?></td></tr><?php endforeach; ?></table>
+    <?php else: ?><div class="vacio dash-vacio"><p class="vacio-titulo">Sin datos en este periodo</p><p class="vacio-texto">Aparece cuando haya <?=$clave==="estados"?"pedidos":"ventas"?>.</p></div><?php endif; ?>
+  </section>
+  <?php endforeach; ?>
+</div>
+<?php endif; ?>
+
+<script type="application/json" id="dash-datos"><?=json_encode($grafica, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_UNICODE)?></script>
+<script src="<?=Assets::url("js/vendor/chart.umd.min.js")?>"></script>
+<script src="<?=Assets::url("js/dashboard.js")?>"></script>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>

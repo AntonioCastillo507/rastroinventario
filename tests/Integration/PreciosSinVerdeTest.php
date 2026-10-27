@@ -89,8 +89,8 @@ final class PreciosSinVerdeTest extends BaseDatos {
 
     public function testLosTotalesDelPanelUsanElTokenDePrecio(): void {
         $x = Html::xpath(Pantallas::render($this->db, "admin_dashboard"));
-        $this->assertGreaterThan(0, $x->query("//*[contains(@class,'stat-val') and contains(@class,'precio')]")->length, "Total vendido");
-        $this->assertSame(0, $x->query("//*[contains(@class,'stat-val') and contains(@class,'green')]")->length);
+        $this->assertGreaterThan(0, $x->query("//*[contains(@class,'dash-kpi-valor') and contains(@class,'num')]")->length, "Total vendido (tarjeta KPI en la fuente numérica, sin verde)");
+        $this->assertSame(0, $x->query("//*[contains(@class,'dash-kpi-valor') and contains(@class,'green')]")->length);
     }
 
     public function testElVerdeSiSeQuedaDondeDebe(): void {

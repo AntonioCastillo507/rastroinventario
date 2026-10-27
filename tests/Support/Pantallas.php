@@ -51,6 +51,9 @@ final class Pantallas {
             "restablecer_invalido" => ["anonimo", fn($f) => (new \PasswordResetController())->restablecer()],
             // ── Panel ──
             "admin_dashboard"   => ["admin", fn($f) => (new \DashboardController())->index()],
+            "admin_dashboard_r7"   => ["admin", function ($f) use ($get) { $get(["r" => "7"]); (new \DashboardController())->index(); }],
+            "admin_dashboard_r30"  => ["admin", function ($f) use ($get) { $get(["r" => "30"]); (new \DashboardController())->index(); }],
+            "admin_dashboard_r999" => ["admin", function ($f) use ($get) { $get(["r" => "999"]); (new \DashboardController())->index(); }],
             "admin_partes"      => ["admin", fn($f) => (new \ParteController())->index()],
             "admin_partes_crear"  => ["admin", fn($f) => (new \ParteController())->crear()],
             "admin_partes_editar" => ["admin", function ($f) use ($get) { $get(["id" => (string)$f["parte"]]); (new \ParteController())->editar(); }],

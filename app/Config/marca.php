@@ -88,5 +88,10 @@ return [
         "descripcion" => "Impuesto de Transferencia de Bienes Muebles y Servicios (Ley 75 de 1976, Panamá)",
     ],
 
+    // Panel: rango que abre el dashboard (7, 30, 90 o 365 = año). Poner 30 cuando haya pedidos recientes.
+    "dashboard" => [
+        "rango_defecto" => 365,
+    ],
+
     "pie" => "© {anio} {nombre} — {pais}",
 ];

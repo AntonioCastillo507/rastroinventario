@@ -33,6 +33,7 @@ $inicialPanel = mb_strtoupper(mb_substr($nombrePanel !== "" ? $nombrePanel : "?"
 <link rel="stylesheet" href="<?=Assets::url("css/base.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/panel.css")?>">
 <link rel="stylesheet" href="<?=Assets::url("css/lista.css")?>">
+<link rel="stylesheet" href="<?=Assets::url("css/dashboard.css")?>">
 <script src="<?=Assets::url("js/panel.js")?>"></script>
 </head>
 <body class="admin-body">

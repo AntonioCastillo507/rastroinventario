@@ -144,6 +144,42 @@ class EstadisticaModel extends BaseModel {
             $desde, $hasta);
     }
 
+    /** Pedidos por atender (pendientes y en proceso), el más antiguo primero */
+    public function porAtender(int $limite = 5): array {
+        return $this->query(
+            "SELECT id, cliente_nombre, total, estado, creado_en FROM pedidos
+             WHERE estado IN ('pendiente', 'procesando')
+             ORDER BY (estado = 'pendiente') DESC, creado_en ASC, id ASC LIMIT " . max(1, $limite));
+    }
+
+    public function contarPorAtender(): int {
+        return (int)$this->db->query("SELECT COUNT(*) FROM pedidos WHERE estado IN ('pendiente', 'procesando')")->fetchColumn();
+    }
+
+    /** Piezas activas con 5 unidades o menos; las más urgentes primero */
+    public function stockBajo(int $limite = 5): array {
+        return $this->query(
+            "SELECT p.id, p.nombre, p.cantidad, s.nombre AS seccion
+             FROM partes p LEFT JOIN secciones s ON s.id = p.seccion_id
+             WHERE p.activo = 1 AND p.cantidad <= 5
+             ORDER BY p.cantidad ASC, p.nombre ASC, p.id ASC LIMIT " . max(1, $limite));
+    }
+
+    /** Comentarios publicados, el más reciente primero */
+    public function comentariosRecientes(int $limite = 3): array {
+        return $this->query(
+            "SELECT c.id, c.nombre_visitante, c.comentario, c.rating, c.creado_en, p.nombre AS parte
+             FROM comentarios c JOIN partes p ON p.id = c.parte_id
+             WHERE c.publicado = 1
+             ORDER BY c.creado_en DESC, c.id DESC LIMIT " . max(1, $limite));
+    }
+
+    public function contarComentariosDesde(string $desde): int {
+        $s = $this->db->prepare("SELECT COUNT(*) FROM comentarios WHERE publicado = 1 AND creado_en >= ?");
+        $s->execute([$desde]);
+        return (int)$s->fetchColumn();
+    }
+
     private function unidades(string $sql, string $desde, string $hasta): array {
         return array_map(fn($r) => ["nombre" => $r["nombre"], "unidades" => (int)$r["unidades"]], $this->query($sql, [$desde, $hasta]));
     }

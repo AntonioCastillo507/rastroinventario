@@ -20,6 +20,7 @@ final class Marca {
         "nosotros" => ["titulo" => "", "titulo_resalte" => "", "parrafos" => [], "imagen" => "", "destacados" => [], "destacados_visibles" => false],
         "contacto" => ["titulo" => "Contacto", "intro" => ""],
         "impuesto" => ["nombre" => "Impuesto", "tasa" => 0.0, "descripcion" => ""],
+        "dashboard" => ["rango_defecto" => 365],
         "pie" => "© {anio} {nombre}",
     ];
 

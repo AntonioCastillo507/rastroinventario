@@ -33,6 +33,7 @@ final class VistasEscapadoTest extends TestCase {
         "stClase", "stTexto", "cant", // detalle: clase y texto de stock elegidos entre literales y stock entero
         "tpId", "tpClase", "tpTexto", "total", // tarjeta de pieza: id entero, clase y texto de stock elegidos entre literales, y total entero del Paginador
         "rol",          // role del aviso (alert o status), calculado en el encabezado a partir de un tipo literal
+        "grafica",      // datos del dashboard para las gráficas: json_encode con JSON_HEX_TAG/AMP/APOS/QUOT dentro de un script application/json
         "logoSvg",      // SVG del logo reconstruido por Logo::sanear con lista blanca (LogoSaneadoTest comprueba que solo sale de Logo::enLinea)
     ];
 
