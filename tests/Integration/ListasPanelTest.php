@@ -23,6 +23,9 @@ final class ListasPanelTest extends BaseDatos {
             "usuarios" => ["admin_usuarios", "usuarios", ["Usuario", "Roles", "Estado", "Creado", "Acciones"], "Usuarios del sistema"],
             "comentarios" => ["admin_comentarios", "comentarios", ["Comentario", "Estado", "Fecha", "Acciones"], "Moderación de comentarios"],
             "roles" => ["admin_roles", "roles", ["Rol", "Descripción", "Acciones"], "Roles y permisos"],
+            "autos" => ["admin_autos", "autos", ["Auto", "Año", "Estado", "Acciones"], "Catálogo de autos"],
+            "secciones" => ["admin_secciones", "secciones", ["Sección", "Estado", "Acciones"], "Secciones del almacén"],
+            "ventas" => ["admin_ventas", "ventas", ["Pieza", "Cant.", "Total", "Vendedor", "Firma", "Fecha"], "Registro de ventas"],
         ];
     }
 
@@ -41,8 +44,9 @@ final class ListasPanelTest extends BaseDatos {
         $this->assertSame(1, Html::contar($x, "//h1[contains(@class,'panel-titulo')]"), "$pantalla: un h1");
         $this->assertStringStartsWith($titulo, trim($x->query("//h1")->item(0)->textContent));
         $this->assertSame(0, Html::contar($x, "//h1//i"), "$pantalla: sin icono en el título (DESIGN.md)");
-        $this->assertSame(1, Html::contar($x, "//th[contains(@class,'col-acciones')]"), "$pantalla: acciones al final");
-        $this->assertSame("col-acciones", explode(" ", $x->query("//table[contains(@class,'lista-tabla')]/thead/tr/th[last()]")->item(0)->getAttribute("class"))[count(explode(" ", $x->query("//table[contains(@class,'lista-tabla')]/thead/tr/th[last()]")->item(0)->getAttribute("class"))) - 1]);
+        $conAcciones = end($columnas) === "Acciones";
+        $this->assertSame($conAcciones ? 1 : 0, Html::contar($x, "//th[contains(@class,'col-acciones')]"), "$pantalla: acciones al final, si las hay");
+        if ($conAcciones) $this->assertStringContainsString("col-acciones", $x->query("//table[contains(@class,'lista-tabla')]/thead/tr/th[last()]")->item(0)->getAttribute("class"));
     }
 
     #[DataProvider("listas")]
@@ -67,6 +71,7 @@ final class ListasPanelTest extends BaseDatos {
     public function testLasAccionesTienenNombreAccesibleIconoOcultoYTextoParaLaTarjeta(string $pantalla): void {
         $x = Html::xpath(Pantallas::render($this->db, $pantalla));
         $botones = $x->query("//td[contains(@class,'col-acciones')]//*[contains(@class,'accion-btn')]");
+        if ($pantalla === "admin_ventas") { $this->assertSame(0, $botones->length, "las ventas no tienen acciones"); return; }
         $this->assertGreaterThan(0, $botones->length, $pantalla);
         foreach ($botones as $b) {
             $q = new \DOMXPath($b->ownerDocument);
@@ -115,12 +120,29 @@ final class ListasPanelTest extends BaseDatos {
         $this->assertMatchesRegularExpression('/<\?php if\(\(\$q\?\?""\)!==""\|\|\(\$filtro\?\?"all"\)!=="all"\|\|\(\$orden\?\?"recientes"\)!=="recientes"\): \?>\s*<a .*lista-filtros-limpiar/', $src);
     }
 
-    public function testElEstadoVacioOcupaTodasLasColumnasDeSuLista(): void {
+    public function testElEstadoVacioUsaElComponenteYOcupaTodasLasColumnasDeSuLista(): void {
         foreach (self::listas() as [$pantalla, $vista, $columnas]) {
             $src = (string)file_get_contents(BASE_PATH . "/app/Views/admin/$vista/index.php");
-            $this->assertSame(1, preg_match('/<tr class="lista-vacia"><td colspan="(\d+)">/', $src, $m), "$vista: fila de estado vacío");
+            $this->assertSame(1, preg_match('/\$vaciaColspan=(\d+); \$vaciaTitulo=/', $src, $m), "$vista: estado vacío con el componente");
             $this->assertSame(count($columnas), (int)$m[1], "$vista: colspan igual al número de columnas");
+            $this->assertStringContainsString('include BASE_PATH."/app/Views/layouts/lista_vacia.php"', $src, $vista);
+            $this->assertStringNotContainsString("text-center text-secondary", $src, "$vista: sin la fila vieja");
         }
+    }
+
+    public function testElComponenteDeEstadoVacioDiceQueHacerConUnSoloBotonYEscapaTodo(): void {
+        $render = function (array $v): string {
+            extract($v); ob_start(); include BASE_PATH . "/app/Views/layouts/lista_vacia.php"; return (string)ob_get_clean();
+        };
+        $x = Html::xpath("<table><tbody>" . $render(["vaciaColspan" => 5, "vaciaTitulo" => "Sin <b>x</b>", "vaciaTexto" => "Texto & más", "vaciaAccion" => ["/a?b=1&c=2", "Hacer <i>algo</i>"]]) . "</tbody></table>");
+        $this->assertSame("5", $x->query("//tr[@class='lista-vacia']/td")->item(0)->getAttribute("colspan"));
+        $this->assertSame("Sin <b>x</b>", $x->query("//p[contains(@class,'vacio-titulo')]")->item(0)->textContent, "se escapa: llega como texto");
+        $this->assertSame(0, $x->query("//b | //i")->length);
+        $this->assertSame(1, $x->query("//div[@class='vacio']/a[contains(@class,'btn-gold')]")->length);
+        $this->assertSame("/a?b=1&c=2", $x->query("//a")->item(0)->getAttribute("href"));
+        $sin = Html::xpath("<table><tbody>" . $render(["vaciaColspan" => 2, "vaciaTitulo" => "T", "vaciaTexto" => "U"]) . "</tbody></table>");
+        $this->assertSame(0, $sin->query("//a")->length, "sin acción no hay botón");
+        $this->assertSame(1, $sin->query("//p[contains(@class,'vacio-texto')]")->length);
     }
 
     public function testLasListasYaNoUsanLosIconosDeColorNiLasClasesViejas(): void {
@@ -202,6 +224,15 @@ final class ListasPanelTest extends BaseDatos {
         $this->assertDoesNotMatchRegularExpression('/\brgba?\(/', $css);
         $this->assertDoesNotMatchRegularExpression('/transition|animation/', $css, "las listas no se animan");
         $this->assertStringContainsString("var(--danger-text)", self::regla(".accion-peligro"), "el rojo de la acción destructiva es el token de texto de error");
+    }
+
+    public function testElEstadoVacioSeCentraSinAlturaFijaYSinHover(): void {
+        $this->assertMatchesRegularExpression('/text-align:\s*center/', self::regla(".lista-vacia td"));
+        $this->assertMatchesRegularExpression('/padding:\s*var\(--spacing-xl\) var\(--spacing-md\)/', self::regla(".lista-vacia td"));
+        $this->assertMatchesRegularExpression('/max-width:\s*40ch/', self::regla(".vacio"));
+        $this->assertMatchesRegularExpression('/color:\s*var\(--text-strong\)/', self::regla(".vacio-titulo"));
+        $this->assertMatchesRegularExpression('/color:\s*var\(--text-muted\)/', self::regla(".vacio-texto"));
+        $this->assertMatchesRegularExpression('/background:\s*none/', self::regla(".lista-tabla tbody tr.lista-vacia:hover > td"), "una fila vacía no reacciona al cursor");
     }
 
     public function testElMarcoCargaListasCssDespuesDePanelCss(): void {

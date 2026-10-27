@@ -1,40 +1,30 @@
 <?php $title="Secciones"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
-<div class="page-header mb-4">
-  <div><h1 class="h4 fw-bold text-white mb-0"><i aria-hidden="true" class="bi bi-diagram-3 me-2 text-warning"></i>Secciones del Almacén</h1></div>
-  <a href="<?=APP_URL?>/admin/?mod=secciones&action=crear" class="btn btn-gold btn-sm"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nueva Sección</a>
+<div class="panel-cabeza">
+  <h1 class="panel-titulo">Secciones del almacén <span class="panel-titulo-cuenta">(<?=count($secciones)?>)</span></h1>
+  <a href="<?=APP_URL?>/admin/?mod=secciones&action=crear" class="btn btn-gold"><i aria-hidden="true" class="bi bi-plus-lg me-1"></i>Nueva sección</a>
 </div>
-<div class="row g-3">
-<?php foreach($secciones as $s): ?>
-<div class="col-md-4 col-sm-6">
-  <div class="dark-card h-100 p-4">
-    <div class="d-flex align-items-center gap-3 mb-3">
-      <!-- Ícono clickeable → filtra partes por esta sección -->
-      <a href="<?=APP_URL?>/admin/?mod=partes&seccion=<?=$s["id"]?>" title="Ver partes de <?=htmlspecialchars($s["nombre"])?>" aria-label="Ver partes de <?=htmlspecialchars($s["nombre"])?>"
-         style="width:44px;height:44px;background:var(--accent-dim);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1.25rem;flex-shrink:0;text-decoration:none;transition:background .15s"
-         onmouseover="this.style.background='var(--accent)';this.style.color='#000'"
-         onmouseout="this.style.background='var(--accent-dim)';this.style.color='var(--accent)'">
-        <i aria-hidden="true" class="bi bi-archive-fill"></i>
-      </a>
-      <div>
-        <h2 class="h6 fw-bold text-white mb-0"><?=htmlspecialchars($s["nombre"])?></h2>
-        <span class="text-secondary small"><?=$s["activo"]?"Activa":"Inactiva"?></span>
+<div class="lista-card">
+<table class="lista-tabla">
+  <thead><tr><th scope="col">Sección</th><th scope="col">Estado</th><th scope="col" class="col-acciones">Acciones</th></tr></thead>
+  <tbody>
+  <?php foreach($secciones as $s): ?>
+  <tr>
+    <td class="celda-principal celda-texto"><span class="celda-titulo"><?=htmlspecialchars($s["nombre"])?></span><span class="celda-sub"><?=htmlspecialchars($s["descripcion"]??"")?></span></td>
+    <td data-label="Estado"><?=$s["activo"]?"<span class=\"chip-success\">Activa</span>":"<span class=\"chip-neutral\">Inactiva</span>"?></td>
+    <td class="col-acciones">
+      <div class="lista-acciones">
+        <a href="<?=APP_URL?>/admin/?mod=partes&seccion=<?=$s["id"]?>" class="accion-btn" title="Ver piezas" aria-label="Ver piezas de <?=htmlspecialchars($s["nombre"])?>"><i aria-hidden="true" class="bi bi-box-seam"></i><span class="accion-texto">Ver piezas</span></a>
+        <a href="<?=APP_URL?>/admin/?mod=secciones&action=editar&id=<?=$s["id"]?>" class="accion-btn" title="Editar" aria-label="Editar la sección <?=htmlspecialchars($s["nombre"])?>"><i aria-hidden="true" class="bi bi-pencil-square"></i><span class="accion-texto">Editar</span></a>
+        <form method="POST" action="<?=APP_URL?>/admin/?mod=secciones&action=eliminar&id=<?=$s["id"]?>"<?=Confirmar::attrs(["titulo"=>"Desactivar «".$s["nombre"]."»","texto"=>"La sección dejará de mostrarse en la tienda.","boton"=>"Desactivar","cancelar"=>"Conservar","peligro"=>true])?>>
+          <?=CsrfToken::field()?>
+          <button type="submit" class="accion-btn accion-peligro" title="Desactivar" aria-label="Desactivar la sección <?=htmlspecialchars($s["nombre"])?>"><i aria-hidden="true" class="bi bi-trash"></i><span class="accion-texto">Desactivar</span></button>
+        </form>
       </div>
-    </div>
-    <p class="text-secondary small mb-3"><?=htmlspecialchars($s["descripcion"]??"")?></p>
-    <div class="d-flex gap-2">
-      <a href="<?=APP_URL?>/admin/?mod=partes&seccion=<?=$s["id"]?>" class="btn btn-outline-secondary btn-sm flex-fill">
-        <i aria-hidden="true" class="bi bi-box-seam me-1"></i>Ver piezas
-      </a>
-      <a href="<?=APP_URL?>/admin/?mod=secciones&action=editar&id=<?=$s["id"]?>" class="btn btn-outline-warning btn-sm flex-fill">
-        <i aria-hidden="true" class="bi bi-pencil me-1"></i>Editar
-      </a>
-      <form method="POST" action="<?=APP_URL?>/admin/?mod=secciones&action=eliminar&id=<?=$s["id"]?>" class="d-inline"<?=Confirmar::attrs(["titulo"=>"Desactivar «".$s["nombre"]."»","texto"=>"La sección dejará de mostrarse en la tienda.","boton"=>"Desactivar","cancelar"=>"Conservar","peligro"=>true])?>>
-        <?=CsrfToken::field()?>
-        <button type="submit" class="btn btn-outline-danger btn-sm" aria-label="Desactivar la sección <?=htmlspecialchars($s["nombre"])?>"><i aria-hidden="true" class="bi bi-trash"></i></button>
-      </form>
-    </div>
-  </div>
-</div>
-<?php endforeach; ?>
+    </td>
+  </tr>
+  <?php endforeach; ?>
+  <?php if(empty($secciones)): $vaciaColspan=3; $vaciaTitulo="Aún no hay secciones"; $vaciaTexto="Las secciones organizan las piezas y sirven de categorías en la tienda."; $vaciaAccion=[APP_URL."/admin/?mod=secciones&action=crear","Nueva sección"]; include BASE_PATH."/app/Views/layouts/lista_vacia.php"; endif; ?>
+  </tbody>
+</table>
 </div>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>

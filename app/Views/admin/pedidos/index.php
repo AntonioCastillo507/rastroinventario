@@ -23,7 +23,7 @@
     </td>
   </tr>
   <?php endforeach; ?>
-  <?php if(empty($pedidos)): ?><tr class="lista-vacia"><td colspan="6">No hay pedidos registrados aún.</td></tr><?php endif; ?>
+  <?php if(empty($pedidos)): $vaciaColspan=6; $vaciaTitulo="Aún no hay pedidos"; $vaciaTexto="Cuando alguien compre en la tienda, su pedido aparecerá aquí."; include BASE_PATH."/app/Views/layouts/lista_vacia.php"; endif; ?>
   </tbody>
 </table>
 </div>

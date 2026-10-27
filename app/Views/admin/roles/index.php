@@ -18,7 +18,7 @@
     </td>
   </tr>
   <?php endforeach; ?>
-  <?php if(empty($roles)): ?><tr class="lista-vacia"><td colspan="3">No hay roles.</td></tr><?php endif; ?>
+  <?php if(empty($roles)): $vaciaColspan=3; $vaciaTitulo="No hay roles"; $vaciaTexto="Crea un rol para asignar permisos."; $vaciaAccion=[APP_URL."/admin/?mod=roles&action=crear","Nuevo rol"]; include BASE_PATH."/app/Views/layouts/lista_vacia.php"; endif; ?>
   </tbody>
 </table>
 </div>

@@ -27,7 +27,7 @@
     </td>
   </tr>
   <?php endforeach; ?>
-  <?php if(empty($comentarios)): ?><tr class="lista-vacia"><td colspan="4">No hay comentarios.</td></tr><?php endif; ?>
+  <?php if(empty($comentarios)): $vaciaColspan=4; $vaciaTitulo="Aún no hay comentarios"; $vaciaTexto="Los comentarios de las piezas aparecerán aquí para moderarlos."; include BASE_PATH."/app/Views/layouts/lista_vacia.php"; endif; ?>
   </tbody>
 </table>
 </div>

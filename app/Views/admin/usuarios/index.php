@@ -29,7 +29,7 @@
     </td>
   </tr>
   <?php endforeach; ?>
-  <?php if(empty($usuarios)): ?><tr class="lista-vacia"><td colspan="5">No hay usuarios.</td></tr><?php endif; ?>
+  <?php if(empty($usuarios)): $vaciaColspan=5; $vaciaTitulo="No hay usuarios"; $vaciaTexto="Crea el primer usuario del sistema."; $vaciaAccion=[APP_URL."/admin/?mod=usuarios&action=crear","Nuevo usuario"]; include BASE_PATH."/app/Views/layouts/lista_vacia.php"; endif; ?>
   </tbody>
 </table>
 </div>

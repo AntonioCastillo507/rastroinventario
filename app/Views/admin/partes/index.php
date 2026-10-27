@@ -58,7 +58,7 @@
     </td>
   </tr>
   <?php endforeach; ?>
-  <?php if(empty($partes)): ?><tr class="lista-vacia"><td colspan="4">Sin resultados con esos filtros.</td></tr><?php endif; ?>
+  <?php if(empty($partes)): $conFiltros=($q??"")!==""||($filtro??"all")!=="all"; $vaciaColspan=4; $vaciaTitulo=$conFiltros?"Sin resultados":"Aún no hay partes"; $vaciaTexto=$conFiltros?"Prueba con otro nombre o marca, o quita los filtros.":"Agrega la primera pieza del inventario."; $vaciaAccion=$conFiltros?[APP_URL."/admin/?mod=partes","Limpiar filtros"]:[APP_URL."/admin/?mod=partes&action=crear","Nueva parte"]; include BASE_PATH."/app/Views/layouts/lista_vacia.php"; endif; ?>
   </tbody>
 </table></div>
 <?php $pagBase=APP_URL."/admin/"; include BASE_PATH."/app/Views/layouts/paginacion.php"; ?>
