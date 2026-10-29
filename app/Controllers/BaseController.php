@@ -22,7 +22,9 @@ abstract class BaseController implements ErrorHandlerInterface {
     }
     public function redirect(string $url, string $msg = "", string $type = "success"): void {
         if ($msg) $_SESSION["flash"] = ["msg" => $msg, "type" => $type];
-        header("Location: " . $url); exit;
+        header("Location: " . $url);
+        if (defined("RASTRO_TEST_TMP")) throw new \RuntimeException("redirect a " . $url); // en las pruebas, un exit() mataría PHPUnit sin avisar
+        exit;
     }
     protected function flash(string $msg, string $type = "success"): void {
         $_SESSION["flash"] = ["msg" => $msg, "type" => $type];
