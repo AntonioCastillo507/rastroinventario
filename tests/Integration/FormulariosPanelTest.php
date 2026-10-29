@@ -79,7 +79,7 @@ final class FormulariosPanelTest extends BaseDatos {
     public function testUnErrorSeMuestraConElComponenteDeAlertaConRoleYSinColorSuelto(): void {
         $_SESSION["user"] = ["id" => 1, "nombre" => "Admin", "email" => "a@example.invalid"];
         try {
-            foreach (["autos/form" => [], "secciones/form" => [], "ventas/form" => ["partes" => []]] as $vista => $extra) {
+            foreach (["autos/form" => ["marcas" => []], "secciones/form" => [], "ventas/form" => ["partes" => []]] as $vista => $extra) {
                 $x = $this->render($vista, ["error" => "No se pudo guardar <b>esto</b>"] + $extra);
                 $a = $x->query("//main//div[@role='alert' and contains(@class,'alert-danger')]");
                 $this->assertSame(1, $a->length, "$vista: aviso de error");

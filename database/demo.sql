@@ -9,11 +9,13 @@
 
 SET NAMES utf8mb4;
 
-INSERT INTO autos (id, marca, modelo, anio) VALUES
-  (1, 'Demo Motors', 'Sedán',     2020),
-  (2, 'Demo Motors', 'Hatchback', 2021),
-  (3, 'Demo Motors', 'Pickup',    2019),
-  (4, 'Demo Motors', 'SUV',       2022);
+INSERT INTO marcas (id, nombre, slug) VALUES (1, 'Demo Motors', 'demo-motors');
+
+INSERT INTO autos (id, marca, marca_id, modelo, anio) VALUES
+  (1, 'Demo Motors', 1, 'Sedán',     2020),
+  (2, 'Demo Motors', 1, 'Hatchback', 2021),
+  (3, 'Demo Motors', 1, 'Pickup',    2019),
+  (4, 'Demo Motors', 1, 'SUV',       2022);
 
 INSERT INTO secciones (id, nombre, descripcion) VALUES
   (1, 'Motor',     'Piezas del motor y filtros'),

@@ -28,14 +28,29 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `marcas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `slug` varchar(120) NOT NULL,
+  `logo` varchar(255) DEFAULT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT '1',
+  `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_marcas_nombre` (`nombre`),
+  UNIQUE KEY `uk_marcas_slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `autos` (
   `id` int NOT NULL AUTO_INCREMENT,
   `marca` varchar(100) NOT NULL,
+  `marca_id` int DEFAULT NULL,
   `modelo` varchar(100) NOT NULL,
   `anio` year NOT NULL,
   `activo` tinyint(1) DEFAULT '1',
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `marca_id` (`marca_id`),
+  CONSTRAINT `autos_ibfk_marca` FOREIGN KEY (`marca_id`) REFERENCES `marcas` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `secciones` (
