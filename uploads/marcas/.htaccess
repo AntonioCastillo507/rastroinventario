@@ -1,0 +1,28 @@
+Options -Indexes -ExecCGI -Includes
+
+# Aquí nunca se ejecuta nada: ni PHP ni CGI ni SSI, sin importar dónde esté la extensión (x.php.png)
+RemoveHandler .php .php3 .php4 .php5 .phtml .phar .cgi .pl .shtml
+RemoveType .php .php3 .php4 .php5 .phtml .phar .shtml
+<IfModule php_module>
+    php_flag engine off
+</IfModule>
+
+# Solo se sirven los logos que genera LogoMarca (marca_ + 32 hex + png, webp o svg); todo lo demás queda negado
+Require all denied
+<FilesMatch "^marca_[0-9a-f]{32}\.(svg|png|webp)$">
+    Require all granted
+</FilesMatch>
+# El .htaccess de uploads/ permite otras imágenes (jpg, gif...) y se hereda: aquí se niega todo lo que no sea el patrón de arriba
+<FilesMatch "^(?!marca_[0-9a-f]{32}\.(svg|png|webp)$)">
+    Require all denied
+</FilesMatch>
+
+AddType image/svg+xml .svg
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    # Un SVG abierto directamente en el navegador no puede cargar ni ejecutar nada
+    <FilesMatch "\.svg$">
+        Header set Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    </FilesMatch>
+</IfModule>
