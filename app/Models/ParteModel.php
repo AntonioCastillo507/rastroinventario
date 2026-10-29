@@ -93,7 +93,7 @@ class ParteModel extends BaseModel {
     public function destacadasParaHero(): array {
         return $this->query(
             "SELECT p.*,a.marca,a.modelo,a.anio ".self::FROM_PUBLIC
-            ." WHERE p.activo=1 AND p.destacado=1 AND p.cantidad>0 AND p.imagen_grande IS NOT NULL AND p.imagen_grande<>'' ORDER BY p.id ASC LIMIT ".self::MAX_DESTACADAS
+            ." WHERE p.activo=1 AND p.destacado=1 AND p.cantidad>0 AND p.imagen_grande IS NOT NULL AND p.imagen_grande<>'' ORDER BY p.id DESC LIMIT ".self::MAX_DESTACADAS
         );
     }
     /** Cuántas piezas activas están destacadas; $exceptoId deja fuera la que se está editando */

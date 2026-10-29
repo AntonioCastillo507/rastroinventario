@@ -146,7 +146,7 @@ final class ParteDestacadaTest extends BaseDatos {
         for ($i = 1; $i <= 5; $i++) $this->pieza("Normal $i");
         for ($v = 0; $v < 6; $v++) {
             $ids = array_map(fn($p) => (int)$p["id"], (new \ParteModel())->paraHero(4, []));
-            $this->assertSame([$d1, $d2], $ids, "solo las destacadas, en orden estable por id");
+            $this->assertSame([$d2, $d1], $ids, "solo las destacadas, en orden estable por id (la más nueva primero)");
         }
         $this->assertSame(2, Html::contar($this->portada(), "//*[@data-hero-carrusel]//a[@data-hero-diapo]"));
     }
