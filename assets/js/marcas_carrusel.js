@@ -3,9 +3,10 @@
 // aquí se mueve sola de forma continua y sin saltos: el contenido se repite en tres bloques iguales y la posición
 // salta un bloque entero cuando se acerca a un borde, con lo que se ve lo mismo antes y después del salto.
 // Se pausa con el cursor encima, con el foco del teclado dentro, con el botón de pausa, mientras se toca o se usan las
-// flechas, con la pestaña oculta o fuera de pantalla. Con prefers-reduced-motion no se mueve sola: queda la fila con scroll.
+// flechas, con la pestaña oculta o fuera de pantalla. Tras 30 s en movimiento se queda quieto y se maneja con las flechas. Con prefers-reduced-motion no se mueve sola: queda la fila con scroll.
 (function () {
   var VELOCIDAD = 30;       // px por segundo (unos 40 s por vuelta a 1200 px)
+  var TIEMPO_MAX = 30000;   // ms en movimiento; después se queda quieto y se maneja con las flechas
   var MIN_MARCAS = 4;       // con menos no se anima: caben quietas
   var PAUSA_USUARIO = 4000; // ms sin moverse tras tocar, usar la rueda o las flechas
 
@@ -24,7 +25,9 @@
     if (pos < bloque * 0.5) return pos + bloque;
     return pos;
   }
-  window.MarcasCarrusel = { VELOCIDAD: VELOCIDAD, MIN_MARCAS: MIN_MARCAS, repeticiones: repeticiones, debeAnimar: debeAnimar, normalizar: normalizar };
+  /** ¿Ya se movió el tiempo máximo? */
+  function agotado(ms) { return ms >= TIEMPO_MAX; }
+  window.MarcasCarrusel = { VELOCIDAD: VELOCIDAD, TIEMPO_MAX: TIEMPO_MAX, agotado: agotado, MIN_MARCAS: MIN_MARCAS, repeticiones: repeticiones, debeAnimar: debeAnimar, normalizar: normalizar };
 
   var raiz = document.querySelector("[data-marcas-carrusel]");
   if (!raiz) return;
@@ -33,17 +36,16 @@
   var controles = document.querySelector("[data-marcas-controles]");
   var btnAnt = document.querySelector("[data-marcas-anterior]");
   var btnSig = document.querySelector("[data-marcas-siguiente]");
-  var btnPausa = document.querySelector("[data-marcas-pausa]");
-  if (!ventana || !pista || !controles || !btnAnt || !btnSig || !btnPausa) return;
+  if (!ventana || !pista || !controles || !btnAnt || !btnSig) return;
 
   var originales = Array.prototype.slice.call(pista.children);
   var mq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
   var animado = false, bloque = 0;
-  var pausaBoton = false, encima = false, conFoco = false, oculta = false, fuera = false, hastaUsuario = 0;
+  var movido = 0, encima = false, conFoco = false, oculta = false, fuera = false, hastaUsuario = 0;
   var rafId = 0, ultimo = 0, resto = 0;
 
   function reducido() { return !!(mq && mq.matches); }
-  function pausado() { return pausaBoton || encima || conFoco || oculta || fuera || Date.now() < hastaUsuario; }
+  function pausado() { return encima || conFoco || oculta || fuera || Date.now() < hastaUsuario; }
 
   function quitarClones() {
     Array.prototype.slice.call(pista.querySelectorAll("[data-clon]")).forEach(function (n) { pista.removeChild(n); });
@@ -73,7 +75,6 @@
       var cabe = pista.scrollWidth <= ventana.clientWidth + 1;
       raiz.classList.toggle("es-fija", cabe);
       controles.hidden = cabe;
-      btnPausa.hidden = true;
       actualizarFlechas();
       return;
     }
@@ -87,7 +88,6 @@
     pista.appendChild(despues);
     raiz.classList.add("es-animado");
     controles.hidden = false;
-    btnPausa.hidden = false;
     btnAnt.disabled = btnSig.disabled = false;
     // Un bloque = r repeticiones del conjunto (con la separación entre ellos); el del medio empieza en las marcas originales
     bloque = originales[0].getBoundingClientRect().left - pista.getBoundingClientRect().left;
@@ -107,6 +107,8 @@
     ultimo = t;
     if (pausado()) return;
     resto += VELOCIDAD * dt;
+    movido += dt * 1000;
+    if (agotado(movido)) { detener(); return; }
     var px = Math.floor(resto);
     if (px >= 1) { resto -= px; ventana.scrollLeft += px; }
   }
@@ -140,15 +142,6 @@
   }
   btnAnt.addEventListener("click", function () { mover(-1); });
   btnSig.addEventListener("click", function () { mover(1); });
-  btnPausa.addEventListener("click", function () {
-    pausaBoton = !pausaBoton;
-    btnPausa.setAttribute("aria-pressed", pausaBoton ? "true" : "false");
-    var texto = pausaBoton ? btnPausa.dataset.textoReanudar : btnPausa.dataset.textoPausar;
-    if (texto) btnPausa.setAttribute("aria-label", texto);
-    var icono = btnPausa.querySelector("i");
-    if (icono) icono.className = pausaBoton ? "bi bi-play-fill" : "bi bi-pause-fill";
-  });
-
   var anchoPrevio = window.innerWidth, temporizador = 0;
   window.addEventListener("resize", function () {
     window.clearTimeout(temporizador);

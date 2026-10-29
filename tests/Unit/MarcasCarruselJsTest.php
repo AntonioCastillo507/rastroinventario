@@ -59,11 +59,21 @@ final class MarcasCarruselJsTest extends TestCase {
         $this->assertStringContainsString("prefers-reduced-motion: reduce", $js);
     }
 
-    public function testLasPausasCubrenCursorFocoBotonTactoPestanaYPantalla(): void {
+    public function testLasPausasCubrenCursorFocoTactoPestanaYPantalla(): void {
         $js = (string)file_get_contents(BASE_PATH . "/assets/js/marcas_carrusel.js");
-        foreach (["mouseenter", "focusin", "visibilitychange", "IntersectionObserver", "pointerdown", "touchstart", "wheel", "aria-pressed"] as $clave) {
+        foreach (["mouseenter", "focusin", "visibilitychange", "IntersectionObserver", "pointerdown", "touchstart", "wheel"] as $clave) {
             $this->assertStringContainsString($clave, $js, $clave);
         }
-        $this->assertSame(1, preg_match('/function pausado\(\) \{ return pausaBoton \|\| encima \|\| conFoco \|\| oculta \|\| fuera \|\| Date\.now\(\) < hastaUsuario; \}/', $js));
+        $this->assertSame(1, preg_match('/function pausado\(\) \{ return encima \|\| conFoco \|\| oculta \|\| fuera \|\| Date\.now\(\) < hastaUsuario; \}/', $js));
+    }
+
+    public function testSeDetieneTrasTreintaSegundosYNoHayBotonDePausa(): void {
+        $this->assertSame(30000, self::$r["tiempoMax"]);
+        $this->assertFalse(self::$r["agotado"]["antes"]);
+        $this->assertTrue(self::$r["agotado"]["justo"]);
+        $this->assertTrue(self::$r["agotado"]["despues"]);
+        $js = (string)file_get_contents(BASE_PATH . "/assets/js/marcas_carrusel.js");
+        $this->assertStringNotContainsString("btnPausa", $js);
+        $this->assertStringContainsString("if (agotado(movido))", $js);
     }
 }

@@ -38,26 +38,32 @@ $conCarrusel=count($heroDiapos)>=2;
     <?php if($conCarrusel): ?>
     <?php /* Carrusel de piezas (assets/js/hero_carrusel.js): sin JavaScript queda la primera pieza. Se oculta por debajo de 992 px */ ?>
     <div class="hero-carrusel" data-hero-carrusel role="group" aria-roledescription="carrusel" aria-label="<?=Marca::h("portada.hero_carrusel")?>">
-      <div class="hero-diapos" data-hero-diapos>
-        <?php foreach($heroDiapos as $i=>$hp):
-          $compat=trim(($hp["marca"]??"")." ".($hp["modelo"]??""));
-          $srcset=APP_URL."/uploads/".$hp["_src"]." 640w".($hp["_src1200"]!==""?", ".APP_URL."/uploads/".$hp["_src1200"]." 1200w":"");
-        ?>
-        <a class="hero-diapo" data-hero-diapo href="<?=APP_URL?>/?action=detalle&amp;id=<?=(int)$hp["id"]?>">
-          <span class="hero-foto"><img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($hp["_src"])?>" srcset="<?=htmlspecialchars($srcset)?>" sizes="(min-width: 1200px) 520px, 440px" alt="" width="640" height="640" decoding="async"<?=$i>0?' loading="lazy"':''?>></span>
-          <span class="hero-leyenda">
-            <span class="hero-nombre"><?=htmlspecialchars($hp["nombre"])?></span>
-            <?php if($compat!==""): ?><span class="hero-compat"><?=htmlspecialchars($compat)?></span><?php endif; ?>
-            <span class="hero-precio num">$<?=number_format((float)$hp["precio"],2)?></span>
-          </span>
-        </a>
-        <?php endforeach; ?>
+      <div class="hero-marco">
+        <div class="hero-diapos" data-hero-diapos>
+          <?php foreach($heroDiapos as $i=>$hp):
+            $compat=trim(($hp["marca"]??"")." ".($hp["modelo"]??""));
+            $srcset=APP_URL."/uploads/".$hp["_src"]." 640w".($hp["_src1200"]!==""?", ".APP_URL."/uploads/".$hp["_src1200"]." 1200w":"");
+          ?>
+          <a class="hero-diapo" data-hero-diapo href="<?=APP_URL?>/?action=detalle&amp;id=<?=(int)$hp["id"]?>">
+            <span class="hero-foto"><img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($hp["_src"])?>" srcset="<?=htmlspecialchars($srcset)?>" sizes="(min-width: 1200px) 520px, 400px" alt="" width="640" height="320" decoding="async"<?=$i>0?' loading="lazy"':''?>></span>
+            <span class="hero-leyenda">
+              <span class="hero-datos">
+                <span class="hero-nombre"><?=htmlspecialchars($hp["nombre"])?></span>
+                <?php if($compat!==""): ?><span class="hero-compat"><?=htmlspecialchars($compat)?></span><?php endif; ?>
+                <span class="hero-precio num">$<?=number_format((float)$hp["precio"],2)?></span>
+              </span>
+              <span class="hero-ver"><?=Marca::h("portada.hero_ver")?> →</span>
+            </span>
+          </a>
+          <?php endforeach; ?>
+        </div>
+        <button type="button" class="hero-flecha hero-flecha-ant" data-hero-anterior hidden aria-label="<?=Marca::h("portada.hero_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
+        <button type="button" class="hero-flecha hero-flecha-sig" data-hero-siguiente hidden aria-label="<?=Marca::h("portada.hero_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
       </div>
-      <div class="hero-barras" data-hero-barras hidden>
+      <div class="hero-puntos" data-hero-puntos hidden>
         <?php $nTotal=count($heroDiapos); foreach($heroDiapos as $i=>$hp): ?>
-        <button type="button" class="hero-barra" data-hero-barra aria-label="<?=htmlspecialchars(str_replace(["{n}","{total}"],[(string)($i+1),(string)$nTotal],(string)Marca::get("portada.hero_barra")))?>"><span class="hero-barra-pista"><span class="hero-barra-relleno"></span></span></button>
+        <button type="button" class="hero-punto" data-hero-punto aria-label="<?=htmlspecialchars(str_replace(["{n}","{total}"],[(string)($i+1),(string)$nTotal],(string)Marca::get("portada.hero_barra")))?>"><span class="hero-punto-marca"></span></button>
         <?php endforeach; ?>
-        <button type="button" class="hero-pausa" data-hero-pausa aria-pressed="false" aria-label="<?=Marca::h("portada.hero_pausar")?>" data-texto-pausar="<?=Marca::h("portada.hero_pausar")?>" data-texto-reanudar="<?=Marca::h("portada.hero_reanudar")?>"><i aria-hidden="true" class="bi bi-pause-fill"></i></button>
       </div>
     </div>
     <script src="<?=Assets::url("js/hero_carrusel.js")?>"></script>
@@ -118,14 +124,13 @@ $conCarrusel=count($heroDiapos)>=2;
       <h2 id="t-marcas" class="seccion-titulo"><?=Marca::h("portada.marcas_titulo")?></h2>
       <div class="marcas-controles" data-marcas-controles hidden>
         <button type="button" class="marcas-nav" data-marcas-anterior aria-label="<?=Marca::h("portada.marcas_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
-        <button type="button" class="marcas-nav" data-marcas-pausa aria-pressed="false" aria-label="<?=Marca::h("portada.marcas_pausar")?>" data-texto-pausar="<?=Marca::h("portada.marcas_pausar")?>" data-texto-reanudar="<?=Marca::h("portada.marcas_reanudar")?>"><i aria-hidden="true" class="bi bi-pause-fill"></i></button>
         <button type="button" class="marcas-nav" data-marcas-siguiente aria-label="<?=Marca::h("portada.marcas_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
       </div>
     </div>
     <div class="marcas-carrusel" data-marcas-carrusel>
       <div class="marcas-ventana" data-marcas-ventana>
         <ul class="marcas-pista" data-marcas-pista>
-          <?php foreach($marcasConteo as $m): $mlNombre=$m["nombre"]; $mlLogo=$m["logo"]; $mlClase=""; $n=(int)$m["total"]; ?>
+          <?php foreach($marcasConteo as $m): $mlNombre=$m["nombre"]; $mlLogo=$m["logo"]; $mlClase="marca-casilla--tarjeta"; $mlNombreVisible=true; $n=(int)$m["total"]; ?>
           <li><a class="marca-enlace" href="<?=APP_URL?>/?ver=catalogo&amp;marca=<?=htmlspecialchars(rawurlencode($m["nombre"]))?>">
             <?php include BASE_PATH."/app/Views/layouts/marca_logo.php"; ?>
             <span class="visually-hidden"><?=htmlspecialchars($m["nombre"])?>, <?=$n?> <?=$n===1?"pieza":"piezas"?></span>

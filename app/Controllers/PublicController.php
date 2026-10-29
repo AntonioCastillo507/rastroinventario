@@ -26,7 +26,7 @@ class PublicController extends BaseController {
         } else {
             $recientes=$this->pam->findPublic("",0,4,"",0,0,"recientes");
             $marcasConteo=(new MarcaAutoModel())->conLogoYPiezas();
-            $heroPartes=$this->pam->paraHero(4);
+            $heroPartes=$this->pam->paraHero(4,(array)Marca::get("portada.hero_excluir_secciones",[]));
             $this->view("public/home",array_merge($shared,compact("recientes","marcasConteo","heroPartes","q")));
         }
     }

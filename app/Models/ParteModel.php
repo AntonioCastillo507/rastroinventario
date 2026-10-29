@@ -68,16 +68,21 @@ class ParteModel extends BaseModel {
         return $this->query($sql, $params);
     }
     /**
-     * Piezas para el carrusel del hero de la portada: activas, con stock y con foto guardada, al azar y como mucho $limite (tope 4).
+     * Piezas para el carrusel del hero de la portada: activas, con stock y con foto guardada, al azar y como mucho $limite (tope 4), sin las de las secciones de $excluirSecciones (nombres, de portada.hero_excluir_secciones en marca.php).
      * Que el archivo exista en disco lo revisa la vista.
      */
-    public function paraHero(int $limite = 4): array {
+    public function paraHero(int $limite = 4, array $excluirSecciones = []): array {
         $limite = max(1, min($limite, 4));
+        $excluir = array_values(array_filter(array_map("strval", $excluirSecciones), fn($n) => $n !== ""));
+        $w = "";
+        if ($excluir) $w = " AND (s.nombre IS NULL OR s.nombre NOT IN (" . implode(",", array_fill(0, count($excluir), "?")) . "))";
         return $this->query(
             "SELECT p.*,a.marca,a.modelo,a.anio ".self::FROM_PUBLIC
-            ." WHERE p.activo=1 AND p.cantidad>0 AND p.imagen_grande IS NOT NULL AND p.imagen_grande<>'' ORDER BY RAND() LIMIT ".$limite
+            ." WHERE p.activo=1 AND p.cantidad>0 AND p.imagen_grande IS NOT NULL AND p.imagen_grande<>''".$w." ORDER BY RAND() LIMIT ".$limite,
+            $excluir
         );
     }
+
     /**
      * Piezas relacionadas con la de $id: de la misma sección o del mismo auto, activas y con stock, sin la propia.
      * Primero las que coinciden en las dos cosas, y a igualdad las más recientes (desempate por id). Máximo $limite.

@@ -16,6 +16,8 @@ const B = 1000;
 console.log(JSON.stringify({
   velocidad: c.VELOCIDAD,
   minMarcas: c.MIN_MARCAS,
+  tiempoMax: c.TIEMPO_MAX,
+  agotado: { antes: c.agotado(29999), justo: c.agotado(30000), despues: c.agotado(45000) },
   rep: [c.repeticiones(1216, 912), c.repeticiones(390, 648), c.repeticiones(1216, 1216), c.repeticiones(1216, 1217), c.repeticiones(1216, 0), c.repeticiones(0, 912), c.repeticiones(2000, 100)],
   anima: {
     tres: c.debeAnimar(3, false), cuatro: c.debeAnimar(4, false), seis: c.debeAnimar(6, false),

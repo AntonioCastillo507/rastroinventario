@@ -99,26 +99,30 @@ final class HeroCarruselTest extends BaseDatos {
         $html = $diapos->item(0)->textContent;
         $this->assertStringContainsString("$12.50", $html, "precio en la leyenda");
 
-        $barras = $x->query("//*[@data-hero-carrusel]//button[@data-hero-barra]");
-        $this->assertSame(3, $barras->length, "una barrita por diapositiva");
-        foreach ($barras as $i => $b) {
+        $puntos = $x->query("//*[@data-hero-carrusel]//button[@data-hero-punto]");
+        $this->assertSame(3, $puntos->length, "un punto por diapositiva");
+        foreach ($puntos as $i => $b) {
             $this->assertSame("Ver la pieza " . ($i + 1) . " de 3", $b->getAttribute("aria-label"));
         }
-        $pausa = $x->query("//*[@data-hero-carrusel]//button[@data-hero-pausa]")->item(0);
-        $this->assertSame(\Marca::get("portada.hero_pausar"), $pausa->getAttribute("aria-label"));
-        $this->assertSame(\Marca::get("portada.hero_reanudar"), $pausa->getAttribute("data-texto-reanudar"));
-        $this->assertTrue($x->query("//*[@data-hero-barras]")->item(0)->hasAttribute("hidden"), "sin JavaScript los controles no se ven");
+        $this->assertSame(\Marca::get("portada.hero_anterior"), $x->query("//button[@data-hero-anterior]")->item(0)->getAttribute("aria-label"));
+        $this->assertSame(\Marca::get("portada.hero_siguiente"), $x->query("//button[@data-hero-siguiente]")->item(0)->getAttribute("aria-label"));
+        $this->assertSame(0, Html::contar($x, "//*[@data-hero-pausa or @data-hero-barra]"), "sin botón de pausa ni barritas");
+        $this->assertSame(3, Html::contar($x, "//a[@data-hero-diapo]//*[contains(@class,'hero-ver')]"), "«Ver detalle →» en cada leyenda");
+        $this->assertTrue($x->query("//*[@data-hero-puntos]")->item(0)->hasAttribute("hidden"), "sin JavaScript los controles no se ven");
+        $this->assertTrue($x->query("//button[@data-hero-anterior]")->item(0)->hasAttribute("hidden"));
         $this->assertSame(1, Html::contar($x, "//script[contains(@src,'hero_carrusel.js')]"));
     }
 
     public function testLosTextosFijosVivenEnMarcaPhp(): void {
         $p = \Marca::todo()["portada"];
-        foreach (["hero_carrusel", "hero_barra", "hero_pausar", "hero_reanudar", "porque_insignia", "porque_titulo", "porque_subtitulo", "porque_texto", "porque_boton"] as $k) {
+        foreach (["hero_carrusel", "hero_barra", "hero_anterior", "hero_siguiente", "hero_ver", "porque_insignia", "porque_titulo", "porque_subtitulo", "porque_texto", "porque_boton"] as $k) {
             $this->assertNotSame("", trim((string)($p[$k] ?? "")), "falta portada.$k");
         }
         $this->assertStringContainsString("{n}", $p["hero_barra"]);
         $vista = (string)file_get_contents(BASE_PATH . "/app/Views/public/home.php");
-        $this->assertStringNotContainsString("Pausar el cambio", $vista);
+        $this->assertStringNotContainsString("Pieza siguiente", $vista);
+        $this->assertArrayNotHasKey("hero_pausar", $p);
+        $this->assertArrayNotHasKey("hero_reanudar", $p);
         $this->assertStringNotContainsString("Conoce más sobre nosotros", $vista);
     }
 
@@ -157,22 +161,42 @@ final class HeroCarruselTest extends BaseDatos {
         $this->assertMatchesRegularExpression('~#comentarios\s*\{\s*scroll-margin-top:\s*6rem;~', $css, "el ancla de comentarios queda bajo la barra fija");
         $this->assertMatchesRegularExpression('~\.hero-carrusel \{ display: none; \}~', $css, "oculta en móvil");
         $this->assertMatchesRegularExpression('~@media \(min-width: 992px\)\s*\{\s*\.hero-con-carrusel~', $css, "visible desde 992 px");
+        $this->assertMatchesRegularExpression('~@media \(min-width: 1200px\) \{ \.hero-con-carrusel \{ grid-template-columns: minmax\(0, 1fr\) 520px~', $css, "tarjeta de 520 px");
         $this->assertStringContainsString("transition: opacity .5s ease-out", $css, "fundido de 500 ms");
-        $this->assertStringContainsString("hero-llena 5s linear", $css, "5 s por pieza");
-        // la pausa tiene que ganarle en especificidad a la regla que anima la barrita activa, o no pausa nada
-        $this->assertMatchesRegularExpression('~\.hero-carrusel\.hero-pausado \.hero-barra\.is-activa \.hero-barra-relleno[^{]*\{ animation-play-state: paused; \}~', $css);
-        $this->assertStringContainsString("object-fit: contain", $css);
-        $this->assertMatchesRegularExpression('~\.hero-barra \{[^}]*height: 44px~', $css, "zona táctil de 44 px");
+        $this->assertMatchesRegularExpression('~\.hero-foto img \{[^}]*object-fit: cover~', $css, "la foto del hero recorta");
+        $this->assertMatchesRegularExpression('~\.hero-flecha \{[^}]*width: 44px; height: 44px~', $css);
+        $this->assertStringNotContainsString("hero-barra", $css);
+        $this->assertStringNotContainsString("hero-pausa", $css);
+        $this->assertMatchesRegularExpression('~\.hero-punto-marca \{[^}]*8px~', $css);
         $this->assertMatchesRegularExpression('~@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.hero-diapo \{ transition: none; \}~', $css);
-        $this->assertDoesNotMatchRegularExpression('~\.hero-diapo[^{]*\{[^}]*(width|height)\s*:[^;]*;[^}]*transition[^}]*(width|height)~', $css, "no se anima tamaño");
+        $this->assertStringContainsString(".portada-seccion ~ .portada-seccion { border-top: 1px solid var(--hairline); }", $css, "divisor entre todas las secciones de la portada");
     }
 
-    public function testElScriptPausaYRespetaMovimientoReducido(): void {
+    public function testElScriptPausaYSeDetieneTrasUnaVuelta(): void {
         $js = (string)file_get_contents(BASE_PATH . "/assets/js/hero_carrusel.js");
-        $this->assertStringContainsString("prefers-reduced-motion: reduce", $js);
-        $this->assertStringContainsString("mouseenter", $js);
-        $this->assertStringContainsString("focusin", $js);
-        $this->assertStringContainsString("aria-pressed", $js);
-        $this->assertStringNotContainsString("setInterval", $js, "el avance lo marca la animación de la barrita, que se pausa con ella");
+        foreach (["prefers-reduced-motion: reduce", "mouseenter", "focusin", "touchstart", "vueltaCompleta", "data-hero-anterior"] as $t) $this->assertStringContainsString($t, $js, $t);
+        $this->assertStringNotContainsString("aria-pressed", $js, "sin botón de pausa");
+        $this->assertStringContainsString("var INTERVALO = 5000;", $js);
+    }
+
+    public function testConLaSeccionExcluidaNoSaleNingunaDeSusPiezasYConLaListaVaciaSi(): void {
+        $this->assertSame(["Motor y transmisión"], \Marca::get("portada.hero_excluir_secciones"), "la lista editable vive en marca.php");
+        $nombre = "Sec excluida " . bin2hex(random_bytes(3));
+        $this->db->prepare("INSERT INTO secciones (nombre) VALUES (?)")->execute([$nombre]);
+        $idSec = (int)$this->db->lastInsertId();
+        $deSec = [];
+        for ($i = 1; $i <= 3; $i++) { $id = $this->pieza("Excluible $i"); $this->db->prepare("UPDATE partes SET seccion_id = ? WHERE id = ?")->execute([$idSec, $id]); $deSec[] = $id; }
+        $libre = $this->pieza("Sin sección");
+        for ($v = 0; $v < 8; $v++) {
+            $ids = array_map(fn($p) => (int)$p["id"], (new \ParteModel())->paraHero(4, [$nombre]));
+            $this->assertSame([$libre], $ids, "solo sale la pieza que no es de la sección excluida");
+        }
+        $vistos = [];
+        for ($v = 0; $v < 20; $v++) foreach ((new \ParteModel())->paraHero(4, []) as $p) $vistos[(int)$p["id"]] = true;
+        $this->assertNotEmpty(array_intersect(array_keys($vistos), $deSec), "con la lista vacía sí pueden salir");
+        $m = \Marca::todo(); $m["portada"]["hero_excluir_secciones"] = [$nombre]; \Marca::usarParaPruebas($m);
+        $this->assertSame(0, Html::contar($this->portada(), "//*[@data-hero-carrusel]"), "menos de 2 piezas tras excluir: sin tarjeta");
+        $m["portada"]["hero_excluir_secciones"] = []; \Marca::usarParaPruebas($m);
+        $this->assertSame(1, Html::contar($this->portada(), "//*[@data-hero-carrusel]"));
     }
 }

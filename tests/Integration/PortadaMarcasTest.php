@@ -104,7 +104,7 @@ final class PortadaMarcasTest extends BaseDatos {
         $x = Html::xpath($html);
         $ctrl = $x->query("//*[@data-marcas-controles]")->item(0);
         $this->assertTrue($ctrl->hasAttribute("hidden"), "sin JavaScript los controles no se ven");
-        $botones = ["data-marcas-anterior" => "portada.marcas_anterior", "data-marcas-siguiente" => "portada.marcas_siguiente", "data-marcas-pausa" => "portada.marcas_pausar"];
+        $botones = ["data-marcas-anterior" => "portada.marcas_anterior", "data-marcas-siguiente" => "portada.marcas_siguiente"];
         foreach ($botones as $attr => $clave) {
             $b = $x->query(".//button[@$attr]", $ctrl)->item(0);
             $this->assertNotNull($b, $attr);
@@ -112,9 +112,8 @@ final class PortadaMarcasTest extends BaseDatos {
             $this->assertSame("button", $b->getAttribute("type"));
             $this->assertSame("true", $x->query(".//i", $b)->item(0)->getAttribute("aria-hidden"));
         }
-        $pausa = $x->query(".//button[@data-marcas-pausa]", $ctrl)->item(0);
-        $this->assertSame("false", $pausa->getAttribute("aria-pressed"));
-        $this->assertSame((string)\Marca::get("portada.marcas_reanudar"), $pausa->getAttribute("data-texto-reanudar"));
+        $this->assertSame(0, $x->query(".//button[@data-marcas-pausa]", $ctrl)->length, "sin botón de pausa");
+        $this->assertSame(2, $x->query(".//button", $ctrl)->length, "solo las dos flechas");
         $this->assertStringContainsString("marcas_carrusel.js", $html);
         $this->assertSame(1, $x->query("//section[@aria-labelledby='t-marcas']//h2[@id='t-marcas']")->length);
     }

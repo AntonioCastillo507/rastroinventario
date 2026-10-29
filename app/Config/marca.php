@@ -54,13 +54,14 @@ return [
         // Textos accesibles de los controles del carrusel de marcas (flechas y pausa)
         "marcas_anterior"   => "Marcas anteriores",
         "marcas_siguiente"  => "Marcas siguientes",
-        "marcas_pausar"     => "Pausar el movimiento de las marcas",
-        "marcas_reanudar"   => "Reanudar el movimiento de las marcas",
         // Carrusel de piezas del hero (S7b-A.1): {n} y {total} se reemplazan por el número de la pieza y el total
         "hero_carrusel"     => "Piezas disponibles",
         "hero_barra"        => "Ver la pieza {n} de {total}",
-        "hero_pausar"       => "Pausar el cambio de piezas",
-        "hero_reanudar"     => "Reanudar el cambio de piezas",
+        "hero_anterior"     => "Pieza anterior",
+        "hero_siguiente"    => "Pieza siguiente",
+        "hero_ver"          => "Ver detalle",
+        // Secciones (por nombre) cuyas piezas no salen en el carrusel del hero, p. ej. porque sus fotos se recortan mal. Vacía = salen todas.
+        "hero_excluir_secciones" => ["Motor y transmisión"],
         // Cuadro «Por qué elegirnos» (S7b-A.2): textos genéricos de plantilla, sin afirmaciones por confirmar. La foto es nosotros.imagen
         "porque_insignia"   => "Quiénes somos",
         "porque_titulo"     => "Por qué elegirnos",
