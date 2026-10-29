@@ -72,6 +72,9 @@ class ParteModel extends BaseModel {
      * Que el archivo exista en disco lo revisa la vista.
      */
     public function paraHero(int $limite = 4, array $excluirSecciones = []): array {
+        // Con 2 o más destacadas a la venta (activas, con stock y foto) el hero muestra solo esas, en orden estable; sin azar
+        $destacadas = $this->destacadasParaHero();
+        if (count($destacadas) >= 2) return $destacadas;
         $limite = max(1, min($limite, 4));
         $excluir = array_values(array_filter(array_map("strval", $excluirSecciones), fn($n) => $n !== ""));
         $w = "";
@@ -81,6 +84,21 @@ class ParteModel extends BaseModel {
             ." WHERE p.activo=1 AND p.cantidad>0 AND p.imagen_grande IS NOT NULL AND p.imagen_grande<>''".$w." ORDER BY RAND() LIMIT ".$limite,
             $excluir
         );
+    }
+
+    /** Máximo de piezas destacadas a la vez (las que el administrador marca para la portada) */
+    public const MAX_DESTACADAS = 6;
+
+    /** Destacadas activas, con stock y foto, por id: el orden no cambia entre visitas */
+    public function destacadasParaHero(): array {
+        return $this->query(
+            "SELECT p.*,a.marca,a.modelo,a.anio ".self::FROM_PUBLIC
+            ." WHERE p.activo=1 AND p.destacado=1 AND p.cantidad>0 AND p.imagen_grande IS NOT NULL AND p.imagen_grande<>'' ORDER BY p.id ASC LIMIT ".self::MAX_DESTACADAS
+        );
+    }
+    /** Cuántas piezas activas están destacadas; $exceptoId deja fuera la que se está editando */
+    public function contarDestacadas(int $exceptoId = 0): int {
+        return (int)$this->query("SELECT COUNT(*) AS n FROM partes WHERE activo=1 AND destacado=1 AND id<>?", [$exceptoId])[0]["n"];
     }
 
     /**

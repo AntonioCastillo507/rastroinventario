@@ -45,6 +45,16 @@ class ParteController extends BaseController {
         $this->view("admin/partes/index", compact("partes","q","filtro","orden","seccion","secciones","pag","pagParams","fichas"));
     }
 
+    public const ERR_DESTACADA_SIN_FOTO = "Una pieza sin foto no puede ser destacada: sube una foto o quita la marca de la portada.";
+    public const ERR_DESTACADAS_TOPE    = "Ya hay 6 piezas destacadas; quita una.";
+    /** Error al marcar una pieza para la portada (vacío si se puede): necesita foto y no pasar de ParteModel::MAX_DESTACADAS a la vez */
+    private function errorDestacada(bool $destacar, int $id, bool $tieneFoto): string {
+        if (!$destacar) return "";
+        if (!$tieneFoto) return self::ERR_DESTACADA_SIN_FOTO;
+        if ($this->pm->contarDestacadas($id) >= ParteModel::MAX_DESTACADAS) return self::ERR_DESTACADAS_TOPE;
+        return "";
+    }
+
     /** Mensaje y tipo del aviso tras guardar: si la foto trae avisos (no bloqueos) se anotan y el aviso pasa a amarillo */
     private static function mensajeConAvisos(string $msg, array $avisos): array {
         return $avisos ? [$msg." Aviso de la foto: ".implode(" ",$avisos), "warning"] : [$msg, "success"];
@@ -55,7 +65,7 @@ class ParteController extends BaseController {
         if ($this->isPost()) {
             CsrfToken::verify();
             // Con un error, el formulario vuelve con lo escrito (la foto hay que elegirla otra vez: un navegador no deja rellenarla)
-            $viejo=array_intersect_key($_POST,array_flip(["nombre","descripcion","auto_id","seccion_id","precio","cantidad"]));
+            $viejo=array_intersect_key($_POST,array_flip(["nombre","descripcion","auto_id","seccion_id","precio","cantidad","destacado"]));
             $nombre=Sanitizer::post("nombre"); $precio=Sanitizer::post("precio","float"); $cant=Sanitizer::post("cantidad","int");
             $v=(new Validator())->required("nombre",$nombre,"Nombre")->numeric("precio",$precio,0.01)->numeric("cantidad",$cant,0);
             if ($v->isValid()) {
@@ -63,8 +73,10 @@ class ParteController extends BaseController {
                 if (isset($_FILES["imagen"])&&($_FILES["imagen"]["error"]??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE) {
                     $r=ImageHelper::upload($_FILES["imagen"],"parte"); if ($r) $imgData=$r; else $error=ImageHelper::$error?:"Error al subir imagen.";
                 }
+                $destacado=Sanitizer::post("destacado","int")?1:0;
+                if ($error==="") $error=$this->errorDestacada($destacado===1,0,!empty($imgData["original"]));
                 if ($error==="") {
-                    $id=$this->pm->create(["nombre"=>$nombre,"descripcion"=>Sanitizer::post("descripcion"),"auto_id"=>Sanitizer::post("auto_id","int")?:null,"seccion_id"=>Sanitizer::post("seccion_id","int")?:null,"precio"=>$precio,"cantidad"=>$cant,"thumbnail"=>$imgData["thumbnail"],"imagen_grande"=>$imgData["original"],"creado_por"=>$_SESSION["user"]["id"]]);
+                    $id=$this->pm->create(["destacado"=>$destacado,"nombre"=>$nombre,"descripcion"=>Sanitizer::post("descripcion"),"auto_id"=>Sanitizer::post("auto_id","int")?:null,"seccion_id"=>Sanitizer::post("seccion_id","int")?:null,"precio"=>$precio,"cantidad"=>$cant,"thumbnail"=>$imgData["thumbnail"],"imagen_grande"=>$imgData["original"],"creado_por"=>$_SESSION["user"]["id"]]);
                     if ($id) { $p=$this->pm->findById($id); $this->pm->updateFirma($id,DigitalSignature::signParte($p)); $this->redirect(APP_URL."/admin/?mod=partes",...self::mensajeConAvisos("Parte creada. ✔",$imgData["avisos"]??[])); }
                     $error="Error al guardar.";
                 }
@@ -79,7 +91,7 @@ class ParteController extends BaseController {
         $autos=$this->am->findActive(); $secciones=$this->sm->findActive(); $error="";
         if ($this->isPost()) {
             CsrfToken::verify();
-            $upd=["nombre"=>Sanitizer::post("nombre"),"descripcion"=>Sanitizer::post("descripcion"),"auto_id"=>Sanitizer::post("auto_id","int")?:null,"seccion_id"=>Sanitizer::post("seccion_id","int")?:null,"precio"=>Sanitizer::post("precio","float"),"cantidad"=>Sanitizer::post("cantidad","int")];
+            $upd=["nombre"=>Sanitizer::post("nombre"),"descripcion"=>Sanitizer::post("descripcion"),"auto_id"=>Sanitizer::post("auto_id","int")?:null,"seccion_id"=>Sanitizer::post("seccion_id","int")?:null,"precio"=>Sanitizer::post("precio","float"),"cantidad"=>Sanitizer::post("cantidad","int"),"destacado"=>Sanitizer::post("destacado","int")?1:0];
             $v=(new Validator())->required("nombre",$upd["nombre"],"Nombre")->numeric("precio",$upd["precio"],0.01)->numeric("cantidad",$upd["cantidad"],0);
             if ($v->isValid()) {
                 $r=null;
@@ -87,6 +99,7 @@ class ParteController extends BaseController {
                     $r=ImageHelper::upload($_FILES["imagen"],"parte");
                     if (!$r) $error=ImageHelper::$error?:"Error al subir imagen."; // no se guarda nada si la imagen falla
                 }
+                if ($error==="") $error=$this->errorDestacada($upd["destacado"]===1,$id,$r!==null||!empty($parte["imagen_grande"]));
                 if ($error==="") {
                     if ($r){$upd["thumbnail"]=$r["thumbnail"];$upd["imagen_grande"]=$r["original"];}
                     $this->pm->update($id,$upd); $nueva=$this->pm->findById($id);

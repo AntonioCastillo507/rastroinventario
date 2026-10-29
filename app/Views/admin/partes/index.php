@@ -45,7 +45,7 @@
       <div class="celda-con-foto">
         <?php $fotoParte=$p; $fotoTam="thumbnails"; $fotoClase="foto-48"; $fotoAlt=""; include BASE_PATH."/app/Views/layouts/foto_pieza.php"; ?>
         <span>
-          <span class="celda-titulo"><?=htmlspecialchars($p["nombre"])?></span>
+          <span class="celda-titulo"><?=htmlspecialchars($p["nombre"])?></span><?php if(!empty($p["destacado"])): ?> <span class="chip-info chip-portada">Portada</span><?php endif; ?>
           <span class="celda-sub"><?=htmlspecialchars(trim(($p["marca"]??"")." ".($p["modelo"]??"")))?> · <?=htmlspecialchars($p["seccion"]??"Sin sección")?></span>
         </span>
       </div>

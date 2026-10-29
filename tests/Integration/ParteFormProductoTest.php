@@ -36,7 +36,7 @@ final class ParteFormProductoTest extends BaseDatos {
         $nombres = [];
         foreach ($x->query("//main//form//*[self::input or self::select or self::textarea][@name]") as $n) $nombres[] = $n->getAttribute("name");
         sort($nombres);
-        $this->assertSame(["auto_id", "cantidad", "csrf_token", "descripcion", "imagen", "nombre", "precio", "seccion_id"], $nombres);
+        $this->assertSame(["auto_id", "cantidad", "csrf_token", "descripcion", "destacado", "imagen", "nombre", "precio", "seccion_id"], $nombres);
         foreach (["nombre", "precio", "cantidad"] as $campo) $this->assertTrue($x->query("//input[@name='$campo']")->item(0)->hasAttribute("required"), "$campo sigue siendo obligatorio");
         $this->assertSame("150", $x->query("//input[@name='nombre']")->item(0)->getAttribute("maxlength"));
         $this->assertSame("0", $x->query("//input[@name='precio']")->item(0)->getAttribute("min"));

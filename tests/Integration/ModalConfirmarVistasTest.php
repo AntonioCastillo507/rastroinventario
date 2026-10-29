@@ -51,7 +51,7 @@ final class ModalConfirmarVistasTest extends BaseDatos {
             $this->assertSame("mcTexto", $d->item(0)->getAttribute("aria-describedby"));
             $this->assertSame(1, Html::contar($x, "//dialog//h2[@id='mcTitulo']"), "$n: título del diálogo");
             $this->assertSame(1, Html::contar($x, "//dialog//p[@id='mcTexto']"), "$n: texto del diálogo");
-            $this->assertSame(2, Html::contar($x, "//dialog//button[@type='button']"), "$n: dos botones, ninguno envía por sí mismo");
+            $this->assertSame(2, Html::contar($x, "//dialog[@id='modalConfirmar']//button[@type='button']"), "$n: dos botones, ninguno envía por sí mismo");
             $this->assertSame(0, Html::contar($x, "//dialog//form"), "$n: el diálogo no es un formulario; reenvía el de la fila");
             $this->assertMatchesRegularExpression('~bootstrap\.bundle\.min\.js.*js/confirmar\.js\?v=[^"]+"~s', $h, $n);
         }

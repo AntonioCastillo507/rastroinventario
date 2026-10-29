@@ -87,6 +87,11 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
 .modal-confirmar::backdrop { background: color-mix(in srgb, var(--canvas) 72%, transparent); }
 .modal-confirmar-titulo { margin: 0 0 var(--spacing-xs); font-size: var(--type-title-md-size); font-weight: var(--type-title-md-weight); line-height: var(--type-title-md-line-height); color: var(--text-strong); overflow-wrap: anywhere; }
 .modal-confirmar-texto { margin: 0 0 var(--spacing-lg); color: var(--text); }
+.modal-confirmar--ancho { width: min(560px, calc(100vw - 2 * var(--spacing-md))); }
+.destacar-previa { margin: 0 0 var(--spacing-lg); overflow: hidden; border: 1px solid var(--hairline); border-radius: var(--rounded-xl); }
+.destacar-campo { margin-top: var(--spacing-md); min-height: 44px; display: flex; align-items: center; gap: var(--spacing-sm); padding-left: 0; }
+.destacar-campo .form-check-input { float: none; margin: 0; flex: none; }
+.chip-portada { display: inline-flex; align-items: center; padding: 0 var(--spacing-xs); border: 1px solid; border-radius: var(--rounded-pill); font-size: var(--type-caption-size); line-height: 1.6; vertical-align: middle; }
 .modal-confirmar-acciones { display: flex; flex-direction: column-reverse; gap: var(--spacing-xs); }
 .modal-confirmar-acciones .btn { min-height: 44px; }
 @media (min-width: 576px) { .modal-confirmar-acciones { flex-direction: row; justify-content: flex-end; } .modal-confirmar-acciones .btn { min-height: 40px; } }

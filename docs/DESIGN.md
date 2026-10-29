@@ -587,6 +587,7 @@ No hay degradados atmosféricos, efectos de vidrio ni sombras pesadas. El hover 
 
 ### Avisos y confirmaciones
 - **`alert`**: éxito, error, aviso e información, con icono, texto y `role` adecuado; el cierre es un botón con nombre accesible. Los avisos no desaparecen solos si contienen un error.
+- **Destacar en la portada (S7b-C.2)**: interruptor «Mostrar en la portada (destacada)» en la tarjeta Organización del formulario de partes. Al marcarlo abre un `modal-confirm` más ancho (560 px) con el aviso del formato y una vista previa real del recorte en la caja `.hero-foto` de la tarjeta del hero (21 : 10, `object-fit: cover`, radio `{rounded.xl}`), con «Sí, se ve bien, destacarla» y «Cancelar» (al cancelar vuelve a desmarcarse). En la lista de partes las destacadas llevan la ficha «Portada» (`chip-info` pequeña, junto al nombre). Con 2 o más destacadas con stock y foto, el hero muestra solo esas (máximo 6, orden por id); con menos, las 4 aleatorias de siempre. Autorizada por Tony (2026-10-29).
 - **`modal-confirm`**: para eliminar, entregar un pedido y desactivar usuarios. Muestra el nombre del objeto y un botón con el verbo. Las acciones reversibles no piden confirmación y ofrecen deshacer.
 
 ### Carrito en dos pasos (E8)

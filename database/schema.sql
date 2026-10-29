@@ -73,6 +73,7 @@ CREATE TABLE `partes` (
   `thumbnail` varchar(255) DEFAULT NULL,
   `imagen_grande` varchar(255) DEFAULT NULL,
   `activo` tinyint(1) DEFAULT '1',
+  `destacado` tinyint(1) NOT NULL DEFAULT '0',
   `firma_digital` varchar(64) DEFAULT NULL,
   `creado_por` int DEFAULT NULL,
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,

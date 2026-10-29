@@ -68,6 +68,13 @@
           <option value="<?=$s["id"]?>" <?=($d["seccion_id"]??"")==$s["id"]?"selected":""?>><?=htmlspecialchars($s["nombre"])?></option>
           <?php endforeach; ?>
         </select>
+        <?php $fotoDestacar=$edit?ImageHelper::fuente($parte["imagen_grande"]??null,$parte["thumbnail"]??null,"large"):""; ?>
+        <div class="form-check form-switch destacar-campo">
+          <input id="f-destacado" type="checkbox" name="destacado" value="1" class="form-check-input" role="switch" data-destacar data-foto-actual="<?=$fotoDestacar!==""?htmlspecialchars(APP_URL."/uploads/".$fotoDestacar):""?>"<?=!empty($d["destacado"])?" checked":""?>>
+          <label for="f-destacado" class="form-check-label">Mostrar en la portada (destacada)</label>
+        </div>
+        <p class="foto-ayuda mb-0">Con 2 o más destacadas, la portada muestra solo esas (máximo <?=ParteModel::MAX_DESTACADAS?>). Necesitan foto.</p>
+        <div data-destacar-aviso class="small text-danger-emphasis" role="status" aria-live="polite"></div>
       </section>
       <section class="form-card" aria-labelledby="pf-compat">
         <h2 class="form-subtitulo" id="pf-compat">Compatibilidad</h2>
@@ -83,5 +90,15 @@
   </div>
 </form>
 </div>
+<dialog class="modal-confirmar modal-confirmar--ancho" id="modalDestacar" role="alertdialog" aria-labelledby="mdTitulo" aria-describedby="mdTexto">
+  <h2 class="modal-confirmar-titulo" id="mdTitulo">Destacar en la portada</h2>
+  <p class="modal-confirmar-texto" id="mdTexto">En la portada la foto se muestra horizontal, recortada al centro, en formato 21:10. Lo principal de la pieza debe verse en el centro de la foto. Mínimo recomendado: 1200 × 570 px.</p>
+  <div class="destacar-previa"><span class="hero-foto" data-destacar-marco><img src="" alt="Vista previa del recorte 21:10 en la portada" data-destacar-img></span></div>
+  <div class="modal-confirmar-acciones">
+    <button type="button" class="btn btn-outline-secondary" data-destacar-cancelar>Cancelar</button>
+    <button type="button" class="btn btn-gold" data-destacar-ok>Sí, se ve bien, destacarla</button>
+  </div>
+</dialog>
 <script src="<?=Assets::url("js/parte_imagen.js")?>"></script>
+<script src="<?=Assets::url("js/parte_destacar.js")?>"></script>
 <?php include BASE_PATH."/app/Views/layouts/admin_footer.php"; ?>
