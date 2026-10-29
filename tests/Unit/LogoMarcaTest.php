@@ -68,9 +68,10 @@ final class LogoMarcaTest extends TestCase {
     }
 
     public function testElNombreSubidoNuncaSeUsa(): void {
-        $f = Imagenes::guardar(self::SVG, "svg");
+        $f = Imagenes::dir() . DIRECTORY_SEPARATOR . "logo-del-cliente.svg";
+        file_put_contents($f, self::SVG);
         $n = \LogoMarca::procesar($f);
-        $this->assertStringNotContainsString(pathinfo($f, PATHINFO_FILENAME), $n);
+        $this->assertStringNotContainsString("cliente", $n);
         $this->assertSame([$n], $this->guardados());
     }
 
