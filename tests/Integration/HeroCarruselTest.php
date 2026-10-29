@@ -156,6 +156,41 @@ final class HeroCarruselTest extends BaseDatos {
         $this->assertSame(0, Html::contar($x, "//div[contains(@class,'porque-tarjeta')]//img"));
     }
 
+    public function testPulidoDelHeroBarritaFlechasZoomYBloqueCentrado(): void {
+        $css = (string)file_get_contents(BASE_PATH . "/assets/css/base.css");
+        $js = (string)file_get_contents(BASE_PATH . "/assets/js/hero_carrusel.js");
+        // barrita fina entre la foto y la leyenda, solo con transform
+        foreach (["Uno", "Dos", "Tres"] as $n) $this->pieza($n);
+        $x = $this->portada();
+        $this->assertSame(3, Html::contar($x, "//a[@data-hero-diapo]/span[contains(@class,'hero-foto')]/following-sibling::span[1][contains(@class,'hero-progreso')]/following-sibling::span[1][contains(@class,'hero-leyenda')]"), "barrita entre foto y leyenda");
+        $this->assertMatchesRegularExpression('~\.hero-progreso \{[^}]*height: 3px~', $css);
+        $this->assertMatchesRegularExpression('~\.hero-progreso-relleno \{[^}]*transform: scaleX\(0\); transform-origin: left~', $css);
+        $this->assertMatchesRegularExpression('~@keyframes hero-llena \{ from \{ transform: scaleX\(0\); \} to \{ transform: scaleX\(1\); \} \}~', $css, "se llena con scaleX, no con width");
+        $this->assertMatchesRegularExpression('~is-activa \.hero-progreso-relleno \{ animation: hero-llena 5s linear forwards~', $css);
+        $this->assertMatchesRegularExpression('~hero-detenida \.hero-diapo\.is-activa \.hero-progreso-relleno \{ animation-play-state: paused~', $css, "la pausa detiene la barrita");
+        $this->assertMatchesRegularExpression('~hero-manual \.hero-diapo\.is-activa \.hero-progreso-relleno \{ animation: none~', $css, "tras la vuelta queda vacía");
+        $this->assertDoesNotMatchRegularExpression('~hero-progreso[^{]*\{[^}]*transition:[^}]*width~', $css);
+        $this->assertGreaterThan(strpos($css, "/* ── Movimiento (DESIGN.md"), strpos($css, ".hero-carrusel.hero-js .hero-progreso { display: block; }"), "la barrita solo se muestra dentro del bloque sin movimiento reducido");
+        foreach (['hero-detenida', 'hero-manual', 'rellenos'] as $t) $this->assertStringContainsString($t, $js, $t);
+        // flechas: chevrones sin fondo ni círculo, dentro de la foto, de 44 px
+        $this->assertSame(1, Html::contar($x, "//div[contains(@class,'hero-flechas')]/button[@data-hero-anterior]/following-sibling::button[@data-hero-siguiente]"));
+        $this->assertMatchesRegularExpression('~\.hero-flecha \{[^}]*background: none; border: 0~', $css);
+        $this->assertDoesNotMatchRegularExpression('~\.hero-flecha \{[^}]*border-radius~', $css, "sin círculo");
+        $this->assertMatchesRegularExpression('~\.hero-flecha \{[^}]*color: var\(--color-on-dark\)[^}]*drop-shadow~', $css, "blanco con sombra suave");
+        $this->assertMatchesRegularExpression('~\.hero-flechas \{[^}]*aspect-ratio: 21 / 10~', $css, "centradas sobre la foto");
+        $this->assertMatchesRegularExpression('~\.hero-flecha:hover, \.hero-flecha:focus-visible \{ opacity: 1; \}~', $css);
+        // zoom al hover (solo ratón) y asentamiento de la foto nueva
+        $this->assertMatchesRegularExpression('~@media \(hover: hover\) and \(pointer: fine\) and \(prefers-reduced-motion: no-preference\)\s*\{\s*\.hero-diapo:hover \.hero-foto img \{ transform: scale\(1\.05\); \}~', $css);
+        $this->assertStringContainsString(".hero-diapo .hero-foto img { transition: transform .4s ease-out; }", $css);
+        $this->assertMatchesRegularExpression('~@keyframes hero-asienta \{ from \{ opacity: 0; transform: scale\(1\.04\); \} to \{ opacity: 1; transform: none; \} \}~', $css);
+        $this->assertStringContainsString(".hero-diapo.is-activa .hero-foto img { animation: hero-asienta .6s ease-out; }", $css);
+        $this->assertMatchesRegularExpression('~\.hero-foto \{[^}]*overflow: hidden~', $css);
+        // bloque centrado: puntos pegados a la tarjeta y leyenda con el relleno de la tarjeta
+        $this->assertMatchesRegularExpression('~\.hero-puntos \{[^}]*margin-top: var\(--spacing-xxs\); margin-bottom: -8px~', $css);
+        $this->assertMatchesRegularExpression('~\.hero-leyenda \{[^}]*padding: var\(--spacing-sm\) var\(--spacing-md\)~', $css);
+        $this->assertMatchesRegularExpression('~\.hero-con-carrusel \{[^}]*align-items: center~', $css);
+    }
+
     public function testEstilosDelHeroYDelAncla(): void {
         $css = (string)file_get_contents(BASE_PATH . "/assets/css/base.css");
         $this->assertMatchesRegularExpression('~#comentarios\s*\{\s*scroll-margin-top:\s*6rem;~', $css, "el ancla de comentarios queda bajo la barra fija");

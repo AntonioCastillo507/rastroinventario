@@ -46,6 +46,7 @@ $conCarrusel=count($heroDiapos)>=2;
           ?>
           <a class="hero-diapo" data-hero-diapo href="<?=APP_URL?>/?action=detalle&amp;id=<?=(int)$hp["id"]?>">
             <span class="hero-foto"><img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($hp["_src"])?>" srcset="<?=htmlspecialchars($srcset)?>" sizes="(min-width: 1200px) 520px, 400px" alt="" width="640" height="320" decoding="async"<?=$i>0?' loading="lazy"':''?>></span>
+            <span class="hero-progreso" aria-hidden="true"><span class="hero-progreso-relleno"></span></span>
             <span class="hero-leyenda">
               <span class="hero-datos">
                 <span class="hero-nombre"><?=htmlspecialchars($hp["nombre"])?></span>
@@ -57,8 +58,10 @@ $conCarrusel=count($heroDiapos)>=2;
           </a>
           <?php endforeach; ?>
         </div>
+        <div class="hero-flechas">
         <button type="button" class="hero-flecha hero-flecha-ant" data-hero-anterior hidden aria-label="<?=Marca::h("portada.hero_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
         <button type="button" class="hero-flecha hero-flecha-sig" data-hero-siguiente hidden aria-label="<?=Marca::h("portada.hero_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
+        </div>
       </div>
       <div class="hero-puntos" data-hero-puntos hidden>
         <?php $nTotal=count($heroDiapos); foreach($heroDiapos as $i=>$hp): ?>
@@ -125,6 +128,7 @@ $conCarrusel=count($heroDiapos)>=2;
       <div class="marcas-controles" data-marcas-controles hidden>
         <button type="button" class="marcas-nav" data-marcas-anterior aria-label="<?=Marca::h("portada.marcas_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
         <button type="button" class="marcas-nav" data-marcas-siguiente aria-label="<?=Marca::h("portada.marcas_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
+        </div>
       </div>
     </div>
     <div class="marcas-carrusel" data-marcas-carrusel>

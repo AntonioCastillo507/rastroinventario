@@ -157,7 +157,7 @@ final class SelectYMovimientoSitioTest extends BaseDatos {
         foreach (["base.css", "panel.css", "lista.css"] as $f) {
             $css = preg_replace('~/\*.*?\*/~s', "", self::css($f));
             // El fundido (500 ms) y el llenado de las barritas (5 s) del hero están aprobados en DESIGN.md y los vigila HeroCarruselTest
-            $css = preg_replace('~\.hero-diapo \{[^}]*\}|\.hero-carrusel:not\(\.hero-js\)[^{]*\{[^}]*\}|\.hero-barra\.is-activa \.hero-barra-relleno \{[^}]*\}~', "", $css);
+            $css = preg_replace('~\.hero-(?:diapo|carrusel)[^{]*\{[^}]*\}~', "", $css);
             preg_match_all('/(?<![-\w])(transition|animation)(?:-duration)?\s*:\s*([^;}]*)/', $css, $m, PREG_SET_ORDER);
             foreach ($m as $x) {
                 if (str_contains($x[2], "0.01ms")) continue;

@@ -26,6 +26,7 @@
   var lista = raiz.querySelector("[data-hero-diapos]");
   var btnAnt = raiz.querySelector("[data-hero-anterior]");
   var btnSig = raiz.querySelector("[data-hero-siguiente]");
+  var rellenos = Array.prototype.slice.call(raiz.querySelectorAll(".hero-progreso-relleno"));
   if (diapos.length < 2 || puntos.length !== diapos.length || !contPuntos || !lista || !btnAnt || !btnSig) return;
 
   var mq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
@@ -40,6 +41,9 @@
       if (k === i) d.removeAttribute("aria-hidden"); else d.setAttribute("aria-hidden", "true");
       d.tabIndex = k === i ? 0 : -1;
     });
+    // reinicia la barrita de la pieza activa (también al pulsar la misma)
+    var r = rellenos[i];
+    if (r) { r.style.animation = "none"; void r.offsetWidth; r.style.animation = ""; }
     puntos.forEach(function (p, k) {
       p.classList.toggle("is-activo", k === i);
       if (k === i) p.setAttribute("aria-current", "true"); else p.removeAttribute("aria-current");
@@ -48,13 +52,15 @@
 
   function parar() { if (timer) { window.clearInterval(timer); timer = 0; } }
   function pausado() { return encima || foco || document.hidden || Date.now() < hastaToque; }
+  function marcarPausa() { raiz.classList.toggle("hero-detenida", pausado()); }
   function tic() {
+    marcarPausa();
     if (pausado()) return;
     transcurrido += TICK;
     if (transcurrido < INTERVALO) return;
     mostrar(siguiente(actual, diapos.length));
     avances++;
-    if (vueltaCompleta(avances, diapos.length)) parar();
+    if (vueltaCompleta(avances, diapos.length)) { parar(); raiz.classList.add("hero-manual"); }
   }
   function iniciar() {
     parar();
@@ -71,15 +77,15 @@
   btnAnt.addEventListener("click", function () { mostrar(anterior(actual, diapos.length)); });
   btnSig.addEventListener("click", function () { mostrar(siguiente(actual, diapos.length)); });
 
-  raiz.addEventListener("mouseenter", function () { encima = true; });
-  raiz.addEventListener("mouseleave", function () { encima = false; });
-  raiz.addEventListener("touchstart", function () { hastaToque = Date.now() + PAUSA_TOQUE; }, { passive: true });
+  raiz.addEventListener("mouseenter", function () { encima = true; marcarPausa(); });
+  raiz.addEventListener("mouseleave", function () { encima = false; marcarPausa(); });
+  raiz.addEventListener("touchstart", function () { hastaToque = Date.now() + PAUSA_TOQUE; marcarPausa(); }, { passive: true });
   raiz.addEventListener("focusin", function (e) {
     var porTeclado = true;
     try { porTeclado = e.target.matches(":focus-visible"); } catch (x) {}
-    if (porTeclado) foco = true;
+    if (porTeclado) { foco = true; marcarPausa(); }
   });
-  raiz.addEventListener("focusout", function (e) { if (!raiz.contains(e.relatedTarget)) foco = false; });
+  raiz.addEventListener("focusout", function (e) { if (!raiz.contains(e.relatedTarget)) { foco = false; marcarPausa(); } });
 
   iniciar();
   if (mq && mq.addEventListener) mq.addEventListener("change", iniciar);

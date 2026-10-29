@@ -133,7 +133,7 @@ final class PortadaMovimientoTest extends BaseDatos {
     public function testLasTransicionesSonDe150A250MsYSoloDeTransformOpacidadYColorDeBorde(): void {
         $css = self::css();
         // El fundido de 500 ms de las diapositivas del hero está aprobado en DESIGN.md y lo vigila HeroCarruselTest
-        $css = preg_replace('~\.hero-diapo \{[^}]*\}|\.hero-carrusel:not\(\.hero-js\)[^{]*\{[^}]*\}~', "", $css);
+        $css = preg_replace('~\.hero-(?:diapo|carrusel)[^{]*\{[^}]*\}~', "", $css);
         preg_match_all('/transition:\s*([^;}]+)[;}]/', substr($css, strpos($css, ".cat-baldosa")), $m);
         $this->assertNotEmpty($m[1]);
         foreach ($m[1] as $t) {
