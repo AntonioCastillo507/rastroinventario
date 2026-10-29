@@ -112,12 +112,43 @@ final class HeroCarruselTest extends BaseDatos {
 
     public function testLosTextosFijosVivenEnMarcaPhp(): void {
         $p = \Marca::todo()["portada"];
-        foreach (["hero_carrusel", "hero_barra", "hero_pausar", "hero_reanudar"] as $k) {
+        foreach (["hero_carrusel", "hero_barra", "hero_pausar", "hero_reanudar", "porque_insignia", "porque_titulo", "porque_subtitulo", "porque_texto", "porque_boton"] as $k) {
             $this->assertNotSame("", trim((string)($p[$k] ?? "")), "falta portada.$k");
         }
         $this->assertStringContainsString("{n}", $p["hero_barra"]);
         $vista = (string)file_get_contents(BASE_PATH . "/app/Views/public/home.php");
         $this->assertStringNotContainsString("Pausar el cambio", $vista);
+        $this->assertStringNotContainsString("Conoce más sobre nosotros", $vista);
+    }
+
+    public function testCuadroPorQueElegirnosConFoto(): void {
+        $m = \Marca::todo();
+        $m["nosotros"]["imagen"] = "assets/img/portada/hero-movil.webp"; // cualquier archivo que exista en esta copia
+        if (!is_file(BASE_PATH . "/" . $m["nosotros"]["imagen"])) $m["nosotros"]["imagen"] = "assets/css/base.css"; // solo para que el archivo exista
+        \Marca::usarParaPruebas($m);
+        $x = $this->portada();
+        $this->assertSame(1, Html::contar($x, "//section[contains(@class,'portada-porque')]//div[contains(@class,'porque-tarjeta')]"));
+        $this->assertSame(1, Html::contar($x, "//section[contains(@class,'portada-porque')]//h2"));
+        $this->assertSame(1, Html::contar($x, "//section[contains(@class,'portada-porque')]//*[contains(@class,'porque-insignia')]"));
+        $this->assertSame(1, Html::contar($x, "//section[contains(@class,'portada-porque')]//*[contains(@class,'porque-sub')]"));
+        $enlace = $x->query("//section[contains(@class,'portada-porque')]//a[contains(@class,'btn-gold')]");
+        $this->assertSame(1, $enlace->length);
+        $this->assertStringEndsWith("/?action=nosotros", $enlace->item(0)->getAttribute("href"));
+        $this->assertSame(\Marca::get("portada.porque_boton"), trim($enlace->item(0)->textContent));
+        $foto = $x->query("//section[contains(@class,'portada-porque')]//div[contains(@class,'porque-foto')]/img");
+        $this->assertSame(1, $foto->length);
+        $this->assertSame("lazy", $foto->item(0)->getAttribute("loading"));
+        // la foto va antes que el texto: en móvil queda arriba
+        $this->assertSame("porque-foto", explode(" ", $x->query("//div[contains(@class,'porque-tarjeta')]/div")->item(0)->getAttribute("class"))[0]);
+    }
+
+    public function testCuadroPorQueElegirnosSinFotoNoDejaImagenRota(): void {
+        $m = \Marca::todo();
+        $m["nosotros"]["imagen"] = "";
+        \Marca::usarParaPruebas($m);
+        $x = $this->portada();
+        $this->assertSame(1, Html::contar($x, "//div[contains(@class,'porque-tarjeta') and contains(@class,'porque-sin-foto')]"));
+        $this->assertSame(0, Html::contar($x, "//div[contains(@class,'porque-tarjeta')]//img"));
     }
 
     public function testEstilosDelHeroYDelAncla(): void {

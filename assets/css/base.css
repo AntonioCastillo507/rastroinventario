@@ -329,6 +329,23 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
   .hero-barra.is-activa .hero-barra-relleno { animation: none; transform: scaleX(1); }
 }
 
+/* ── Portada: cuadro «Por qué elegirnos» (S7b-A.2). Móvil: foto arriba y texto abajo; desde 768 px, mitad y mitad ── */
+.porque-tarjeta { display: grid; grid-template-columns: minmax(0, 1fr); overflow: hidden; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); box-shadow: 0 6px 16px color-mix(in srgb, var(--color-canvas-dark) 30%, transparent); }
+.porque-foto { aspect-ratio: 16 / 10; background: var(--surface-elevated); }
+.porque-foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.porque-texto { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: var(--spacing-lg); }
+.porque-insignia { display: inline-block; margin-bottom: var(--spacing-sm); padding: var(--spacing-xxs) var(--spacing-sm); font-size: var(--type-caption-size); font-weight: 600; line-height: 1.4; color: var(--link); border: 1px solid currentColor; border-radius: var(--rounded-pill); }
+.porque-titulo { margin: 0 0 var(--spacing-xs); font-size: var(--type-title-lg-size); font-weight: 600; line-height: 1.3; color: var(--text-strong); }
+.porque-sub { margin: 0 0 var(--spacing-sm); font-size: var(--type-title-md-size); font-weight: 600; line-height: 1.35; color: var(--link); }
+.porque-parrafo { margin: 0 0 var(--spacing-md); max-width: 34em; color: var(--text); }
+@media (min-width: 768px) {
+  .porque-tarjeta:not(.porque-sin-foto) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .porque-foto { aspect-ratio: auto; min-height: 320px; }
+  .porque-texto { padding: var(--spacing-xxl); }
+  .porque-titulo { font-size: var(--type-display-sm-size); line-height: 1.2; }
+}
+
+
 .portada-seccion { padding-block: var(--spacing-lg); }
 @media (min-width: 768px) { .portada-seccion { padding-block: var(--spacing-xl); } }
 .seccion-cabeza { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--spacing-xs) var(--spacing-md); margin-bottom: var(--spacing-md); }

@@ -139,6 +139,24 @@ $conCarrusel=count($heroDiapos)>=2;
 <script src="<?=Assets::url("js/marcas_carrusel.js")?>"></script>
 <?php endif; ?>
 
+<?php
+$nosFoto=Marca::urlSiExiste("nosotros.imagen");
+?>
+<section class="portada-seccion portada-porque" aria-labelledby="t-porque">
+  <div class="container-xl">
+    <div class="porque-tarjeta<?=$nosFoto!==""?"":" porque-sin-foto"?>">
+      <?php if($nosFoto!==""): ?><div class="porque-foto"><img src="<?=htmlspecialchars($nosFoto)?>" alt="" loading="lazy" decoding="async"></div><?php endif; ?>
+      <div class="porque-texto">
+        <span class="porque-insignia"><?=Marca::h("portada.porque_insignia")?></span>
+        <h2 id="t-porque" class="porque-titulo"><?=Marca::h("portada.porque_titulo")?></h2>
+        <p class="porque-sub"><?=Marca::h("portada.porque_subtitulo")?></p>
+        <p class="porque-parrafo"><?=Marca::h("portada.porque_texto")?></p>
+        <a class="btn btn-gold porque-boton" href="<?=APP_URL?>/?action=nosotros"><?=Marca::h("portada.porque_boton")?></a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="portada-seccion portada-cta" aria-labelledby="t-cta">
   <div class="container-xl">
     <div class="cta-banda">

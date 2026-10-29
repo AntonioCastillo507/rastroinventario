@@ -61,6 +61,12 @@ return [
         "hero_barra"        => "Ver la pieza {n} de {total}",
         "hero_pausar"       => "Pausar el cambio de piezas",
         "hero_reanudar"     => "Reanudar el cambio de piezas",
+        // Cuadro «Por qué elegirnos» (S7b-A.2): textos genéricos de plantilla, sin afirmaciones por confirmar. La foto es nosotros.imagen
+        "porque_insignia"   => "Quiénes somos",
+        "porque_titulo"     => "Por qué elegirnos",
+        "porque_subtitulo"  => "Repuestos usados para tu carro, con trato directo",
+        "porque_texto"      => "Conoce quiénes estamos detrás de la tienda y cómo trabajamos para ayudarte a encontrar la pieza que necesitas.",
+        "porque_boton"      => "Conoce más sobre nosotros",
         "cta_titulo"        => "¿No encuentras tu pieza?",
         "cta_texto"         => "Escríbenos o llámanos con el nombre de la pieza y tu vehículo.",
         "cta_boton"         => "Contáctanos",
