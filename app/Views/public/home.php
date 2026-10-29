@@ -7,7 +7,7 @@ $conFoto=$fotoEscritorio!==""||$fotoMovil!=="";
 if($fotoEscritorio==="") $fotoEscritorio=$fotoMovil;
 if($fotoMovil==="") $fotoMovil=$fotoEscritorio;
 $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
-// Carrusel del hero: solo piezas cuya foto está en disco; con menos de 2 no se muestra la tarjeta
+// Carrusel del hero: solo piezas cuya foto está en disco. Una sola pieza se muestra únicamente si es destacada (tarjeta fija, sin controles)
 $heroDiapos=[];
 foreach(($heroPartes??[]) as $hp){
   $f640=ImageHelper::fuente($hp["imagen_grande"]??null,$hp["thumbnail"]??null,"thumbnails");
@@ -15,7 +15,8 @@ foreach(($heroPartes??[]) as $hp){
   $f1200=ImageHelper::existe(ImageHelper::derivada($hp["imagen_grande"]??null,"medium"),"medium")?"medium/".ImageHelper::derivada($hp["imagen_grande"],"medium"):"";
   $hp["_src"]=$f640; $hp["_src1200"]=$f1200; $heroDiapos[]=$hp;
 }
-$conCarrusel=count($heroDiapos)>=2;
+$variasDiapos=count($heroDiapos)>=2;
+$conCarrusel=$variasDiapos||(count($heroDiapos)===1&&!empty($heroDiapos[0]["destacado"]));
 ?>
 
 <?php /* HERO: título, subtítulo y buscador en una columna. Con foto (portada.foto en marca.php) lleva la capa por modo; sin ella es tipográfico */ ?>
@@ -46,7 +47,7 @@ $conCarrusel=count($heroDiapos)>=2;
           ?>
           <a class="hero-diapo" data-hero-diapo href="<?=APP_URL?>/?action=detalle&amp;id=<?=(int)$hp["id"]?>">
             <span class="hero-foto"><img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($hp["_src"])?>" srcset="<?=htmlspecialchars($srcset)?>" sizes="(min-width: 1200px) 444px, 400px" alt="" width="640" height="320" decoding="async"<?=$i>0?' loading="lazy"':''?>></span>
-            <span class="hero-progreso" aria-hidden="true"><span class="hero-progreso-relleno"></span></span>
+            <?php if($variasDiapos): ?><span class="hero-progreso" aria-hidden="true"><span class="hero-progreso-relleno"></span></span><?php endif; ?>
             <span class="hero-leyenda">
               <span class="hero-datos">
                 <span class="hero-nombre"><?=htmlspecialchars($hp["nombre"])?></span>
@@ -58,16 +59,20 @@ $conCarrusel=count($heroDiapos)>=2;
           </a>
           <?php endforeach; ?>
         </div>
+        <?php if($variasDiapos): ?>
         <div class="hero-flechas">
         <button type="button" class="hero-flecha hero-flecha-ant" data-hero-anterior hidden aria-label="<?=Marca::h("portada.hero_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
         <button type="button" class="hero-flecha hero-flecha-sig" data-hero-siguiente hidden aria-label="<?=Marca::h("portada.hero_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
         </div>
+        <?php endif; ?>
       </div>
+      <?php if($variasDiapos): ?>
       <div class="hero-puntos" data-hero-puntos hidden>
         <?php $nTotal=count($heroDiapos); foreach($heroDiapos as $i=>$hp): ?>
         <button type="button" class="hero-punto" data-hero-punto aria-label="<?=htmlspecialchars(str_replace(["{n}","{total}"],[(string)($i+1),(string)$nTotal],(string)Marca::get("portada.hero_barra")))?>"><span class="hero-punto-marca"></span></button>
         <?php endforeach; ?>
       </div>
+      <?php endif; ?>
     </div>
     <script src="<?=Assets::url("js/hero_carrusel.js")?>"></script>
     <?php endif; ?>

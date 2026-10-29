@@ -51,7 +51,7 @@
           <input id="f-destacado" type="checkbox" name="destacado" value="1" class="form-check-input" role="switch" data-destacar data-foto-actual="<?=$fotoDestacar!==""?htmlspecialchars(APP_URL."/uploads/".$fotoDestacar):""?>"<?=!empty($d["destacado"])?" checked":""?>>
           <label for="f-destacado" class="form-check-label">Mostrar esta pieza en la portada</label>
         </div>
-        <p class="foto-ayuda mb-0">Con 2 o más destacadas, la portada muestra solo esas (máximo <?=ParteModel::MAX_DESTACADAS?>). Necesitan foto.</p>
+        <p class="foto-ayuda mb-0">Las piezas destacadas aparecen en la portada (máximo <?=ParteModel::MAX_DESTACADAS?>). Si no hay ninguna destacada, la portada muestra piezas al azar. Necesitan foto.</p>
         <div data-destacar-aviso class="small text-secondary" role="status" aria-live="polite"></div>
       </section>
     </div>

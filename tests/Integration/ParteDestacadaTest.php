@@ -142,7 +142,7 @@ final class ParteDestacadaTest extends BaseDatos {
     }
 
     // ── hero ──
-    public function testElHeroUsaSoloLasDestacadasCuandoHayDosOMas(): void {
+    public function testElHeroUsaSoloLasDestacadasCuandoHayVarias(): void {
         $d1 = $this->pieza("Dest A", true, true);
         $d2 = $this->pieza("Dest B", true, true);
         for ($i = 1; $i <= 5; $i++) $this->pieza("Normal $i");
@@ -153,35 +153,52 @@ final class ParteDestacadaTest extends BaseDatos {
         $this->assertSame(2, Html::contar($this->portada(), "//*[@data-hero-carrusel]//a[@data-hero-diapo]"));
     }
 
-    public function testLasDestacadasSinStockInactivasOSinFotoNoCuentanParaElMinimo(): void {
-        $this->pieza("Dest A", true, true);
+    public function testConUnaSolaDestacadaElHeroMuestraSoloEsaYSinControles(): void {
+        $d = $this->pieza("Única destacada", true, true);
+        for ($i = 1; $i <= 4; $i++) $this->pieza("Normal $i");
+        for ($v = 0; $v < 6; $v++) $this->assertSame([$d], array_map(fn($p) => (int)$p["id"], (new \ParteModel())->paraHero(4, [])), "solo la destacada, sin azar");
+        $x = $this->portada();
+        $this->assertSame(1, Html::contar($x, "//*[@data-hero-carrusel]"), "la tarjeta se muestra con una sola pieza");
+        $this->assertSame(1, Html::contar($x, "//*[@data-hero-carrusel]//a[@data-hero-diapo]"));
+        $this->assertSame(1, Html::contar($x, "//*[@data-hero-carrusel]//a[@data-hero-diapo]//*[contains(@class,'hero-ver')]"), "leyenda y «Ver detalle →»");
+        $this->assertSame(0, Html::contar($x, "//*[@data-hero-carrusel]//*[@data-hero-anterior or @data-hero-siguiente or @data-hero-puntos or @data-hero-punto or contains(@class,'hero-progreso') or contains(@class,'hero-flechas')]"), "sin flechas, puntos ni barrita");
+    }
+
+    public function testLasDestacadasSinStockInactivasOSinFotoNoCuentan(): void {
         $this->pieza("Sin stock", true, true, 0);
         $this->pieza("Sin foto", false, true);
         $in = $this->pieza("Inactiva", true, true);
         $this->db->prepare("UPDATE partes SET activo = 0 WHERE id = ?")->execute([$in]);
         $normales = [];
         for ($i = 1; $i <= 4; $i++) $normales[] = $this->pieza("Normal $i");
+        $this->assertSame([], (new \ParteModel())->destacadasParaHero());
         $ids = array_map(fn($p) => (int)$p["id"], (new \ParteModel())->paraHero(4, []));
-        $this->assertCount(4, $ids, "con una sola destacada vuelve a las aleatorias");
-        $this->assertNotEmpty(array_intersect($ids, $normales));
+        $this->assertCount(4, $ids, "sin ninguna destacada válida vuelve a las aleatorias");
+        $this->assertEqualsCanonicalizing($normales, $ids);
     }
 
-    public function testConMenosDeDosDestacadasElHeroEsAleatorioYRespetaLasSeccionesExcluidas(): void {
+    public function testSinDestacadasElHeroEsAleatorioYRespetaLasSeccionesExcluidas(): void {
         $nombre = "Sec excl " . bin2hex(random_bytes(3));
         $this->db->prepare("INSERT INTO secciones (nombre) VALUES (?)")->execute([$nombre]);
         $sec = (int)$this->db->lastInsertId();
-        $dest = $this->pieza("Única destacada", true, true);
-        $this->db->prepare("UPDATE partes SET seccion_id = ? WHERE id = ?")->execute([$sec, $dest]);
+        $ex = $this->pieza("De la sección excluida");
+        $this->db->prepare("UPDATE partes SET seccion_id = ? WHERE id = ?")->execute([$sec, $ex]);
         $libres = [$this->pieza("Libre 1"), $this->pieza("Libre 2")];
         for ($v = 0; $v < 6; $v++) {
             $ids = array_map(fn($p) => (int)$p["id"], (new \ParteModel())->paraHero(4, [$nombre]));
-            $this->assertEqualsCanonicalizing($libres, $ids, "una sola destacada no basta: sale el azar y la sección excluida no aporta");
+            $this->assertEqualsCanonicalizing($libres, $ids, "sin destacadas sale el azar y la sección excluida no aporta");
         }
+    }
+
+    public function testSinDestacadasYConMenosDeDosAleatoriasNoSeMuestraLaTarjeta(): void {
+        $this->pieza("Sola");
+        $this->assertSame(0, Html::contar($this->portada(), "//*[@data-hero-carrusel]"));
     }
 
     public function testElHeroPuedeLlevarSeisDestacadas(): void {
         for ($i = 1; $i <= 6; $i++) $this->pieza("Dest $i", true, true);
-        $this->assertCount(6, (new \ParteModel())->paraHero(4, []));
+        $this->pieza("Séptima agotada de la lista", true, true);
+        $this->assertCount(6, (new \ParteModel())->paraHero(4, []), "máximo 6");
     }
 
     // ── lista del panel ──

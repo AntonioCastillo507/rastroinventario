@@ -72,9 +72,9 @@ class ParteModel extends BaseModel {
      * Que el archivo exista en disco lo revisa la vista.
      */
     public function paraHero(int $limite = 4, array $excluirSecciones = []): array {
-        // Con 2 o más destacadas a la venta (activas, con stock y foto) el hero muestra solo esas, en orden estable; sin azar
+        // Con 1 o más destacadas a la venta (activas, con stock y foto) el hero muestra solo esas, en orden estable; sin azar
         $destacadas = $this->destacadasParaHero();
-        if (count($destacadas) >= 2) return $destacadas;
+        if ($destacadas) return $destacadas;
         $limite = max(1, min($limite, 4));
         $excluir = array_values(array_filter(array_map("strval", $excluirSecciones), fn($n) => $n !== ""));
         $w = "";
