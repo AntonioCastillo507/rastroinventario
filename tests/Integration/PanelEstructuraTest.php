@@ -12,7 +12,7 @@ use Tests\Support\Pantallas;
  * título, tema y menú de cuenta (Salir por POST), y módulos según los permisos del rol.
  */
 final class PanelEstructuraTest extends BaseDatos {
-    private const GRUPOS = ["General" => ["Dashboard"], "Catálogo" => ["Partes", "Autos", "Secciones"], "Ventas" => ["Pedidos", "Ventas", "Reportes", "Comentarios"], "Administración" => ["Usuarios", "Roles", "Seguridad"]];
+    private const GRUPOS = ["General" => ["Dashboard"], "Catálogo" => ["Partes", "Autos", "Marcas", "Secciones"], "Ventas" => ["Pedidos", "Ventas", "Reportes", "Comentarios"], "Administración" => ["Usuarios", "Roles", "Seguridad"]];
 
     protected function setUp(): void {
         parent::setUp();

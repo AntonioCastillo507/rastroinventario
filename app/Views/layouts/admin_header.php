@@ -6,7 +6,7 @@ $esMiClave = $modActivo==="usuarios" && (string)($_GET["action"] ?? "")==="mi_cl
 // Menú lateral agrupado: [grupo, [[clave, texto, icono, ruta, permiso que lo muestra (null = siempre)]]]
 $menuGrupos = [
   ["General",        [["dashboard","Dashboard","speedometer2","/admin/",null]]],
-  ["Catálogo",       [["partes","Partes","box-seam","/admin/?mod=partes","partes"],["autos","Autos","car-front","/admin/?mod=autos","autos"],["secciones","Secciones","diagram-3","/admin/?mod=secciones","secciones"]]],
+  ["Catálogo",       [["partes","Partes","box-seam","/admin/?mod=partes","partes"],["autos","Autos","car-front","/admin/?mod=autos","autos"],["marcas","Marcas","tags","/admin/?mod=marcas","autos"],["secciones","Secciones","diagram-3","/admin/?mod=secciones","secciones"]]],
   ["Ventas",         [["pedidos","Pedidos","bag-check","/admin/?mod=pedidos","pedidos"],["ventas","Ventas","cart-check","/admin/?mod=ventas","ventas"],["reportes","Reportes","file-earmark-bar-graph","/admin/?mod=reportes","ventas"],["comentarios","Comentarios","chat-dots","/admin/?mod=comentarios","comentarios"]]],
   ["Administración", [["usuarios","Usuarios","people","/admin/?mod=usuarios","usuarios"],["roles","Roles","shield-lock","/admin/?mod=roles","roles"],["seguridad","Seguridad","shield-check","/admin/?mod=seguridad","seguridad"]]],
 ];

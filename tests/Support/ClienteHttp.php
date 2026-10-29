@@ -32,6 +32,13 @@ final class ClienteHttp {
         return $this->ejecutar();
     }
 
+    /** POST multipart con un archivo real (como lo envía un navegador); $archivo es la ruta local y $nombre el que viaja */
+    public function postArchivo(string $ruta, array $campos, string $campoArchivo, string $archivo, string $nombre, string $tipo): array {
+        $campos[$campoArchivo] = new \CURLFile($archivo, $tipo, $nombre);
+        curl_setopt_array($this->curl, [CURLOPT_URL => $this->base . $ruta, CURLOPT_POST => true, CURLOPT_POSTFIELDS => $campos]);
+        return $this->ejecutar();
+    }
+
     /** Pide la página, saca su token CSRF y hace el POST con él */
     public function postConToken(string $rutaFormulario, string $rutaPost, array $campos): array {
         $token = self::token($this->get($rutaFormulario)["cuerpo"]);

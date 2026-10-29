@@ -23,6 +23,7 @@ $map = [
     "partes"      => ParteController::class,
     "ventas"      => VentaController::class,
     "autos"       => AutoController::class,
+    "marcas"      => MarcaAutoController::class,
     "secciones"   => SeccionController::class,
     "usuarios"    => UserController::class,
     "roles"       => RolController::class,

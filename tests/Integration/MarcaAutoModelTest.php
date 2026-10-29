@@ -52,6 +52,12 @@ final class MarcaAutoModelTest extends BaseDatos {
         return [["honda"], ["Honda "], ["  HONDA"], ["Honda"]];
     }
 
+    public function testMonogramaConIniciales(): void {
+        foreach (["Honda" => "HO", "Mercedes Benz" => "MB", "  alfa   romeo " => "AR", "Land Rover Defender" => "LR", "BMW" => "BM", "X" => "X", "Škoda" => "ŠK", "Citroën C4" => "CC", "***" => "?"] as $nombre => $esperado) {
+            $this->assertSame($esperado, \MarcaAutoModel::iniciales($nombre), $nombre);
+        }
+    }
+
     public function testNombreVacioOLargoSeRechaza(): void {
         foreach (["", "   ", str_repeat("a", 101)] as $malo) {
             try { $this->m->crear($malo); $this->fail("debió rechazar «$malo»"); }

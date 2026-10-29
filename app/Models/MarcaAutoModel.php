@@ -13,6 +13,14 @@ class MarcaAutoModel extends BaseModel {
         return trim((string)preg_replace('/\s+/u', " ", $n));
     }
 
+    /** Monograma de la marca sin logo: iniciales de las dos primeras palabras («Mercedes Benz» → MB) o las dos primeras letras («Honda» → HO) */
+    public static function iniciales(string $nombre): string {
+        $palabras = preg_split('/[^\p{L}\p{N}]+/u', self::limpiarNombre($nombre), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        if (count($palabras) >= 2) $t = mb_substr($palabras[0], 0, 1, "UTF-8") . mb_substr($palabras[1], 0, 1, "UTF-8");
+        else $t = mb_substr($palabras[0] ?? "?", 0, 2, "UTF-8");
+        return mb_strtoupper($t, "UTF-8");
+    }
+
     /** Texto para URLs: minúsculas sin acentos, letras y números separados por guiones */
     public static function slugDe(string $n): string {
         $n = strtr(mb_strtolower(self::limpiarNombre($n), "UTF-8"), [

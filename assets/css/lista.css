@@ -111,3 +111,5 @@
   .lista-comentarios th.col-acciones, .lista-comentarios td.col-acciones { text-align: center; }
   .lista-comentarios .col-acciones .lista-acciones { justify-content: center; }
 }
+/* Marcas: casilla del logo a la izquierda del nombre */
+.marca-celda { display: flex; align-items: center; gap: var(--spacing-sm); min-width: 0; }
