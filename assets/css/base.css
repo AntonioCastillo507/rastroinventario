@@ -345,6 +345,8 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
   .porque-titulo { font-size: var(--type-display-sm-size); line-height: 1.2; }
 }
 
+/* Ancla bajo la barra superior fija: el título de comentarios no queda tapado (S7b-A.3) */
+#comentarios { scroll-margin-top: 6rem; }
 
 .portada-seccion { padding-block: var(--spacing-lg); }
 @media (min-width: 768px) { .portada-seccion { padding-block: var(--spacing-xl); } }

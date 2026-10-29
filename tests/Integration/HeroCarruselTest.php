@@ -8,6 +8,7 @@ use Tests\Support\Imagenes;
 use Tests\Support\Pantallas;
 
 /**
+ * S7b-A: carrusel de piezas del hero, cuadro «Por qué elegirnos» y el ancla #comentarios.
  * La consulta toma como mucho 4 piezas activas, con stock y con foto; la vista solo pinta la tarjeta con 2 o más fotos en disco.
  * El movimiento real (fundido, pausa, barritas) lo cubre el navegador integrado.
  */
@@ -153,6 +154,7 @@ final class HeroCarruselTest extends BaseDatos {
 
     public function testEstilosDelHeroYDelAncla(): void {
         $css = (string)file_get_contents(BASE_PATH . "/assets/css/base.css");
+        $this->assertMatchesRegularExpression('~#comentarios\s*\{\s*scroll-margin-top:\s*6rem;~', $css, "el ancla de comentarios queda bajo la barra fija");
         $this->assertMatchesRegularExpression('~\.hero-carrusel \{ display: none; \}~', $css, "oculta en móvil");
         $this->assertMatchesRegularExpression('~@media \(min-width: 992px\)\s*\{\s*\.hero-con-carrusel~', $css, "visible desde 992 px");
         $this->assertStringContainsString("transition: opacity .5s ease-out", $css, "fundido de 500 ms");
