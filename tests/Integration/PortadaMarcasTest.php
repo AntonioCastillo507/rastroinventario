@@ -128,4 +128,20 @@ final class PortadaMarcasTest extends BaseDatos {
         $this->assertSame("Marcas <b>X</b>", trim($x->query("//h2[@id='t-marcas']")->item(0)->textContent));
         $this->assertSame("Atrás \"ya\"", $x->query("//button[@data-marcas-anterior]")->item(0)->getAttribute("aria-label"));
     }
+    public function testElCarruselDeMarcasVaDentroDelMismoContenedorQueElTitulo(): void {
+        $x = Html::xpath(Pantallas::render($this->db, "home"));
+        $this->assertSame(1, Html::contar($x, "//section[contains(@class,'portada-marcas')]/div[contains(@class,'container-xl')]/div[contains(@class,'marcas-carrusel')]"), "el carrusel no se sale del contenedor de la sección");
+        $this->assertSame(1, Html::contar($x, "//section[contains(@class,'portada-marcas')]/div[contains(@class,'container-xl')]/div[contains(@class,'seccion-cabeza')]"));
+    }
+
+    public function testLaVentanaDeMarcasRecortaDentroDelContenedorYDifuminaLosBordes(): void {
+        $css = (string)file_get_contents(BASE_PATH . "/assets/css/base.css");
+        $this->assertMatchesRegularExpression('~\.marcas-ventana \{[^}]*overflow-x: auto; overflow-y: hidden~', $css, "recorta dentro del contenedor");
+        $this->assertMatchesRegularExpression('~\.marcas-ventana \{[^}]*-webkit-mask-image: linear-gradient\(to right, transparent 0, black var\(--fade-izq\), black calc\(100% - var\(--fade-der\)\), transparent 100%\);\s*mask-image: linear-gradient~s', $css, "máscara en los dos bordes");
+        $this->assertStringContainsString(".marcas-carrusel.hay-izq .marcas-ventana { --fade-izq: 48px; }", $css);
+        $this->assertStringContainsString(".marcas-carrusel.hay-der .marcas-ventana { --fade-der: 48px; }", $css);
+        $js = (string)file_get_contents(BASE_PATH . "/assets/js/marcas_carrusel.js");
+        $this->assertStringContainsString('toggle("hay-izq"', $js);
+        $this->assertStringContainsString('toggle("hay-der"', $js);
+    }
 }

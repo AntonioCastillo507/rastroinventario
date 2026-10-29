@@ -130,7 +130,6 @@ $conCarrusel=count($heroDiapos)>=2;
         <button type="button" class="marcas-nav" data-marcas-siguiente aria-label="<?=Marca::h("portada.marcas_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
         </div>
       </div>
-    </div>
     <div class="marcas-carrusel" data-marcas-carrusel>
       <div class="marcas-ventana" data-marcas-ventana>
         <ul class="marcas-pista" data-marcas-pista>

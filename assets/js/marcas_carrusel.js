@@ -76,6 +76,7 @@
       raiz.classList.toggle("es-fija", cabe);
       controles.hidden = cabe;
       actualizarFlechas();
+      bordes();
       return;
     }
     var r = repeticiones(ventana.clientWidth, conjunto);
@@ -92,7 +93,15 @@
     // Un bloque = r repeticiones del conjunto (con la separación entre ellos); el del medio empieza en las marcas originales
     bloque = originales[0].getBoundingClientRect().left - pista.getBoundingClientRect().left;
     ventana.scrollLeft = bloque;
+    bordes();
     iniciar();
+  }
+
+  // Difumina el borde por el que aún hay tarjetas; en la fila fija no hay nada que indicar
+  function bordes() {
+    var fija = raiz.classList.contains("es-fija");
+    raiz.classList.toggle("hay-izq", !fija && ventana.scrollLeft > 1);
+    raiz.classList.toggle("hay-der", !fija && ventana.scrollLeft + ventana.clientWidth < ventana.scrollWidth - 1);
   }
 
   function actualizarFlechas() {
@@ -116,6 +125,7 @@
   function detener() { if (rafId) { window.cancelAnimationFrame(rafId); rafId = 0; } }
 
   ventana.addEventListener("scroll", function () {
+    bordes();
     if (animado) {
       var n = normalizar(ventana.scrollLeft, bloque);
       if (n !== ventana.scrollLeft) ventana.scrollLeft = n;

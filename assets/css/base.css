@@ -390,7 +390,13 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .marcas-nav:hover:not(:disabled) { color: var(--link); border-color: var(--btn-primary-bg); }
 .marcas-nav:disabled { color: var(--text-muted); opacity: .5; cursor: default; }
 .marcas-nav:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.marcas-ventana { overflow-x: auto; overscroll-behavior-x: contain; padding-block: var(--spacing-xxs); scrollbar-width: thin; }
+/* La ventana recorta dentro del contenedor de la sección; el margen de 4 px deja ver el foco de la primera y la última tarjeta
+   sin mover su alineación con el título. Los bordes se difuminan 48 px solo del lado donde hay más (clases de marcas_carrusel.js). */
+.marcas-ventana { --fade-izq: 0px; --fade-der: 0px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; margin-inline: calc(-1 * var(--spacing-xxs)); padding: var(--spacing-xxs); scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black var(--fade-izq), black calc(100% - var(--fade-der)), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black var(--fade-izq), black calc(100% - var(--fade-der)), transparent 100%); }
+.marcas-carrusel.hay-izq .marcas-ventana { --fade-izq: 48px; }
+.marcas-carrusel.hay-der .marcas-ventana { --fade-der: 48px; }
 .marcas-carrusel.es-animado .marcas-ventana { scrollbar-width: none; }
 .marcas-carrusel.es-animado .marcas-ventana::-webkit-scrollbar { display: none; }
 .marcas-pista { display: flex; gap: var(--spacing-sm); width: max-content; min-width: 100%; margin: 0; padding: 0; list-style: none; }
