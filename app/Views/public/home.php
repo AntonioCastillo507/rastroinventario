@@ -7,6 +7,15 @@ $conFoto=$fotoEscritorio!==""||$fotoMovil!=="";
 if($fotoEscritorio==="") $fotoEscritorio=$fotoMovil;
 if($fotoMovil==="") $fotoMovil=$fotoEscritorio;
 $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
+// Carrusel del hero: solo piezas cuya foto está en disco; con menos de 2 no se muestra la tarjeta
+$heroDiapos=[];
+foreach(($heroPartes??[]) as $hp){
+  $f640=ImageHelper::fuente($hp["imagen_grande"]??null,$hp["thumbnail"]??null,"thumbnails");
+  if($f640==="") continue;
+  $f1200=ImageHelper::existe(ImageHelper::derivada($hp["imagen_grande"]??null,"medium"),"medium")?"medium/".ImageHelper::derivada($hp["imagen_grande"],"medium"):"";
+  $hp["_src"]=$f640; $hp["_src1200"]=$f1200; $heroDiapos[]=$hp;
+}
+$conCarrusel=count($heroDiapos)>=2;
 ?>
 
 <?php /* HERO: título, subtítulo y buscador en una columna. Con foto (portada.foto en marca.php) lleva la capa por modo; sin ella es tipográfico */ ?>
@@ -15,7 +24,8 @@ $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
   <picture class="hero-fondo" aria-hidden="true"><source media="(min-width: 768px)" srcset="<?=htmlspecialchars($fotoEscritorio)?>"><img src="<?=htmlspecialchars($fotoMovil)?>" alt="" decoding="async" fetchpriority="high"></picture>
   <div class="hero-capa" aria-hidden="true"></div>
   <?php endif; ?>
-  <div class="container-xl hero-texto">
+  <div class="container-xl hero-texto<?=$conCarrusel?" hero-con-carrusel":""?>">
+    <div class="hero-columna">
     <h1 id="hero-titulo" class="hero-titulo"><?=Marca::h("portada.titulo")?> <span class="hero-resalte"><?=Marca::h("portada.titulo_resalte")?></span></h1>
     <p class="hero-sub"><?=Marca::h("portada.subtitulo")?></p>
     <form class="hero-buscar" method="GET" action="<?=APP_URL?>/" role="search">
@@ -24,6 +34,34 @@ $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
       <input id="hero-q" type="search" name="q" class="form-control dark-input" placeholder="<?=Marca::h("portada.buscador")?>" autocomplete="off">
       <button class="btn btn-gold" type="submit">Buscar</button>
     </form>
+    </div>
+    <?php if($conCarrusel): ?>
+    <?php /* Carrusel de piezas (assets/js/hero_carrusel.js): sin JavaScript queda la primera pieza. Se oculta por debajo de 992 px */ ?>
+    <div class="hero-carrusel" data-hero-carrusel role="group" aria-roledescription="carrusel" aria-label="<?=Marca::h("portada.hero_carrusel")?>">
+      <div class="hero-diapos" data-hero-diapos>
+        <?php foreach($heroDiapos as $i=>$hp):
+          $compat=trim(($hp["marca"]??"")." ".($hp["modelo"]??""));
+          $srcset=APP_URL."/uploads/".$hp["_src"]." 640w".($hp["_src1200"]!==""?", ".APP_URL."/uploads/".$hp["_src1200"]." 1200w":"");
+        ?>
+        <a class="hero-diapo" data-hero-diapo href="<?=APP_URL?>/?action=detalle&amp;id=<?=(int)$hp["id"]?>">
+          <span class="hero-foto"><img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($hp["_src"])?>" srcset="<?=htmlspecialchars($srcset)?>" sizes="(min-width: 1200px) 520px, 440px" alt="" width="640" height="640" decoding="async"<?=$i>0?' loading="lazy"':''?>></span>
+          <span class="hero-leyenda">
+            <span class="hero-nombre"><?=htmlspecialchars($hp["nombre"])?></span>
+            <?php if($compat!==""): ?><span class="hero-compat"><?=htmlspecialchars($compat)?></span><?php endif; ?>
+            <span class="hero-precio num">$<?=number_format((float)$hp["precio"],2)?></span>
+          </span>
+        </a>
+        <?php endforeach; ?>
+      </div>
+      <div class="hero-barras" data-hero-barras hidden>
+        <?php $nTotal=count($heroDiapos); foreach($heroDiapos as $i=>$hp): ?>
+        <button type="button" class="hero-barra" data-hero-barra aria-label="<?=htmlspecialchars(str_replace(["{n}","{total}"],[(string)($i+1),(string)$nTotal],(string)Marca::get("portada.hero_barra")))?>"><span class="hero-barra-pista"><span class="hero-barra-relleno"></span></span></button>
+        <?php endforeach; ?>
+        <button type="button" class="hero-pausa" data-hero-pausa aria-pressed="false" aria-label="<?=Marca::h("portada.hero_pausar")?>" data-texto-pausar="<?=Marca::h("portada.hero_pausar")?>" data-texto-reanudar="<?=Marca::h("portada.hero_reanudar")?>"><i aria-hidden="true" class="bi bi-pause-fill"></i></button>
+      </div>
+    </div>
+    <script src="<?=Assets::url("js/hero_carrusel.js")?>"></script>
+    <?php endif; ?>
   </div>
 </section>
 

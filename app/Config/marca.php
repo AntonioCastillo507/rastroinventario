@@ -56,6 +56,11 @@ return [
         "marcas_siguiente"  => "Marcas siguientes",
         "marcas_pausar"     => "Pausar el movimiento de las marcas",
         "marcas_reanudar"   => "Reanudar el movimiento de las marcas",
+        // Carrusel de piezas del hero (S7b-A.1): {n} y {total} se reemplazan por el número de la pieza y el total
+        "hero_carrusel"     => "Piezas disponibles",
+        "hero_barra"        => "Ver la pieza {n} de {total}",
+        "hero_pausar"       => "Pausar el cambio de piezas",
+        "hero_reanudar"     => "Reanudar el cambio de piezas",
         "cta_titulo"        => "¿No encuentras tu pieza?",
         "cta_texto"         => "Escríbenos o llámanos con el nombre de la pieza y tu vehículo.",
         "cta_boton"         => "Contáctanos",

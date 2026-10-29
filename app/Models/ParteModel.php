@@ -68,6 +68,17 @@ class ParteModel extends BaseModel {
         return $this->query($sql, $params);
     }
     /**
+     * Piezas para el carrusel del hero de la portada: activas, con stock y con foto guardada, al azar y como mucho $limite (tope 4).
+     * Que el archivo exista en disco lo revisa la vista.
+     */
+    public function paraHero(int $limite = 4): array {
+        $limite = max(1, min($limite, 4));
+        return $this->query(
+            "SELECT p.*,a.marca,a.modelo,a.anio ".self::FROM_PUBLIC
+            ." WHERE p.activo=1 AND p.cantidad>0 AND p.imagen_grande IS NOT NULL AND p.imagen_grande<>'' ORDER BY RAND() LIMIT ".$limite
+        );
+    }
+    /**
      * Piezas relacionadas con la de $id: de la misma sección o del mismo auto, activas y con stock, sin la propia.
      * Primero las que coinciden en las dos cosas, y a igualdad las más recientes (desempate por id). Máximo $limite.
      * Sin sección ni auto no hay relación que buscar: lista vacía.
