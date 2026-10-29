@@ -177,7 +177,7 @@ final class HeroCarruselTest extends BaseDatos {
         $this->assertMatchesRegularExpression('~\.hero-flecha \{[^}]*background: none; border: 0~', $css);
         $this->assertDoesNotMatchRegularExpression('~\.hero-flecha \{[^}]*border-radius~', $css, "sin círculo");
         $this->assertMatchesRegularExpression('~\.hero-flecha \{[^}]*color: var\(--color-on-dark\)[^}]*drop-shadow~', $css, "blanco con sombra suave");
-        $this->assertMatchesRegularExpression('~\.hero-flechas \{[^}]*aspect-ratio: 21 / 10~', $css, "centradas sobre la foto");
+        $this->assertMatchesRegularExpression('~\.hero-flechas \{[^}]*aspect-ratio: 16 / 9~', $css, "centradas sobre la foto");
         $this->assertMatchesRegularExpression('~\.hero-flecha:hover, \.hero-flecha:focus-visible \{ opacity: 1; \}~', $css);
         // zoom al hover (solo ratón) y asentamiento de la foto nueva
         $this->assertMatchesRegularExpression('~@media \(hover: hover\) and \(pointer: fine\) and \(prefers-reduced-motion: no-preference\)\s*\{\s*\.hero-diapo:hover \.hero-foto img \{ transform: scale\(1\.05\); \}~', $css);
@@ -187,7 +187,7 @@ final class HeroCarruselTest extends BaseDatos {
         $this->assertMatchesRegularExpression('~\.hero-foto \{[^}]*overflow: hidden~', $css);
         // bloque centrado: puntos pegados a la tarjeta y leyenda con el relleno de la tarjeta
         $this->assertMatchesRegularExpression('~\.hero-puntos \{[^}]*margin-top: var\(--spacing-xxs\); margin-bottom: -8px~', $css);
-        $this->assertMatchesRegularExpression('~\.hero-leyenda \{[^}]*padding: var\(--spacing-sm\) var\(--spacing-md\)~', $css);
+        $this->assertMatchesRegularExpression('~\.hero-leyenda \{[^}]*padding: var\(--spacing-xl\) var\(--spacing-md\) var\(--spacing-sm\)[^}]*linear-gradient\(to top, color-mix\(in srgb, var\(--color-canvas-dark\) 92%~', $css);
         $this->assertMatchesRegularExpression('~\.hero-con-carrusel \{[^}]*align-items: center~', $css);
     }
 

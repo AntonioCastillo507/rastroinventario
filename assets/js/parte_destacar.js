@@ -1,5 +1,5 @@
 "use strict";
-// Casilla «Mostrar en la portada»: al marcarla se abre un aviso con la vista previa real del recorte 21:10 (la misma caja
+// Casilla «Mostrar en la portada»: al marcarla se abre un aviso con la vista previa real del recorte 16:9 (la misma caja
 // .hero-foto de la tarjeta de la portada, con object-fit: cover). «Cancelar», Esc o el fondo la dejan desmarcada.
 // Sin foto no se abre: avisa y la desmarca (el servidor también lo valida). Sin JavaScript la casilla funciona igual.
 (function () {
@@ -20,6 +20,20 @@
     }
     return casilla.getAttribute("data-foto-actual") || "";
   }
+
+  // Sin foto el interruptor queda desactivado; se activa al elegir una (o si la pieza ya tiene una)
+  function sinFoto() {
+    var f = campoFoto && campoFoto.files && campoFoto.files[0];
+    return !f && !casilla.getAttribute("data-foto-actual");
+  }
+  function revisar() {
+    var no = sinFoto();
+    if (no) casilla.checked = false;
+    casilla.disabled = no;
+    aviso.textContent = no ? "Primero elige una foto" : "";
+  }
+  if (campoFoto) campoFoto.addEventListener("change", revisar);
+  revisar();
 
   casilla.addEventListener("change", function () {
     aviso.textContent = "";

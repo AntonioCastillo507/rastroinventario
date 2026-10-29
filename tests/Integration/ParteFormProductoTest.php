@@ -19,7 +19,7 @@ final class ParteFormProductoTest extends BaseDatos {
     public function testLasTarjetasEstanEnSuColumna(string $pantalla): void {
         $x = Html::xpath(Pantallas::render($this->db, $pantalla));
         $titulos = fn(string $col) => array_map(fn($n) => trim($n->textContent), iterator_to_array($x->query("//div[contains(@class,'$col')]/section[contains(@class,'form-card')]/h2[contains(@class,'form-subtitulo')]")));
-        $this->assertSame(["Información", "Fotos"], $titulos("producto-principal"));
+        $this->assertSame(["Información", "Fotos", "Portada de la tienda"], $titulos("producto-principal"));
         $this->assertSame(["Precio e inventario", "Organización", "Compatibilidad"], $titulos("producto-lateral"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-info']//input[@name='nombre']"));
         $this->assertSame(1, Html::contar($x, "//section[@aria-labelledby='pf-info']//textarea[@name='descripcion']"));

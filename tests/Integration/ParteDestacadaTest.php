@@ -7,7 +7,7 @@ use Tests\Support\Html;
 use Tests\Support\Imagenes;
 use Tests\Support\Pantallas;
 
-/** S7b-C.2: piezas destacadas en la portada (columna, validaciones del formulario, modal con vista previa 21:10, hero y lista del panel). */
+/** S7b-C.2: piezas destacadas en la portada (columna, validaciones del formulario, modal con vista previa 16:9, hero y lista del panel). */
 final class ParteDestacadaTest extends BaseDatos {
     protected function setUp(): void {
         parent::setUp();
@@ -110,24 +110,26 @@ final class ParteDestacadaTest extends BaseDatos {
     }
 
     // ── formulario y modal ──
-    public function testElFormularioTieneLaCasillaEnOrganizacionYElModalConLaVistaPrevia21a10(): void {
+    public function testElFormularioTieneLaCasillaEnOrganizacionYElModalConLaVistaPrevia16a9(): void {
         $x = $this->enviar("crear", []);
-        $this->assertSame(1, Html::contar($x, "//section[.//h2[@id='pf-org']]//input[@name='destacado'][@type='checkbox'][@value='1'][@data-destacar]"), "casilla en la tarjeta de Organización");
-        $this->assertStringContainsString("Mostrar en la portada (destacada)", $x->query("//label[@for='f-destacado']")->item(0)->textContent);
+        $this->assertSame(1, Html::contar($x, "//section[.//h2[@id='pf-portada']]//input[@name='destacado'][@type='checkbox'][@value='1'][@data-destacar]"), "casilla en su propia tarjeta «Portada de la tienda»");
+        $this->assertSame(1, Html::contar($x, "//section[.//h2[@id='pf-fotos']]/following-sibling::section[1][.//h2[@id='pf-portada']]"), "justo debajo de Fotos");
+        $this->assertSame(0, Html::contar($x, "//section[.//h2[@id='pf-org']]//input[@name='destacado']"), "ya no está en Organización");
+        $this->assertStringContainsString("Mostrar esta pieza en la portada", $x->query("//label[@for='f-destacado']")->item(0)->textContent);
         $m = $x->query("//dialog[@id='modalDestacar']");
         $this->assertSame(1, $m->length);
         $this->assertStringContainsString("modal-confirmar", $m->item(0)->getAttribute("class"), "reutiliza el componente modal de confirmación");
         $t = $m->item(0)->textContent;
-        foreach (["En la portada la foto se muestra horizontal, recortada al centro, en formato 21:10", "Lo principal de la pieza debe verse en el centro de la foto", "Mínimo recomendado: 1200 × 570 px", "Sí, se ve bien, destacarla", "Cancelar"] as $f) $this->assertStringContainsString($f, $t, $f);
+        foreach (["En la portada la foto se muestra horizontal, recortada al centro, en formato 16:9", "Lo principal de la pieza debe verse en el centro", "Mínimo recomendado: 1200 × 675 px", "Sí, se ve bien, destacarla", "Cancelar"] as $f) $this->assertStringContainsString($f, $t, $f);
         $this->assertSame(1, Html::contar($x, "//dialog[@id='modalDestacar']//span[contains(@class,'hero-foto')]/img[@data-destacar-img]"), "la vista previa usa la misma caja .hero-foto que la tarjeta del hero");
         $css = (string)file_get_contents(BASE_PATH . "/assets/css/base.css");
-        $this->assertMatchesRegularExpression('~\.hero-foto \{[^}]*aspect-ratio: 21 / 10~', $css);
+        $this->assertMatchesRegularExpression('~\.hero-foto \{[^}]*aspect-ratio: 16 / 9~', $css);
         $this->assertMatchesRegularExpression('~\.hero-foto img \{[^}]*object-fit: cover~', $css);
     }
 
     public function testElScriptDelModalCancelaDesmarcaYExigeFoto(): void {
         $js = (string)file_get_contents(BASE_PATH . "/assets/js/parte_destacar.js");
-        foreach (["showModal", "data-foto-actual", "createObjectURL", "acepto"] as $t) $this->assertStringContainsString($t, $js, $t);
+        foreach (["showModal", "data-foto-actual", "createObjectURL", "acepto", "Primero elige una foto", "casilla.disabled = no"] as $t) $this->assertStringContainsString($t, $js, $t);
         $this->assertMatchesRegularExpression('~if \(!acepto\) casilla\.checked = false~', $js, "al cancelar la casilla vuelve a desmarcada");
         $this->assertMatchesRegularExpression('~if \(!src\) \{\s*casilla\.checked = false~', $js, "sin foto no se abre y se desmarca");
     }

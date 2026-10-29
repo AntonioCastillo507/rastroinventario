@@ -133,7 +133,8 @@ html[data-panel-menu="colapsado"] { --panel-menu-ancho: 72px; }
 .form-panel-producto .form-subtitulo { margin-bottom: var(--spacing-md); }
 .form-panel-producto .form-label-dark { margin-bottom: var(--spacing-xs); }
 @media (min-width: 992px) {
-  .producto-grid { grid-template-columns: minmax(0, 1fr) 380px; gap: var(--spacing-lg); align-items: start; }
+  .producto-grid { grid-template-columns: minmax(0, 1fr) 380px; gap: var(--spacing-lg); align-items: stretch; }
+  .producto-principal > .form-card:last-child, .producto-lateral > .form-card:last-child { flex: 1; } /* las dos columnas terminan a la misma altura */
   .producto-principal, .producto-lateral { gap: var(--spacing-lg); }
   .form-panel-producto .form-card { padding: var(--spacing-lg); }
 }
