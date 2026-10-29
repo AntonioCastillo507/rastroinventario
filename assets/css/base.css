@@ -61,7 +61,7 @@ body:focus-visible, main:focus, main:focus-visible { outline: none; }
     scroll-behavior: auto !important;
   }
   .tarjeta-pieza:hover, .stat-card:hover, a.stat-card:hover, .btn-gold:hover, .btn-warning:hover,
-  .cat-baldosa:hover, .marca-tarjeta:hover, .marca-tarjeta:hover .marca-flecha, .btn:hover, .btn:active,
+  .cat-baldosa:hover, .marca-enlace:hover .marca-casilla, .marca-enlace:focus-visible .marca-casilla, .btn:hover, .btn:active,
   .tarjeta-pieza:hover .foto-baldosa { transform: none !important; }
   .rv-item { opacity: 1 !important; animation: none !important; }
 }
@@ -302,7 +302,7 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .seccion-ver { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; color: var(--link); text-decoration: none; }
 .seccion-ver:hover { color: var(--link-hover); text-decoration: underline; }
 
-.cat-lista, .marca-lista, .confianza-lista { list-style: none; margin: 0; padding: 0; }
+.cat-lista, .confianza-lista { list-style: none; margin: 0; padding: 0; }
 .cat-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-sm); }
 @media (min-width: 768px) { .cat-lista { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--spacing-lg); } }
 .cat-baldosa { display: flex; flex-direction: column; gap: var(--spacing-xxs); height: 100%; min-height: 120px; padding: var(--spacing-md); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); text-decoration: none; transition: transform .2s ease-out, border-color .2s ease-out; }
@@ -314,22 +314,29 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .cat-cuenta { margin-top: auto; font-size: var(--type-number-sm-size); font-weight: 500; color: var(--text); }
 
 .portada-nuevas { border-block: 1px solid var(--hairline); }
-.marca-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-sm); }
-@media (min-width: 768px) { .marca-lista { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-lg); } }
-@media (min-width: 1200px) { .marca-lista { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.marca-tarjeta { display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-sm); height: 100%; min-height: 96px; padding: var(--spacing-md); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); color: var(--text-strong); text-decoration: none; transition: transform .2s ease-out, border-color .2s ease-out; }
-@media (min-width: 768px) { .marca-tarjeta { min-height: 112px; padding: var(--spacing-lg); } }
-.marca-tarjeta:hover { border-color: var(--btn-primary-bg); transform: translateY(-2px); }
-.marca-tarjeta-nombre { font-size: var(--type-title-md-size); font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
-.marca-tarjeta-pie { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-xs); color: var(--text-muted); }
-.marca-tarjeta-n { font-size: var(--type-number-sm-size); font-weight: 500; }
-.marca-flecha { color: var(--link); transition: transform .2s ease-out; }
-.marca-tarjeta:hover .marca-flecha { transform: translateX(4px); }
 /* Casilla de marca (S7): logo en una sola tinta (máscara sobre currentColor) o monograma. 96×44 px en móvil y 128×56 desde 768 px. Gris secundario en reposo; el acento lo pone quien la usa al pasar el cursor o enfocar */
 .marca-casilla { display: flex; flex: none; align-items: center; justify-content: center; width: 96px; height: 44px; padding: var(--spacing-xs) var(--spacing-sm); color: var(--text-muted); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-lg); }
 @media (min-width: 768px) { .marca-casilla { width: 128px; height: 56px; } }
 .marca-logo { display: block; width: 100%; height: 100%; background-color: currentColor; -webkit-mask-image: var(--logo-url); mask-image: var(--logo-url); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; }
 .marca-monograma { font-size: var(--type-title-sm-size); font-weight: 700; line-height: 1; letter-spacing: 0; }
+/* Carrusel de marcas de la portada: ventana con scroll horizontal (sin JavaScript es una fila que se desliza); marcas_carrusel.js la mueve de forma continua, la pausa y arma el bucle */
+.marcas-controles { display: flex; gap: var(--spacing-xs); }
+.marcas-controles[hidden] { display: none; }
+.marcas-nav { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; color: var(--text-strong); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-pill); cursor: pointer; transition: border-color .2s ease-out, color .2s ease-out; }
+.marcas-nav:hover:not(:disabled) { color: var(--link); border-color: var(--btn-primary-bg); }
+.marcas-nav:disabled { color: var(--text-muted); opacity: .5; cursor: default; }
+.marcas-nav:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.marcas-ventana { overflow-x: auto; overscroll-behavior-x: contain; padding-block: var(--spacing-xxs); scrollbar-width: thin; }
+.marcas-carrusel.es-animado .marcas-ventana { scrollbar-width: none; }
+.marcas-carrusel.es-animado .marcas-ventana::-webkit-scrollbar { display: none; }
+.marcas-pista { display: flex; gap: var(--spacing-sm); width: max-content; min-width: 100%; margin: 0; padding: 0; list-style: none; }
+.marcas-carrusel.es-fija .marcas-pista { justify-content: center; }
+@media (min-width: 768px) { .marcas-pista { gap: var(--spacing-lg); } }
+.marcas-pista > li { flex: none; }
+.marca-enlace { position: relative; display: block; border-radius: var(--rounded-lg); text-decoration: none; }
+.marca-enlace:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.marca-enlace .marca-casilla { transition: transform .2s ease-out, border-color .2s ease-out, color .2s ease-out; }
+.marca-enlace:hover .marca-casilla, .marca-enlace:focus-visible .marca-casilla { color: var(--link); border-color: var(--btn-primary-bg); transform: translateY(-2px); }
 
 /* ── Movimiento (DESIGN.md, «Movimiento»): 250 ms como máximo, solo transform y opacity (y color de borde), nada de tamaño ni sombras ── */
 @media (prefers-reduced-motion: no-preference) {

@@ -110,9 +110,5 @@ class ParteModel extends BaseModel {
     public function countAll(): int { return (int)$this->db->query("SELECT COUNT(*) FROM partes WHERE activo=1")->fetchColumn(); }
     public function countStockBajo(): int { return (int)$this->db->query("SELECT COUNT(*) FROM partes WHERE activo=1 AND cantidad<=5")->fetchColumn(); }
     public function getMarcas(): array { return $this->db->query("SELECT DISTINCT a.marca FROM autos a INNER JOIN partes p ON p.auto_id=a.id WHERE p.activo=1 ORDER BY a.marca")->fetchAll(PDO::FETCH_COLUMN); }
-    /** Marcas con piezas a la venta y cuántas piezas tiene cada una (las del catálogo público); la de más piezas primero */
-    public function getMarcasConConteo(): array {
-        return $this->query("SELECT a.marca, COUNT(p.id) AS total ".self::FROM_PUBLIC." WHERE p.activo=1 AND p.cantidad>0 AND a.marca<>'' GROUP BY a.marca ORDER BY total DESC, a.marca ASC");
-    }
     public function getPrecioRango(): array { $r=$this->db->query("SELECT MIN(precio) AS mn,MAX(precio) AS mx FROM partes WHERE activo=1 AND cantidad>0")->fetch(); return [$r["mn"]??0,$r["mx"]??9999]; }
 }

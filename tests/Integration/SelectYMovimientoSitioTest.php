@@ -185,7 +185,7 @@ final class SelectYMovimientoSitioTest extends BaseDatos {
     }
 
     public function testLasTarjetasConHoverLevantan2PxYPasanElBordeAlAmarillo(): void {
-        foreach ([".cat-baldosa:hover", ".marca-tarjeta:hover"] as $sel) {
+        foreach ([".cat-baldosa:hover", ".marca-enlace:focus-visible .marca-casilla"] as $sel) {
             $r = self::regla($sel);
             $this->assertMatchesRegularExpression('/border-color:\s*var\(--btn-primary-bg\)/', $r, $sel);
             $this->assertMatchesRegularExpression('/transform:\s*translateY\(-2px\)/', $r, $sel);

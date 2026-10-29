@@ -34,7 +34,10 @@ final class PortadaTest extends BaseDatos {
     }
 
     private function auto(string $marca, string $modelo = "Modelo X", int $anio = 2020): int {
-        $this->db->prepare("INSERT INTO autos (marca, modelo, anio) VALUES (?, ?, ?)")->execute([$marca, $modelo, $anio]);
+        $m = new \MarcaAutoModel();
+        $fila = $m->porNombre($marca);
+        $marcaId = $fila ? (int)$fila["id"] : $m->crear($marca);
+        $this->db->prepare("INSERT INTO autos (marca, marca_id, modelo, anio) VALUES (?, ?, ?, ?)")->execute([$marca, $marcaId, $modelo, $anio]);
         return (int)$this->db->lastInsertId();
     }
 
@@ -180,9 +183,8 @@ final class PortadaTest extends BaseDatos {
         $this->auto("Sin Piezas");
         [$x, $html] = $this->home();
         $chips = [];
-        foreach ($x->query("//ul[contains(@class,'marca-lista')]//a") as $a2) {
-            $nombre = trim($x->query(".//*[contains(@class,'marca-tarjeta-nombre')]", $a2)->item(0)->textContent);
-            $n = trim($x->query(".//*[contains(concat(' ',@class,' '),' marca-tarjeta-n ')]", $a2)->item(0)->textContent);
+        foreach ($x->query("//ul[@data-marcas-pista]//a") as $a2) {
+            [$nombre, $n] = explode(", ", trim($x->query(".//span[contains(@class,'visually-hidden')]", $a2)->item(0)->textContent), 2);
             $chips[$nombre] = [$n, $a2->getAttribute("href")];
         }
         $this->assertSame("2 piezas", $chips["Zeta Marca & Co"][0], "solo cuentan las activas y con stock");
@@ -194,13 +196,13 @@ final class PortadaTest extends BaseDatos {
 
     public function testLaMarcaMasPiezasVaPrimeroYElConteoCoincideConElCatalogo(): void {
         $pm = new \ParteModel();
-        $filas = $pm->getMarcasConConteo();
+        $filas = (new \MarcaAutoModel())->conLogoYPiezas();
         $this->assertNotEmpty($filas);
         $previo = PHP_INT_MAX;
         foreach ($filas as $f) {
             $this->assertLessThanOrEqual($previo, (int)$f["total"]);
             $previo = (int)$f["total"];
-            $this->assertSame((int)$f["total"], $pm->contarPublic("", 0, $f["marca"]), "el conteo de {$f["marca"]} es el del catálogo al pulsar el enlace");
+            $this->assertSame((int)$f["total"], $pm->contarPublic("", 0, $f["nombre"]), "el conteo de {$f["nombre"]} es el del catálogo al pulsar el enlace");
         }
     }
 
@@ -209,13 +211,13 @@ final class PortadaTest extends BaseDatos {
         $this->pieza("Pieza rara", $a);
         [$x, $html] = $this->home();
         $this->assertStringNotContainsString("<i>", str_replace(["<i aria-hidden", "</i>"], "", $html), "el nombre sale escapado");
-        $this->assertGreaterThanOrEqual(1, Html::contar($x, "//ul[contains(@class,'marca-lista')]//a[contains(@href,'marca=O%27Brien')]"));
+        $this->assertGreaterThanOrEqual(1, Html::contar($x, "//ul[@data-marcas-pista]//a[contains(@href,'marca=O%27Brien')]"));
     }
 
     public function testSinPiezasALaVentaNoSePintaLaSeccionDeMarcas(): void {
         $this->db->exec("UPDATE partes SET activo = 0");
         [$x] = $this->home();
-        $this->assertSame(0, Html::contar($x, "//ul[contains(@class,'marca-lista')]"));
+        $this->assertSame(0, Html::contar($x, "//ul[@data-marcas-pista]"));
         $this->assertSame(0, Html::contar($x, "//section[@aria-labelledby='t-marcas']"));
         $this->assertSame(1, Html::contar($x, "//section[contains(@class,'portada-nuevas')]"), "la sección de novedades sigue, con su aviso");
         $this->assertSame(0, Html::contar($x, "//section[contains(@class,'portada-nuevas')]//*[contains(@class,'rejilla-piezas')]"), "sin piezas no hay rejilla vacía");

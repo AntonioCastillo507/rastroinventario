@@ -17,7 +17,10 @@ final class Volumen {
     public static function crear(PDO $db): array {
         $autos = [];
         foreach (["Volumen Alfa", "Volumen Beta", "Volumen Gamma"] as $m) {
-            $db->prepare("INSERT INTO autos (marca, modelo, anio) VALUES (?, 'Modelo V', 2020)")->execute([$m]);
+            // las marcas son únicas: si la base ya tiene datos de volumen (composer test:volumen) se reutilizan
+            $db->prepare("INSERT INTO marcas (nombre, slug) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)")->execute([$m, \MarcaAutoModel::slugDe($m)]);
+            $marcaId = (int)$db->lastInsertId();
+            $db->prepare("INSERT INTO autos (marca, marca_id, modelo, anio) VALUES (?, ?, 'Modelo V', 2020)")->execute([$m, $marcaId]);
             $autos[] = (int)$db->lastInsertId();
         }
         $secciones = [];

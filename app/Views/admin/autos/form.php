@@ -14,7 +14,7 @@
     <label for="f-marca" class="form-label-dark">Marca *</label>
     <select id="f-marca" name="marca_id" class="form-select dark-input" required>
       <option value="">— Elige una marca —</option>
-      <?php if($marcaSel&&!in_array($marcaSel,$enLista)): ?><option value="<?=$marcaSel?>" selected><?=htmlspecialchars($auto["marca"]??"")?> (inactiva)</option><?php endif; ?>
+      <?php if($marcaSel&&!in_array($marcaSel,$enLista)): ?><option value="<?=(int)$marcaSel?>" selected><?=htmlspecialchars($auto["marca"]??"")?> (inactiva)</option><?php endif; ?>
       <?php foreach($marcas as $m): ?><option value="<?=(int)$m["id"]?>"<?=$marcaSel===(int)$m["id"]?" selected":""?>><?=htmlspecialchars($m["nombre"])?></option><?php endforeach; ?>
     </select>
     <p class="foto-ayuda mb-0">¿No está? <a href="<?=APP_URL?>/admin/?mod=marcas&amp;action=crear">Agrega la marca</a> primero.</p>

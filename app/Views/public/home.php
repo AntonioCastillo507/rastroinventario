@@ -73,19 +73,32 @@ $tarjetaVolver = $_SERVER["REQUEST_URI"] ?? "";
 </section>
 
 <?php if(!empty($marcasConteo)): ?>
-<section class="portada-seccion" aria-labelledby="t-marcas">
+<?php /* Carrusel de logos (assets/js/marcas_carrusel.js): sin JavaScript queda una fila con scroll. Cada logo lleva al catálogo de esa marca */ ?>
+<section class="portada-seccion portada-marcas" aria-labelledby="t-marcas">
   <div class="container-xl">
-    <h2 id="t-marcas" class="seccion-titulo"><?=Marca::h("portada.marcas_titulo")?></h2>
-    <ul class="marca-lista">
-      <?php foreach($marcasConteo as $m): ?>
-      <li><a class="marca-tarjeta" href="<?=APP_URL?>/?ver=catalogo&amp;marca=<?=htmlspecialchars(rawurlencode($m["marca"]))?>">
-        <span class="marca-tarjeta-nombre"><?=htmlspecialchars($m["marca"])?></span>
-        <span class="marca-tarjeta-pie"><span class="marca-tarjeta-n num"><?=(int)$m["total"]?> <?=(int)$m["total"]===1?"pieza":"piezas"?></span><i aria-hidden="true" class="bi bi-arrow-right marca-flecha"></i></span>
-      </a></li>
-      <?php endforeach; ?>
-    </ul>
+    <div class="seccion-cabeza">
+      <h2 id="t-marcas" class="seccion-titulo"><?=Marca::h("portada.marcas_titulo")?></h2>
+      <div class="marcas-controles" data-marcas-controles hidden>
+        <button type="button" class="marcas-nav" data-marcas-anterior aria-label="<?=Marca::h("portada.marcas_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
+        <button type="button" class="marcas-nav" data-marcas-pausa aria-pressed="false" aria-label="<?=Marca::h("portada.marcas_pausar")?>" data-texto-pausar="<?=Marca::h("portada.marcas_pausar")?>" data-texto-reanudar="<?=Marca::h("portada.marcas_reanudar")?>"><i aria-hidden="true" class="bi bi-pause-fill"></i></button>
+        <button type="button" class="marcas-nav" data-marcas-siguiente aria-label="<?=Marca::h("portada.marcas_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
+      </div>
+    </div>
+    <div class="marcas-carrusel" data-marcas-carrusel>
+      <div class="marcas-ventana" data-marcas-ventana>
+        <ul class="marcas-pista" data-marcas-pista>
+          <?php foreach($marcasConteo as $m): $mlNombre=$m["nombre"]; $mlLogo=$m["logo"]; $mlClase=""; $n=(int)$m["total"]; ?>
+          <li><a class="marca-enlace" href="<?=APP_URL?>/?ver=catalogo&amp;marca=<?=htmlspecialchars(rawurlencode($m["nombre"]))?>">
+            <?php include BASE_PATH."/app/Views/layouts/marca_logo.php"; ?>
+            <span class="visually-hidden"><?=htmlspecialchars($m["nombre"])?>, <?=$n?> <?=$n===1?"pieza":"piezas"?></span>
+          </a></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
+<script src="<?=Assets::url("js/marcas_carrusel.js")?>"></script>
 <?php endif; ?>
 
 <section class="portada-seccion portada-cta" aria-labelledby="t-cta">

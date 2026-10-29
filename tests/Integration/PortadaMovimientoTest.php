@@ -91,32 +91,44 @@ final class PortadaMovimientoTest extends BaseDatos {
         $this->assertMatchesRegularExpression('/height:\s*40px/', self::regla(".cat-icono"));
     }
 
-    // ── mosaico de marcas ──
-    public function testLasMarcasSonTarjetasConNombreConteoYFlechaSinLogos(): void {
+    // ── carrusel de marcas (S7) ──
+    public function testLasMarcasSonLogosOMonogramasConEnlaceYNombreAccesible(): void {
         $x = $this->home();
-        $t = $x->query("//ul[contains(@class,'marca-lista')]//a[contains(@class,'marca-tarjeta')]");
+        $t = $x->query("//ul[@data-marcas-pista]//a[contains(@class,'marca-enlace')]");
         $this->assertGreaterThan(0, $t->length);
         foreach ($t as $a) {
-            $this->assertSame(1, $x->query(".//*[contains(@class,'marca-tarjeta-nombre')]", $a)->length);
-            $this->assertMatchesRegularExpression('/^\d+ piezas?$/u', trim($x->query(".//*[contains(concat(' ',@class,' '),' marca-tarjeta-n ')]", $a)->item(0)->textContent));
-            $f = $x->query(".//i[contains(@class,'bi-arrow-right')]", $a);
-            $this->assertSame(1, $f->length);
-            $this->assertSame("true", $f->item(0)->getAttribute("aria-hidden"));
-            $this->assertSame(0, $x->query(".//img | .//svg", $a)->length, "sin logos de marcas");
+            $this->assertSame(1, $x->query(".//span[contains(@class,'marca-casilla') and @aria-hidden='true']", $a)->length, "casilla decorativa");
+            $this->assertMatchesRegularExpression('/^.+, \d+ piezas?$/u', trim($x->query(".//span[contains(@class,'visually-hidden')]", $a)->item(0)->textContent), "el nombre y el conteo van como texto accesible");
+            $this->assertSame(0, $x->query(".//img | .//svg", $a)->length, "el logo es una máscara, no una imagen en línea");
         }
-        $this->assertSame(0, $x->query("//a[contains(@class,'marca-chip')]")->length, "ya no hay chips");
+        $this->assertSame(0, $x->query("//a[contains(@class,'marca-chip') or contains(@class,'marca-tarjeta')]")->length, "ya no hay chips ni tarjetas de texto");
     }
 
-    public function testElMosaicoEsUnaRejillaDe2_3Y4ColumnasConHover(): void {
-        $this->assertMatchesRegularExpression('/grid-template-columns:\s*repeat\(2,/', self::regla(".marca-lista"));
+    public function testElCssDelCarruselTieneCasillasHoverYMascaraConPrefijo(): void {
         $css = self::css();
-        $this->assertMatchesRegularExpression('/@media \(min-width: 768px\) \{ \.marca-lista \{ grid-template-columns: repeat\(3,/', $css);
-        $this->assertMatchesRegularExpression('/@media \(min-width: 1200px\) \{ \.marca-lista \{ grid-template-columns: repeat\(4,/', $css);
-        $this->assertMatchesRegularExpression('/border-color:\s*var\(--btn-primary-bg\)/', self::regla(".marca-tarjeta:hover"));
-        $this->assertMatchesRegularExpression('/translateX\(4px\)/', self::regla(".marca-tarjeta:hover .marca-flecha"));
-        $this->assertMatchesRegularExpression('/min-height:\s*96px/', self::regla(".marca-tarjeta"), "más grande que el chip de 44 px");
+        $this->assertMatchesRegularExpression('/\.marca-casilla \{[^}]*width:\s*96px;\s*height:\s*44px/', $css);
+        $this->assertMatchesRegularExpression('/@media \(min-width: 768px\) \{ \.marca-casilla \{ width: 128px; height: 56px; \} \}/', $css);
+        $this->assertMatchesRegularExpression('/-webkit-mask-image:\s*var\(--logo-url\);\s*mask-image:\s*var\(--logo-url\)/', self::regla(".marca-logo"), "máscara con y sin prefijo");
+        $this->assertMatchesRegularExpression('/-webkit-mask-size:\s*contain;\s*mask-size:\s*contain/', self::regla(".marca-logo"));
+        $this->assertMatchesRegularExpression('/background-color:\s*currentColor/', self::regla(".marca-logo"), "una sola tinta");
+        $hover = self::regla(".marca-enlace:focus-visible .marca-casilla");
+        $this->assertMatchesRegularExpression('/color:\s*var\(--link\)/', $hover, "acento al pasar el cursor y al enfocar");
+        $this->assertMatchesRegularExpression('/border-color:\s*var\(--btn-primary-bg\)/', $hover);
+        $this->assertMatchesRegularExpression('/transform:\s*translateY\(-2px\)/', $hover);
+        $this->assertMatchesRegularExpression('/color:\s*var\(--text-muted\)/', self::regla(".marca-casilla"), "gris secundario en reposo");
+        $this->assertMatchesRegularExpression('/width:\s*44px;\s*height:\s*44px/', self::regla(".marcas-nav"), "flechas de 44 px");
+        $this->assertMatchesRegularExpression('/border-radius:\s*var\(--rounded-pill\)/', self::regla(".marcas-nav"));
+        $this->assertMatchesRegularExpression('/overflow-x:\s*auto/', self::regla(".marcas-ventana"), "sin JavaScript es una fila con scroll");
     }
 
+    public function testElCarruselNoUsaAnimacionesCssYLasTransicionesNoMuevenTamano(): void {
+        $css = self::css();
+        $ini = strpos($css, "/* Carrusel de marcas de la portada");
+        $this->assertNotFalse($ini);
+        $bloque = substr($css, $ini, strpos($css, "/* ── Movimiento (DESIGN.md") - $ini);
+        $this->assertStringNotContainsString("@keyframes", $bloque, "el movimiento continuo lo hace marcas_carrusel.js, no una animación CSS que prefers-reduced-motion cortaría a medias");
+        $this->assertDoesNotMatchRegularExpression('/transition:[^;}]*\b(width|height|padding|margin|all)\b/', $bloque);
+    }
     // ── movimiento ──
     public function testLasTransicionesSonDe150A250MsYSoloDeTransformOpacidadYColorDeBorde(): void {
         $css = self::css();
@@ -138,7 +150,7 @@ final class PortadaMovimientoTest extends BaseDatos {
         $css = self::css();
         $this->assertMatchesRegularExpression('/@media \(prefers-reduced-motion: no-preference\) \{[^@]*@keyframes hero-entra[^@]*\.hero-texto \{ animation: hero-entra \.25s ease-out both; \}[^@]*\.portada-seccion\.rv \{ opacity: 0; transform: translateY\(12px\);[^@]*\.portada-seccion\.rv\.rv-visto \{ opacity: 1; transform: none; \}/s', $css);
         $this->assertMatchesRegularExpression('/@keyframes hero-entra \{ from \{ opacity: 0; transform: translateY\(8px\); \} to \{ opacity: 1; transform: none; \} \}/', $css, "el hero solo anima transform y opacity");
-        $this->assertMatchesRegularExpression('/\.cat-baldosa:hover, \.marca-tarjeta:hover, \.marca-tarjeta:hover \.marca-flecha,[^}]*transform:\s*none\s*!important/s', $css, "con movimiento reducido el hover no mueve");
+        $this->assertMatchesRegularExpression('/\.cat-baldosa:hover, \.marca-enlace:hover \.marca-casilla, \.marca-enlace:focus-visible \.marca-casilla,[^}]*transform:\s*none\s*!important/s', $css, "con movimiento reducido el hover no mueve");
         $this->assertSame(1, substr_count($css, ".portada-seccion.rv {"), "la clase que oculta se declara una sola vez, dentro de la media query");
     }
 

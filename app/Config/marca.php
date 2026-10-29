@@ -51,6 +51,11 @@ return [
         "recientes_titulo"  => "Recién llegadas",
         "recientes_ver"     => "Ver las {total} piezas",
         "marcas_titulo"     => "Compra por marca",
+        // Textos accesibles de los controles del carrusel de marcas (flechas y pausa)
+        "marcas_anterior"   => "Marcas anteriores",
+        "marcas_siguiente"  => "Marcas siguientes",
+        "marcas_pausar"     => "Pausar el movimiento de las marcas",
+        "marcas_reanudar"   => "Reanudar el movimiento de las marcas",
         "cta_titulo"        => "¿No encuentras tu pieza?",
         "cta_texto"         => "Escríbenos o llámanos con el nombre de la pieza y tu vehículo.",
         "cta_boton"         => "Contáctanos",

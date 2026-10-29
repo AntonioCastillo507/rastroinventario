@@ -25,7 +25,7 @@ class PublicController extends BaseController {
             $this->view("public/catalogo",array_merge($shared,compact("partes","q","secId","marca","pMin","pMax","orden","marcas","precioMin","precioMax","pag","pagParams")));
         } else {
             $recientes=$this->pam->findPublic("",0,4,"",0,0,"recientes");
-            $marcasConteo=$this->pam->getMarcasConConteo();
+            $marcasConteo=(new MarcaAutoModel())->conLogoYPiezas();
             $this->view("public/home",array_merge($shared,compact("recientes","marcasConteo","q")));
         }
     }
