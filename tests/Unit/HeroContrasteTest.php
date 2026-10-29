@@ -26,7 +26,7 @@ final class HeroContrasteTest extends TestCase {
         foreach (["style.css", "extra.css", "base.css"] as $css) {
             $t = (string)file_get_contents(BASE_PATH . "/assets/css/$css");
             preg_match_all('/\.(?:portada-hero|hero-[a-z-]+)\s*\{[^}]*\}/', $t, $m);
-            foreach ($m[0] as $regla) if (!str_starts_with($regla, ".hero-leyenda ")) $this->assertStringNotContainsString("gradient", $regla, "$css: DESIGN.md no admite degradados"); // salvo el velo oscuro de la leyenda del carrusel (S7b-C, autorizado por Tony)
+            foreach ($m[0] as $regla) $this->assertStringNotContainsString("gradient", $regla, "$css: DESIGN.md no admite degradados");
         }
     }
 

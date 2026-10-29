@@ -45,7 +45,7 @@ $conCarrusel=count($heroDiapos)>=2;
             $srcset=APP_URL."/uploads/".$hp["_src"]." 640w".($hp["_src1200"]!==""?", ".APP_URL."/uploads/".$hp["_src1200"]." 1200w":"");
           ?>
           <a class="hero-diapo" data-hero-diapo href="<?=APP_URL?>/?action=detalle&amp;id=<?=(int)$hp["id"]?>">
-            <span class="hero-foto"><img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($hp["_src"])?>" srcset="<?=htmlspecialchars($srcset)?>" sizes="(min-width: 1200px) 520px, 400px" alt="" width="640" height="320" decoding="async"<?=$i>0?' loading="lazy"':''?>></span>
+            <span class="hero-foto"><img src="<?=APP_URL?>/uploads/<?=htmlspecialchars($hp["_src"])?>" srcset="<?=htmlspecialchars($srcset)?>" sizes="(min-width: 1200px) 444px, 400px" alt="" width="640" height="320" decoding="async"<?=$i>0?' loading="lazy"':''?>></span>
             <span class="hero-progreso" aria-hidden="true"><span class="hero-progreso-relleno"></span></span>
             <span class="hero-leyenda">
               <span class="hero-datos">

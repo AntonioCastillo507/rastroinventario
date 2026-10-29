@@ -300,23 +300,19 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
   .hero-con-carrusel { display: grid; grid-template-columns: minmax(0, 1fr) 400px; align-items: center; gap: var(--spacing-xl); padding-block: var(--spacing-md); }
   .hero-carrusel { display: block; width: 100%; }
 }
-@media (min-width: 1200px) { .hero-con-carrusel { grid-template-columns: minmax(0, 1fr) 520px; } }
+@media (min-width: 1200px) { .hero-con-carrusel { grid-template-columns: minmax(0, 1fr) 444px; } }
 .hero-marco { position: relative; }
 .hero-diapos { display: grid; overflow: hidden; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); box-shadow: 0 6px 16px color-mix(in srgb, var(--color-canvas-dark) 30%, transparent); }
-.hero-diapo { grid-area: 1 / 1; display: grid; min-width: 0; color: var(--text-strong); text-decoration: none; opacity: 0; visibility: hidden; transition: opacity .5s ease-out, visibility 0s linear .5s; }
+.hero-diapo { grid-area: 1 / 1; display: flex; flex-direction: column; min-width: 0; color: var(--text-strong); text-decoration: none; opacity: 0; visibility: hidden; transition: opacity .5s ease-out, visibility 0s linear .5s; }
 .hero-carrusel:not(.hero-js) .hero-diapo:first-child, .hero-diapo.is-activa { opacity: 1; visibility: visible; transition: opacity .5s ease-out, visibility 0s; }
 .hero-diapo:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -4px; }
 .hero-foto { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--color-canvas-light); }
 .hero-foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
-/* S7b-C: foto, barrita y leyenda comparten la celda; la leyenda va sobre la parte baja de la foto con un degradado del color del lienzo oscuro */
-.hero-foto, .hero-progreso, .hero-leyenda { grid-area: 1 / 1; }
-.hero-progreso { align-self: end; z-index: 1; }
-.hero-leyenda { align-self: end; display: flex; align-items: flex-end; justify-content: space-between; gap: var(--spacing-md); margin-bottom: 3px; padding: var(--spacing-xl) var(--spacing-md) var(--spacing-sm); color: var(--color-on-dark); background: linear-gradient(to top, color-mix(in srgb, var(--color-canvas-dark) 92%, transparent) 70%, transparent); }
+.hero-leyenda { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); background: var(--surface); border-top: 1px solid var(--hairline); }
 .hero-datos { display: flex; flex-direction: column; min-width: 0; }
-.hero-nombre { color: var(--color-on-dark); font-size: var(--type-title-sm-size); font-weight: 600; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hero-compat { font-size: var(--type-body-sm-size); line-height: 1.5; color: var(--color-muted-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hero-precio { color: var(--color-primary-text-on-dark); }
-.hero-ver { flex: none; display: inline-flex; align-items: center; height: 40px; padding-inline: var(--spacing-md); font-size: var(--type-button-size); font-weight: 600; color: var(--color-on-dark); border: 1px solid var(--border-strong); border-radius: var(--rounded-md); transition: border-color .2s ease-out; }
+.hero-nombre { font-size: var(--type-title-sm-size); font-weight: 600; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hero-compat { font-size: var(--type-body-sm-size); line-height: 1.5; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hero-ver { flex: none; display: inline-flex; align-items: center; height: 40px; padding-inline: var(--spacing-md); font-size: var(--type-button-size); font-weight: 600; color: var(--text-strong); border: 1px solid var(--border-strong); border-radius: var(--rounded-md); transition: border-color .2s ease-out; }
 .hero-diapo:hover .hero-ver, .hero-diapo:focus-visible .hero-ver { border-color: var(--btn-primary-bg); }
 .hero-flechas { position: absolute; top: 1px; left: 1px; right: 1px; z-index: 2; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: space-between; pointer-events: none; }
 .hero-flecha { pointer-events: auto; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; font-size: 28px; line-height: 1; color: var(--color-on-dark); background: none; border: 0; opacity: .8; cursor: pointer; filter: drop-shadow(0 1px 3px color-mix(in srgb, var(--color-canvas-dark) 70%, transparent)); transition: opacity .2s ease-out; }

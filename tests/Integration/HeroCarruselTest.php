@@ -187,7 +187,8 @@ final class HeroCarruselTest extends BaseDatos {
         $this->assertMatchesRegularExpression('~\.hero-foto \{[^}]*overflow: hidden~', $css);
         // bloque centrado: puntos pegados a la tarjeta y leyenda con el relleno de la tarjeta
         $this->assertMatchesRegularExpression('~\.hero-puntos \{[^}]*margin-top: var\(--spacing-xxs\); margin-bottom: -8px~', $css);
-        $this->assertMatchesRegularExpression('~\.hero-leyenda \{[^}]*padding: var\(--spacing-xl\) var\(--spacing-md\) var\(--spacing-sm\)[^}]*linear-gradient\(to top, color-mix\(in srgb, var\(--color-canvas-dark\) 92%~', $css);
+        $this->assertMatchesRegularExpression('~\.hero-leyenda \{[^}]*padding: var\(--spacing-sm\) var\(--spacing-md\)~', $css, "leyenda debajo de la foto");
+        $this->assertDoesNotMatchRegularExpression('~\.hero-(leyenda|progreso|nombre|compat|ver)[^{]*\{[^}]*gradient~', $css, "sin degradado sobre la foto");
         $this->assertMatchesRegularExpression('~\.hero-con-carrusel \{[^}]*align-items: center~', $css);
     }
 
@@ -196,7 +197,7 @@ final class HeroCarruselTest extends BaseDatos {
         $this->assertMatchesRegularExpression('~#comentarios\s*\{\s*scroll-margin-top:\s*6rem;~', $css, "el ancla de comentarios queda bajo la barra fija");
         $this->assertMatchesRegularExpression('~\.hero-carrusel \{ display: none; \}~', $css, "oculta en móvil");
         $this->assertMatchesRegularExpression('~@media \(min-width: 992px\)\s*\{\s*\.hero-con-carrusel~', $css, "visible desde 992 px");
-        $this->assertMatchesRegularExpression('~@media \(min-width: 1200px\) \{ \.hero-con-carrusel \{ grid-template-columns: minmax\(0, 1fr\) 520px~', $css, "tarjeta de 520 px");
+        $this->assertMatchesRegularExpression('~@media \(min-width: 1200px\) \{ \.hero-con-carrusel \{ grid-template-columns: minmax\(0, 1fr\) 444px~', $css, "tarjeta de 444 px (foto 16:9 de unos 250 px)");
         $this->assertStringContainsString("transition: opacity .5s ease-out", $css, "fundido de 500 ms");
         $this->assertMatchesRegularExpression('~\.hero-foto img \{[^}]*object-fit: cover~', $css, "la foto del hero recorta");
         $this->assertMatchesRegularExpression('~\.hero-flecha \{[^}]*width: 44px; height: 44px~', $css);
