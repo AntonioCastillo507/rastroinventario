@@ -6,4 +6,4 @@
  */
 $mlUrl = LogoMarca::url($mlLogo ?? null);
 ?>
-<span class="marca-casilla<?=!empty($mlClase)?" ".htmlspecialchars($mlClase):""?>" aria-hidden="true"><?php if($mlUrl!==""): ?><span class="marca-logo" style="--logo-url:url('<?=htmlspecialchars($mlUrl,ENT_QUOTES)?>')"></span><?php else: ?><span class="marca-monograma"><?=htmlspecialchars(MarcaAutoModel::iniciales((string)($mlNombre??"")))?></span><?php endif; ?></span>
+<span class="marca-casilla<?=!empty($mlClase)?" ".htmlspecialchars($mlClase):""?>" aria-hidden="true"><?php if($mlUrl!==""): ?><span class="marca-mascara" style="--logo-url:url('<?=htmlspecialchars($mlUrl,ENT_QUOTES)?>')"></span><?php else: ?><span class="marca-monograma"><?=htmlspecialchars(MarcaAutoModel::iniciales((string)($mlNombre??"")))?></span><?php endif; ?></span>

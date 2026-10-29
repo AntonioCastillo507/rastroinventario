@@ -1,4 +1,4 @@
-<?php $edit=!empty($auto); $title=$edit?"Editar Auto":"Nuevo Auto"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
+<?php $edit=!empty($id); $auto=$auto??[]; $title=$edit?"Editar Auto":"Nuevo Auto"; include BASE_PATH."/app/Views/layouts/admin_header.php"; ?>
 <div class="panel-cabeza">
   <div>
     <a href="<?=APP_URL?>/admin/?mod=autos" class="enlace-volver"><i aria-hidden="true" class="bi bi-arrow-left"></i>Volver a autos</a>

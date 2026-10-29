@@ -28,12 +28,12 @@
     info.textContent = archivo.name + " · " + Math.max(1, Math.round(archivo.size / 1024)) + " KB";
     if (texto) { caja.textContent = texto; return; }
     url = URL.createObjectURL(archivo);
-    var logo = casilla.querySelector(".marca-logo");
+    var logo = casilla.querySelector(".marca-mascara");
     if (!logo) {
       var caja2 = casilla.querySelector(".marca-casilla");
       caja2.textContent = "";
       logo = document.createElement("span");
-      logo.className = "marca-logo";
+      logo.className = "marca-mascara";
       caja2.appendChild(logo);
     }
     logo.style.setProperty("--logo-url", "url('" + url + "')");

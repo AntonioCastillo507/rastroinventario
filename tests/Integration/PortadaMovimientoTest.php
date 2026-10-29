@@ -108,9 +108,9 @@ final class PortadaMovimientoTest extends BaseDatos {
         $css = self::css();
         $this->assertMatchesRegularExpression('/\.marca-casilla \{[^}]*width:\s*96px;\s*height:\s*44px/', $css);
         $this->assertMatchesRegularExpression('/@media \(min-width: 768px\) \{ \.marca-casilla \{ width: 128px; height: 56px; \} \}/', $css);
-        $this->assertMatchesRegularExpression('/-webkit-mask-image:\s*var\(--logo-url\);\s*mask-image:\s*var\(--logo-url\)/', self::regla(".marca-logo"), "máscara con y sin prefijo");
-        $this->assertMatchesRegularExpression('/-webkit-mask-size:\s*contain;\s*mask-size:\s*contain/', self::regla(".marca-logo"));
-        $this->assertMatchesRegularExpression('/background-color:\s*currentColor/', self::regla(".marca-logo"), "una sola tinta");
+        $this->assertMatchesRegularExpression('/-webkit-mask-image:\s*var\(--logo-url\);\s*mask-image:\s*var\(--logo-url\)/', self::regla(".marca-mascara"), "máscara con y sin prefijo");
+        $this->assertMatchesRegularExpression('/-webkit-mask-size:\s*contain;\s*mask-size:\s*contain/', self::regla(".marca-mascara"));
+        $this->assertMatchesRegularExpression('/background-color:\s*currentColor/', self::regla(".marca-mascara"), "una sola tinta");
         $hover = self::regla(".marca-enlace:focus-visible .marca-casilla");
         $this->assertMatchesRegularExpression('/color:\s*var\(--link\)/', $hover, "acento al pasar el cursor y al enfocar");
         $this->assertMatchesRegularExpression('/border-color:\s*var\(--btn-primary-bg\)/', $hover);
@@ -160,6 +160,15 @@ final class PortadaMovimientoTest extends BaseDatos {
         $this->assertStringContainsString("de 150 a 250 ms", $d);
         $this->assertStringContainsString("prefers-reduced-motion", substr($d, strpos($d, "## Movimiento")));
         $this->assertStringContainsString("categoria_iconos", $d, "la excepción de iconos en las categorías está documentada");
+    }
+
+    public function testDesignMdDocumentaElCarruselDeMarcasYLaCasilla(): void {
+        $d = (string)file_get_contents(BASE_PATH . "/docs/DESIGN.md");
+        $mov = substr($d, strpos($d, "## Movimiento"), strpos($d, "## Qué hacer y qué no") - strpos($d, "## Movimiento"));
+        foreach (["Carrusel de marcas (S7)", "30 px por segundo", "marcas_carrusel.js", "prefers-reduced-motion: reduce", "WCAG 2.2.2"] as $t) $this->assertStringContainsString($t, $mov, $t);
+        foreach (["96×44", "128×56", "una sola tinta", "monograma", "44 px"] as $t) $this->assertStringContainsString($t, $d, $t);
+        $this->assertMatchesRegularExpression("/^\| 35 \| S7: /m", $d, "fila 35 de Adaptaciones");
+        $this->assertStringNotContainsString("flecha de la tarjeta de marca", $d, "la tarjeta de texto de marca ya no existe");
     }
 
     public function testElObservadorMarcaYRevelaLasSeccionesSoloConMovimiento(): void {

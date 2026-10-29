@@ -59,7 +59,7 @@ final class PortadaMarcasTest extends BaseDatos {
         $x = $this->home();
         $con = $this->enlace($x, "Zq Con Logo");
         $this->assertNotNull($con);
-        $logo = $x->query(".//span[contains(@class,'marca-logo')]", $con)->item(0);
+        $logo = $x->query(".//span[contains(@class,'marca-mascara')]", $con)->item(0);
         $this->assertNotNull($logo, "máscara del logo");
         $this->assertMatchesRegularExpression("~^--logo-url:url\('" . preg_quote(APP_URL, "~") . "/uploads/marcas/marca_[0-9a-f]{32}\.png'\)$~", $logo->getAttribute("style"));
         $this->assertSame(0, $x->query(".//*[contains(@class,'marca-monograma')]", $con)->length);
@@ -75,7 +75,7 @@ final class PortadaMarcasTest extends BaseDatos {
         $this->m->guardarLogo($id, "marca_" . str_repeat("a", 32) . ".png"); // el nombre existe en la base pero no en disco
         $x = $this->home();
         $a = $this->enlace($x, "Zq Sin Archivo");
-        $this->assertSame(0, $x->query(".//span[contains(@class,'marca-logo')]", $a)->length);
+        $this->assertSame(0, $x->query(".//span[contains(@class,'marca-mascara')]", $a)->length);
         $this->assertSame(1, $x->query(".//span[contains(@class,'marca-monograma')]", $a)->length);
     }
 

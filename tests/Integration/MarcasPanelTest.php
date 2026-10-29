@@ -283,6 +283,9 @@ final class MarcasPanelTest extends TestCase {
             $r = $admin->post("/admin/?mod=autos&action=crear", ["csrf_token" => ClienteHttp::token($html), "marca_id" => $malo, "modelo" => "Raro $this->s", "anio" => 2021]);
             $this->assertSame(200, $r["codigo"], "marca_id $malo");
             $this->assertStringContainsString("Elige una marca", $this->alerta($r["cuerpo"]));
+            $x = Html::xpath($r["cuerpo"]);
+            $this->assertStringEndsWith("action=crear", $x->query("//main//form[@method='POST' or @method='post']")->item(0)->getAttribute("action"), "el formulario con error sigue siendo el de crear");
+            $this->assertSame("Raro $this->s", $x->query("//input[@name='modelo']")->item(0)->getAttribute("value"), "conserva lo escrito");
         }
         $this->assertSame(0, (int)$this->db->query("SELECT COUNT(*) FROM autos WHERE modelo = 'Raro $this->s'")->fetchColumn());
     }

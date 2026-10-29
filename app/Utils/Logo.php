@@ -50,7 +50,7 @@ final class Logo {
     }
 
     /** SVG de un logo de marca de autos reconstruido con el perfil «marca»; null si no sirve */
-    public static function saneaMarca(string $svg, string $clase = "marca-logo"): ?string {
+    public static function saneaMarca(string $svg, string $clase = "marca-mascara"): ?string {
         return self::sanear($svg, $clase, true);
     }
 
