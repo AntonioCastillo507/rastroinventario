@@ -37,7 +37,7 @@ final class ComentariosPanelTest extends BaseDatos {
         $m = new \ComentarioModel();
         $pag = \Paginador::crear($pagina, $m->contar(), \Paginador::PANEL);
         $comentarios = $m->findAllWithParte($pag, $orden);
-        $puedeModerar = $admin;
+        $puedeModerar = $admin; $puedeEditar = $admin; $destacadas = $m->contarDestacadas();
         $_SESSION["user"] = ["id" => Datos::usuario($this->db), "nombre" => "Admin", "email" => "a@example.invalid"];
         $_GET = ["mod" => "comentarios"];
         ob_start();
@@ -47,6 +47,23 @@ final class ComentariosPanelTest extends BaseDatos {
     }
 
     private string $html = "";
+
+    // ── Portada (S7b-D) ──
+
+    public function testLaFilaMuestraLaFichaPortadaYElBotonCorrectoSegunEstaDestacada(): void {
+        $p = $this->parteConAuto("Pieza Portada Panel");
+        $a = $this->comentario($p, "Zq Destacada", "Texto uno", 5);
+        $b = $this->comentario($p, "Zq Normal", "Texto dos", 5);
+        $c = $this->comentario($p, "Zq Oculta", "Texto tres", 5, 0);
+        $this->db->prepare("UPDATE comentarios SET destacado = 1 WHERE id = ?")->execute([$a]);
+        $x = $this->vista();
+        $fila = fn(string $n) => $x->query("//tr[.//span[contains(@class,'celda-titulo') and starts-with(normalize-space(),'$n')]]")->item(0);
+        $this->assertSame(1, $x->query(".//span[contains(@class,'chip-portada')]", $fila("Zq Destacada"))->length, "ficha Portada en la destacada");
+        $this->assertSame(0, $x->query(".//span[contains(@class,'chip-portada')]", $fila("Zq Normal"))->length);
+        $this->assertSame(1, $x->query(".//form[contains(@action,'action=quitar_portada&id=$a')]//input[@name='csrf_token' or @type='hidden']", $fila("Zq Destacada"))->length);
+        $this->assertSame(1, $x->query(".//form[contains(@action,'action=destacar&id=$b')]", $fila("Zq Normal"))->length);
+        $this->assertSame(0, $x->query(".//form[contains(@action,'action=destacar')]", $fila("Zq Oculta"))->length, "una oculta no ofrece destacar");
+    }
 
     // ── 1. La fila ──
 

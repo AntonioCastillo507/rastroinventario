@@ -116,7 +116,7 @@ final class Pantallas {
         $db->prepare("UPDATE usuarios SET nombre = 'Cliente de prueba', telefono = '6000-0000', direccion = 'Calle inventada 1' WHERE id = ?")->execute([$cliente]);
         $parte = Datos::parte($db, 25.50, 12, "Pieza de pantalla");
         $db->prepare("UPDATE partes SET auto_id = ?, seccion_id = ? WHERE id = ?")->execute([$v["autos"][0], $v["secciones"][0], $parte]);
-        $db->prepare("INSERT INTO comentarios (parte_id, nombre_visitante, comentario, rating, publicado) VALUES (?, 'Visitante', 'Funciona muy bien', 4, 1)")->execute([$parte]);
+        $db->prepare("INSERT INTO comentarios (parte_id, nombre_visitante, comentario, rating, publicado, destacado) VALUES (?, 'Visitante', 'Funciona muy bien', 4, 1, 1)")->execute([$parte]);
         $pedido = Datos::pedido($db, [[$parte, 1]], "pendiente", $cliente);
         $muerta = Datos::parte($db, 9.00, 3, "Pieza desactivada de pantalla");
         $db->prepare("UPDATE partes SET activo = 0 WHERE id = ?")->execute([$muerta]);

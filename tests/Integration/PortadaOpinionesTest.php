@@ -18,9 +18,9 @@ final class PortadaOpinionesTest extends BaseDatos {
         parent::tearDown();
     }
 
-    private function resena(int $parte, string $nombre, string $texto, ?int $rating = 5, int $publicado = 1, string $fecha = "2026-10-01 10:00:00", int $autoPub = 1): int {
-        $this->db->prepare("INSERT INTO comentarios (parte_id, nombre_visitante, comentario, rating, auto_pub, publicado, creado_en) VALUES (?, ?, ?, ?, ?, ?, ?)")
-                 ->execute([$parte, $nombre, $texto, $rating, $autoPub, $publicado, $fecha]);
+    private function resena(int $parte, string $nombre, string $texto, ?int $rating = 5, int $publicado = 1, string $fecha = "2026-10-01 10:00:00", int $autoPub = 1, int $destacado = 1): int {
+        $this->db->prepare("INSERT INTO comentarios (parte_id, nombre_visitante, comentario, rating, auto_pub, publicado, destacado, creado_en) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+                 ->execute([$parte, $nombre, $texto, $rating, $autoPub, $publicado, $destacado, $fecha]);
         return (int)$this->db->lastInsertId();
     }
 
@@ -49,6 +49,22 @@ final class PortadaOpinionesTest extends BaseDatos {
         $this->db->prepare("UPDATE partes SET activo = 0 WHERE id = ?")->execute([$oculta]);
         $r = array_values(array_filter($this->nombres(), fn($n) => str_starts_with($n, "Zq ")));
         $this->assertSame(["Zq Nueva", "Zq Vieja"], $r);
+    }
+
+    public function testSoloSalenLasDestacadasYElCarruselIgnoraLasDemas(): void {
+        $p = Datos::parte($this->db, 10.00, 5, "Pieza Op Destacada");
+        $this->resena($p, "Zq Destacada", "Elegida", 5, 1, "2026-10-01 10:00:00", 1, 1);
+        $this->resena($p, "Zq NoDestacada", "Negativa", 2, 1, "2026-10-05 10:00:00", 1, 0);
+        $this->resena($p, "Zq OcultaDestacada", "Oculta aunque marcada", 5, 0, "2026-10-06 10:00:00", 1, 1);
+        $r = array_values(array_filter($this->nombres(), fn($n) => str_starts_with($n, "Zq ")));
+        $this->assertSame(["Zq Destacada"], $r);
+    }
+
+    public function testSinDestacadasLaSeccionNoSaleAunqueHayaResenasVisibles(): void {
+        $this->sinResenas();
+        $this->resena(Datos::parte($this->db, 10.00, 5, "Pieza Op SinDest"), "Zq SinDest", "Visible pero no destacada", 5, 1, "2026-10-01 10:00:00", 1, 0);
+        $x = $this->home();
+        $this->assertSame(0, Html::contar($x, "//section[contains(@class,'portada-opiniones')]"));
     }
 
     public function testUnaResenaDeUnaPiezaQueNoExisteNoSale(): void {
@@ -188,6 +204,8 @@ final class PortadaOpinionesTest extends BaseDatos {
         $this->assertGreaterThanOrEqual(3, min($ratings));
         $this->assertLessThanOrEqual(5, max($ratings));
         $this->assertSame(1, count(array_filter($ratings, fn($r) => $r === 3)), "una sola de 3 estrellas");
+        $this->assertSame(9, (int)$this->db->query("SELECT COUNT(*) FROM comentarios WHERE auto_pub = 2 AND destacado = 1 AND rating >= 4")->fetchColumn(), "las de 4 y 5 destacadas");
+        $this->assertSame(0, (int)$this->db->query("SELECT COUNT(*) FROM comentarios WHERE auto_pub = 2 AND destacado = 1 AND rating < 4")->fetchColumn(), "la de 3 no");
         $this->assertGreaterThanOrEqual(7, count(array_filter($ratings, fn($r) => $r >= 4)), "la mayoría de 4 y 5");
         $this->assertSame([1], array_map("intval", array_values(array_unique(array_column($demo, "publicado")))));
 

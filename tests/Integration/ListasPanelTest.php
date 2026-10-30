@@ -124,7 +124,7 @@ final class ListasPanelTest extends BaseDatos {
         foreach (self::listas() as [$pantalla, $vista, $columnas]) {
             $src = (string)file_get_contents(BASE_PATH . "/app/Views/admin/$vista/index.php");
             if ($vista === "comentarios") { // sin Acciones para quien no es Administrador: 4 o 5 columnas
-                $this->assertStringContainsString('$cols=$puedeModerar?5:4;', $src);
+                $this->assertStringContainsString('$cols=$hayAcciones?5:4;', $src);
                 $this->assertStringContainsString('$vaciaColspan=$cols; $vaciaTitulo=', $src);
             } else {
                 $this->assertSame(1, preg_match('/\$vaciaColspan=(\d+); \$vaciaTitulo=/', $src, $m), "$vista: estado vacío con el componente");

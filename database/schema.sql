@@ -148,6 +148,7 @@ CREATE TABLE `comentarios` (
   `rating` tinyint DEFAULT NULL,
   `auto_pub` tinyint(1) DEFAULT '0',
   `publicado` tinyint(1) DEFAULT '0',
+  `destacado` tinyint(1) NOT NULL DEFAULT '0',
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `parte_id` (`parte_id`),

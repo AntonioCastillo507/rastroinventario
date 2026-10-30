@@ -22,15 +22,29 @@ class ComentarioModel extends BaseModel {
         $sql = "SELECT c.*,p.nombre AS parte_nombre,p.activo AS parte_activo,a.marca,a.modelo,a.anio FROM comentarios c LEFT JOIN partes p ON p.id=c.parte_id LEFT JOIN autos a ON a.id=p.auto_id ORDER BY ".self::ORDENES[self::ordenValido($orden)];
         return $this->query($pag ? $sql.$pag->sql() : $sql);
     }
-    /** Reseñas de la portada: solo visibles y de piezas que existen y siguen activas (el enlace llevaría a una pieza que no se ve), la más reciente primero */
+    /** Reseñas de la portada: solo las destacadas por el administrador, visibles y de piezas que existen y siguen activas (el enlace llevaría a una pieza que no se ve), la más reciente primero */
     public function paraPortada(int $limite = 12): array {
         return $this->query(
             "SELECT c.id, c.nombre_visitante, c.comentario, c.rating, c.parte_id, p.nombre AS parte
              FROM comentarios c JOIN partes p ON p.id = c.parte_id
-             WHERE c.publicado = 1 AND p.activo = 1 AND TRIM(c.comentario) <> ''
+             WHERE c.destacado = 1 AND c.publicado = 1 AND p.activo = 1 AND TRIM(c.comentario) <> ''
              ORDER BY c.creado_en DESC, c.id DESC LIMIT " . max(1, $limite));
     }
-    public function togglePublicado(int $id): void { $this->exec("UPDATE comentarios SET publicado=IF(publicado=1,0,1) WHERE id=?",[$id]); }
+    /** Al ocultar una reseña también sale de la portada (destacado se evalúa antes y ve el estado anterior) */
+    public function togglePublicado(int $id): void { $this->exec("UPDATE comentarios SET destacado=IF(publicado=1,0,destacado), publicado=IF(publicado=1,0,1) WHERE id=?",[$id]); }
+    public const MAX_DESTACADAS = 12;
+    /** Destaca una reseña en la portada; devuelve "" si se hizo o el motivo si no (no existe, está oculta o ya hay el tope) */
+    public function destacar(int $id): string {
+        $c = $this->query("SELECT publicado, destacado FROM comentarios WHERE id=?", [$id])[0] ?? null;
+        if (!$c) return "El comentario no existe.";
+        if ((int)$c["destacado"] === 1) return "";
+        if ((int)$c["publicado"] !== 1) return "Una reseña oculta no se puede destacar. Muéstrala primero.";
+        if ($this->contarDestacadas() >= self::MAX_DESTACADAS) return "Ya hay " . self::MAX_DESTACADAS . " reseñas en la portada, que es el máximo. Quita una antes de destacar otra.";
+        $this->exec("UPDATE comentarios SET destacado=1 WHERE id=? AND publicado=1", [$id]);
+        return "";
+    }
+    public function quitarDestacado(int $id): void { $this->exec("UPDATE comentarios SET destacado=0 WHERE id=?", [$id]); }
+    public function contarDestacadas(): int { return (int)$this->query("SELECT COUNT(*) AS n FROM comentarios WHERE destacado=1")[0]["n"]; }
     public function countPendientes(): int { return 0; } // ya no hay pendientes
     public function promedioRating(int $pid): float {
         $s=$this->db->prepare("SELECT AVG(rating) FROM comentarios WHERE parte_id=? AND rating IS NOT NULL");
