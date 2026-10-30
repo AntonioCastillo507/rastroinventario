@@ -170,6 +170,40 @@ $nosFoto=Marca::urlSiExiste("nosotros.imagen");
   </div>
 </section>
 
+<?php if(!empty($opiniones)): ?>
+<?php /* Carrusel de reseñas (assets/js/opiniones_carrusel.js): sin JavaScript es una fila con scroll táctil. Solo reseñas visibles (ComentarioModel::paraPortada) */ ?>
+<section class="portada-seccion portada-opiniones" aria-labelledby="t-opiniones">
+  <div class="container-xl">
+    <div class="opiniones-cabeza">
+      <h2 id="t-opiniones" class="seccion-titulo"><?=Marca::h("portada.opiniones_titulo")?></h2>
+      <p class="opiniones-sub"><?=Marca::h("portada.opiniones_subtitulo")?></p>
+    </div>
+    <div class="opiniones-carrusel" data-opiniones-carrusel>
+      <div class="opiniones-ventana" data-opiniones-ventana tabindex="0" role="region" aria-label="<?=Marca::h("portada.opiniones_region")?>">
+        <ul class="opiniones-pista">
+          <?php foreach($opiniones as $o): $rt=(int)$o["rating"]; $quien=trim((string)$o["nombre_visitante"]); $ini=mb_strtoupper(mb_substr($quien!==""?$quien:"?",0,1)); ?>
+          <li class="opinion">
+            <div class="opinion-quien">
+              <span class="opinion-avatar" aria-hidden="true"><?=htmlspecialchars($ini)?></span>
+              <b class="opinion-nombre"><?=htmlspecialchars($quien)?></b>
+            </div>
+            <?php if($rt>=1 && $rt<=5): ?><span class="estrellas" role="img" aria-label="<?=(int)$rt?> de 5 estrellas"><?php for($i=1;$i<=5;$i++): ?><i aria-hidden="true" class="bi bi-star<?=$i<=$rt?"-fill":""?>"></i><?php endfor; ?></span><?php endif; ?>
+            <p class="opinion-texto"><?=htmlspecialchars((string)$o["comentario"])?></p>
+            <a class="opinion-pieza" href="<?=APP_URL?>/?action=detalle&amp;id=<?=(int)$o["parte_id"]?>#comentarios"><?=Marca::h("portada.opiniones_sobre")?> <?=htmlspecialchars((string)$o["parte"])?></a>
+          </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+      <div class="opiniones-nav" data-opiniones-nav hidden>
+        <button type="button" class="marcas-nav" data-opiniones-anterior aria-label="<?=Marca::h("portada.opiniones_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
+        <button type="button" class="marcas-nav" data-opiniones-siguiente aria-label="<?=Marca::h("portada.opiniones_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="<?=Assets::url("js/opiniones_carrusel.js")?>"></script>
+<?php endif; ?>
+
 <section class="portada-seccion portada-cta" aria-labelledby="t-cta">
   <div class="container-xl">
     <div class="cta-banda">

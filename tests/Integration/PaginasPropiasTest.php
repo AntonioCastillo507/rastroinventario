@@ -60,7 +60,7 @@ final class PaginasPropiasTest extends BaseDatos {
 
     public function testLaPortadaQuedaCorta(): void {
         $x = Html::xpath(Pantallas::render($this->db, "home"));
-        $this->assertSame(["inicio", "", "", "", "", ""], array_map(fn($s) => $s->getAttribute("id"), iterator_to_array($x->query("//main//section"))), "hero, categorías, recién llegadas, marcas, «Por qué elegirnos» y banda (la franja de confianza va oculta)");
+        $this->assertSame(["inicio", "", "", "", "", "", ""], array_map(fn($s) => $s->getAttribute("id"), iterator_to_array($x->query("//main//section"))), "hero, categorías, recién llegadas, marcas, «Por qué elegirnos», opiniones y banda (la franja de confianza va oculta)");
         $this->assertSame(0, Html::contar($x, "//*[@id='nosotros' or @id='contacto']"));
         $this->assertSame(0, Html::contar($x, "//*[contains(@class,'about-section')]"));
         $plano = strtoupper(strip_tags(Pantallas::render($this->db, "home")));

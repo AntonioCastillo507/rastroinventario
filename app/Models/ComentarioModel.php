@@ -22,6 +22,14 @@ class ComentarioModel extends BaseModel {
         $sql = "SELECT c.*,p.nombre AS parte_nombre,p.activo AS parte_activo,a.marca,a.modelo,a.anio FROM comentarios c LEFT JOIN partes p ON p.id=c.parte_id LEFT JOIN autos a ON a.id=p.auto_id ORDER BY ".self::ORDENES[self::ordenValido($orden)];
         return $this->query($pag ? $sql.$pag->sql() : $sql);
     }
+    /** Reseñas de la portada: solo visibles y de piezas que existen y siguen activas (el enlace llevaría a una pieza que no se ve), la más reciente primero */
+    public function paraPortada(int $limite = 12): array {
+        return $this->query(
+            "SELECT c.id, c.nombre_visitante, c.comentario, c.rating, c.parte_id, p.nombre AS parte
+             FROM comentarios c JOIN partes p ON p.id = c.parte_id
+             WHERE c.publicado = 1 AND p.activo = 1 AND TRIM(c.comentario) <> ''
+             ORDER BY c.creado_en DESC, c.id DESC LIMIT " . max(1, $limite));
+    }
     public function togglePublicado(int $id): void { $this->exec("UPDATE comentarios SET publicado=IF(publicado=1,0,1) WHERE id=?",[$id]); }
     public function countPendientes(): int { return 0; } // ya no hay pendientes
     public function promedioRating(int $pid): float {

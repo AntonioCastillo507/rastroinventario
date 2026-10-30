@@ -408,6 +408,36 @@ input[type="file"].form-control::file-selector-button:hover { background: var(--
 .marca-enlace .marca-casilla { transition: transform .2s ease-out, border-color .2s ease-out, color .2s ease-out; }
 .marca-enlace:hover .marca-casilla, .marca-enlace:focus-visible .marca-casilla { color: var(--link); border-color: var(--btn-primary-bg); transform: translateY(-2px); }
 
+/* ── Portada: opiniones de los clientes (S7b-B.1). Fila con scroll táctil y encaje por tarjeta: 1 visible en móvil, 2 desde 768 px y 3 desde 1024 px.
+   Las flechas son las del carrusel de marcas (.marcas-nav): bajo las tarjetas en móvil y a los lados, dentro del contenedor, desde 768 px ── */
+.estrellas { display: inline-flex; gap: 2px; color: var(--link); }
+.opiniones-cabeza { margin-bottom: var(--spacing-lg); text-align: center; }
+.opiniones-cabeza .seccion-titulo { margin-bottom: var(--spacing-xs); }
+.opiniones-sub { margin: 0; color: var(--text-muted); }
+.opiniones-carrusel { position: relative; }
+.opiniones-ventana { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; margin-inline: calc(-1 * var(--spacing-xxs)); padding: var(--spacing-xxs); scrollbar-width: thin; border-radius: var(--rounded-xl); }
+.opiniones-ventana:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.opiniones-pista { display: flex; align-items: stretch; gap: var(--spacing-md); margin: 0; padding: 0; list-style: none; }
+.opinion { flex: 0 0 100%; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-sm); padding: var(--spacing-lg); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--rounded-xl); scroll-snap-align: start; }
+.opinion-quien { display: flex; align-items: center; gap: var(--spacing-sm); min-width: 0; }
+.opinion-avatar { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; font-size: var(--type-title-sm-size); font-weight: 600; color: var(--text-strong); background: var(--surface-elevated); border: 1px solid var(--border-strong); border-radius: var(--rounded-pill); }
+.opinion-nombre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text-strong); }
+.opinion .estrellas { font-size: 16px; }
+.opinion-texto { flex: 1; margin: 0; display: -webkit-box; -webkit-line-clamp: 6; line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; color: var(--text); }
+.opinion-pieza { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; line-height: 44px; color: var(--link); text-decoration: none; }
+.opinion-pieza:hover { color: var(--link-hover); text-decoration: underline; }
+.opinion-pieza:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: var(--rounded-sm); }
+.opiniones-nav { display: flex; justify-content: center; gap: var(--spacing-xs); margin-top: var(--spacing-md); }
+.opiniones-nav[hidden] { display: none; }
+@media (min-width: 768px) {
+  .opiniones-pista { gap: var(--spacing-lg); }
+  .opinion { flex-basis: calc((100% - var(--spacing-lg)) / 2); }
+  .opiniones-ventana { margin-inline: 44px; }
+  .opiniones-nav { position: absolute; inset: 0; margin: 0; align-items: center; justify-content: space-between; pointer-events: none; }
+  .opiniones-nav .marcas-nav { pointer-events: auto; }
+}
+@media (min-width: 1024px) { .opinion { flex-basis: calc((100% - 2 * var(--spacing-lg)) / 3); } }
+
 /* ── Movimiento (DESIGN.md, «Movimiento»): 250 ms como máximo, solo transform y opacity (y color de borde), nada de tamaño ni sombras ── */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes hero-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

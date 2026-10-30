@@ -244,13 +244,13 @@ final class PortadaTest extends BaseDatos {
         [$x] = $this->home();
         $ids = [];
         foreach ($x->query("//main//section") as $s) $ids[] = $s->getAttribute("id") ?: $s->getAttribute("aria-labelledby");
-        $this->assertSame(["inicio", "t-cats", "t-nuevas", "t-marcas", "t-porque", "t-cta"], $ids);
+        $this->assertSame(["inicio", "t-cats", "t-nuevas", "t-marcas", "t-porque", "t-opiniones", "t-cta"], $ids);
         $this->assertSame(1, Html::contar($x, "//section[@id='inicio']//*[contains(@class,'btn-gold')]"));
     }
 
     public function testLasSeccionesDelPieYLasMarcasTienenSuTituloH2(): void {
         [$x] = $this->home();
-        $this->assertSame(5, Html::contar($x, "//main//section/descendant::h2[@id]"));
+        $this->assertSame(6, Html::contar($x, "//main//section/descendant::h2[@id]"));
         $this->assertSame(1, Html::contar($x, "//main"));
     }
 }

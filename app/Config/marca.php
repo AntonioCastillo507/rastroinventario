@@ -68,6 +68,13 @@ return [
         "porque_subtitulo"  => "Repuestos usados para tu carro, con trato directo",
         "porque_texto"      => "Conoce quiénes estamos detrás de la tienda y cómo trabajamos para ayudarte a encontrar la pieza que necesitas.",
         "porque_boton"      => "Conoce más sobre nosotros",
+        // Opiniones de los clientes (S7b-B.1): la sección se oculta si no hay reseñas visibles
+        "opiniones_titulo"    => "Opiniones de nuestros clientes",
+        "opiniones_subtitulo" => "Lo que dicen quienes ya compraron con nosotros",
+        "opiniones_region"    => "Opiniones de los clientes",
+        "opiniones_anterior"  => "Opiniones anteriores",
+        "opiniones_siguiente" => "Opiniones siguientes",
+        "opiniones_sobre"     => "Sobre",
         "cta_titulo"        => "¿No encuentras tu pieza?",
         "cta_texto"         => "Escríbenos o llámanos con el nombre de la pieza y tu vehículo.",
         "cta_boton"         => "Contáctanos",
