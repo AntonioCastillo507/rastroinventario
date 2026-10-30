@@ -417,27 +417,91 @@ class PedidoController extends BaseController {
         $this->view("public/mis_pedidos",compact("pedidos"));
     }
 
-    public function miPerfil(): void {
+    // ── Mi cuenta ─────────────────────────────────────────────────
+    /** El usuario con sesión, o redirige al acceso */
+    private function usuarioDeCuenta(): array {
         if (empty($_SESSION["user"])) $this->redirect(APP_URL."/login.php");
-        $um=new UserModel(); $user=$um->findById($_SESSION["user"]["id"]); $error=""; $success="";
+        $user=(new UserModel())->findById((int)$_SESSION["user"]["id"]);
+        if (!$user) $this->redirect(APP_URL."/login.php");
+        return $user;
+    }
+
+    public function miPerfil(): void {
+        $user=$this->usuarioDeCuenta(); $error=""; $success=""; $errores=[];
         if ($this->isPost()){
             CsrfToken::verify();
-            if (isset($_POST["nueva"])) {
-                $actual=$_POST["actual"]??""; $nueva=$_POST["nueva"]??""; $conf=$_POST["confirmar"]??"";
-                if (!password_verify($actual,$user["password"])) { $error="La contraseña actual no es correcta."; }
-                elseif ($nueva!==$conf) { $error="La nueva contraseña y su confirmación no coinciden."; }
-                else {
-                    $vp=(new Validator())->password("nueva",$nueva,$user["email"],$user["nombre"]);
-                    if ($vp->isValid()) { $um->updatePassword($_SESSION["user"]["id"],password_hash($nueva,PASSWORD_BCRYPT)); $success="Contraseña actualizada correctamente."; CsrfToken::rotar(); }
-                    else { $error=$vp->first(); }
-                }
-                $this->view("public/mi_perfil",compact("user","error","success")); return;
+            $nombre=Sanitizer::post("nombre"); $tel=Sanitizer::post("telefono");
+            $v=(new Validator())->required("nombre",$nombre,"El nombre")->maxLen("nombre",$nombre,100);
+            $errores=$v->getErrors();
+            $telNorm="";
+            if ($tel!==""){
+                $telNorm=DireccionPanama::telefono($tel)??"";
+                if ($telNorm==="") $errores["telefono"]="Escribe un teléfono de Panamá: celular de 8 dígitos que empieza por 6, o fijo de 7 dígitos.";
             }
-            $upd=["nombre"=>Sanitizer::post("nombre"),"telefono"=>Sanitizer::post("telefono"),"direccion"=>Sanitizer::post("direccion")];
-            $v=(new Validator())->required("nombre",$upd["nombre"],"Nombre");
-            if ($v->isValid()){ $um->updateProfile($_SESSION["user"]["id"],$upd); $_SESSION["user"]["nombre"]=$upd["nombre"]; $success="Perfil actualizado."; $user=$um->findById($_SESSION["user"]["id"]); }
-            else $error=$v->first();
+            if (!$errores){
+                (new UserModel())->updateProfile((int)$user["id"],["nombre"=>$nombre,"telefono"=>$telNorm]);
+                $_SESSION["user"]["nombre"]=$nombre;
+                $this->redirect(APP_URL."/?action=mi_perfil","Perfil actualizado.","success");
+            }
+            $user["nombre"]=$nombre; $user["telefono"]=$tel; // se conserva lo escrito
         }
-        $this->view("public/mi_perfil",compact("user","error","success"));
+        $this->view("public/mi_perfil",compact("user","error","success","errores"));
+    }
+
+    public function miDireccion(): void {
+        $user=$this->usuarioDeCuenta(); $errores=[]; $geo=new GeoPanamaModel();
+        $dir=[
+            "provincia"=>(string)($user["dir_provincia"]??""), "distrito"=>(string)($user["dir_distrito"]??""), "corregimiento"=>(string)($user["dir_corregimiento"]??""),
+            "calle"=>(string)($user["dir_calle"]??""), "casa"=>(string)($user["dir_casa"]??""), "barriada"=>(string)($user["dir_barriada"]??""), "referencia"=>(string)($user["dir_referencia"]??""),
+        ];
+        if ($this->isPost()){
+            CsrfToken::verify();
+            foreach (array_keys($dir) as $k) $dir[$k]=Sanitizer::post($k);
+            $r=DireccionPanama::validar($dir,$geo);
+            if ($r["ok"]){
+                (new UserModel())->update((int)$user["id"],DireccionPanama::paraUsuario($r["datos"]));
+                $this->redirect(APP_URL."/?action=mi_direccion","Dirección de entrega guardada.","success");
+            }
+            $errores=$r["errores"];
+        }
+        $this->view("public/mi_direccion",compact("user","dir","errores","geo"));
+    }
+
+    public function miClave(): void {
+        $user=$this->usuarioDeCuenta(); $error=""; $success="";
+        if ($this->isPost()){
+            CsrfToken::verify();
+            $actual=$_POST["actual"]??""; $nueva=$_POST["nueva"]??""; $conf=$_POST["confirmar"]??"";
+            if (!is_string($actual)||!is_string($nueva)||!is_string($conf)) $error="Revisa los datos del formulario.";
+            elseif (!password_verify($actual,$user["password"])) $error="La contraseña actual no es correcta.";
+            elseif ($nueva!==$conf) $error="La nueva contraseña y su confirmación no coinciden.";
+            else {
+                $vp=(new Validator())->password("nueva",$nueva,$user["email"],$user["nombre"]);
+                if ($vp->isValid()){ (new UserModel())->updatePassword((int)$user["id"],password_hash($nueva,PASSWORD_BCRYPT)); $success="Contraseña actualizada correctamente."; CsrfToken::rotar(); }
+                else $error=$vp->first();
+            }
+        }
+        $this->view("public/mi_clave",compact("user","error","success"));
+    }
+
+    /**
+     * Respuesta del selector de provincia → distrito → corregimiento: datos públicos de solo lectura, sin nada personal.
+     * "padre" solo vale con dígitos y el largo exacto del nivel (2 para los distritos de una provincia, 4 para los corregimientos de un distrito).
+     * @return array{0:int,1:array} código HTTP y cuerpo
+     */
+    public static function respuestaGeo(array $get, string $metodo, GeoPanamaModel $geo): array {
+        if ($metodo!=="GET") return [405,["error"=>"Método no permitido."]];
+        $nivel=is_string($get["nivel"]??null)?$get["nivel"]:""; $padre=is_string($get["padre"]??null)?$get["padre"]:"";
+        if ($nivel==="distritos"&&preg_match('/^\d{2}\z/',$padre)===1)
+            return [200,["nivel"=>$nivel,"padre"=>$padre,"items"=>$geo->distritos($padre),"implicito"=>$geo->distritoImplicito($padre)]];
+        if ($nivel==="corregimientos"&&preg_match('/^\d{4}\z/',$padre)===1)
+            return [200,["nivel"=>$nivel,"padre"=>$padre,"items"=>$geo->corregimientos($padre),"implicito"=>null]];
+        return [400,["error"=>"Parámetros no válidos."]];
+    }
+
+    public function geo(): void {
+        [$codigo,$cuerpo]=self::respuestaGeo($_GET,$_SERVER["REQUEST_METHOD"],new GeoPanamaModel());
+        header("X-Content-Type-Options: nosniff");
+        $this->json($cuerpo,$codigo);
     }
 }

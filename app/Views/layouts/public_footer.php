@@ -60,4 +60,5 @@ try { $pieSecciones = (new SeccionModel())->findActive(); } catch (Throwable $e)
 <script src="<?=Assets::url("js/main.js")?>"></script>
 <script src="<?=Assets::url("js/carrito.js")?>"></script>
 <script src="<?=Assets::url("js/envio.js")?>"></script>
+<?php if(!empty($cargarDireccionJs)): ?><script src="<?=Assets::url("js/direccion.js")?>"></script><?php endif; ?>
 </body></html>

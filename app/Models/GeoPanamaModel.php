@@ -15,19 +15,19 @@ class GeoPanamaModel extends BaseModel {
 
     /** Distritos visibles de una provincia o comarca (vacío si no tiene, como Guna Yala) @return list<array{codigo:string,nombre:string}> */
     public function distritos(string $provincia): array {
-        if (!preg_match('/^\d{2}$/', $provincia)) return [];
+        if (!preg_match('/^\d{2}\z/', $provincia)) return [];
         return $this->query("SELECT codigo, nombre FROM distritos WHERE provincia_codigo = ? AND implicito = 0 ORDER BY nombre", [$provincia]);
     }
 
     /** Corregimientos visibles de un distrito (vacío si no tiene, como Naso Tjër Di) @return list<array{codigo:string,nombre:string}> */
     public function corregimientos(string $distrito): array {
-        if (!preg_match('/^\d{4}$/', $distrito)) return [];
+        if (!preg_match('/^\d{4}\z/', $distrito)) return [];
         return $this->query("SELECT codigo, nombre FROM corregimientos WHERE distrito_codigo = ? AND implicito = 0 ORDER BY nombre", [$distrito]);
     }
 
     /** Código del distrito implícito de una provincia que no tiene distritos visibles (Guna Yala: 1001), o null. Sirve para listar sus corregimientos */
     public function distritoImplicito(string $provincia): ?string {
-        return preg_match('/^\d{2}$/', $provincia) ? $this->implicitoUnico("distritos", "provincia_codigo", $provincia) : null;
+        return preg_match('/^\d{2}\z/', $provincia) ? $this->implicitoUnico("distritos", "provincia_codigo", $provincia) : null;
     }
 
     /** El hijo implícito único de un padre, o null si el padre tiene hijos visibles o ninguno */
@@ -46,17 +46,17 @@ class GeoPanamaModel extends BaseModel {
     public function resolver(string $provincia, string $distrito, string $corregimiento): array {
         $provincia = trim($provincia); $distrito = trim($distrito); $corregimiento = trim($corregimiento);
         if ($provincia === "") return ["error" => "provincia"];
-        if (!preg_match('/^\d{2}$/', $provincia)) return ["error" => "combinacion"];
+        if (!preg_match('/^\d{2}\z/', $provincia)) return ["error" => "combinacion"];
 
         if ($distrito === "") {
             $distrito = $this->implicitoUnico("distritos", "provincia_codigo", $provincia) ?? "";
             if ($distrito === "") return ["error" => "distrito"];
-        } elseif (!preg_match('/^\d{4}$/', $distrito)) return ["error" => "combinacion"];
+        } elseif (!preg_match('/^\d{4}\z/', $distrito)) return ["error" => "combinacion"];
 
         if ($corregimiento === "") {
             $corregimiento = $this->implicitoUnico("corregimientos", "distrito_codigo", $distrito) ?? "";
             if ($corregimiento === "") return ["error" => "corregimiento"];
-        } elseif (!preg_match('/^\d{6}$/', $corregimiento)) return ["error" => "combinacion"];
+        } elseif (!preg_match('/^\d{6}\z/', $corregimiento)) return ["error" => "combinacion"];
 
         $f = $this->query(
             "SELECT p.nombre AS pn, d.nombre AS dn, d.implicito AS di, c.nombre AS cn, c.implicito AS ci

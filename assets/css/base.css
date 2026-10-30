@@ -835,3 +835,30 @@ select:disabled, .form-select:disabled { cursor: not-allowed; --flecha: var(--te
 /* ── fieldset y legend: el título queda DENTRO del recuadro, no montado sobre su borde (flota a todo el ancho y lo siguiente lo despeja) ── */
 legend { float: left; width: 100%; padding: 0; margin: 0 0 var(--spacing-sm); }
 legend + * { clear: both; }
+
+/* Mi cuenta (S8.3): menú de la cuenta, tarjeta de formulario y dirección de Panamá. Solo tokens existentes. */
+.cuenta { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-xxl); }
+.cuenta-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-lg); align-items: start; }
+.cuenta-nav { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rounded-xl); padding: var(--spacing-xs); }
+.cuenta-nav-lista { list-style: none; margin: 0; padding: 0; }
+.cuenta-nav-enlace { display: flex; align-items: center; width: 100%; min-height: 44px; padding: 0 var(--spacing-md); border: 0; border-left: 3px solid transparent; border-radius: var(--rounded-md); background: transparent; color: var(--text); font: inherit; font-size: var(--type-body-md-size); font-weight: 500; text-align: left; text-decoration: none; cursor: pointer; }
+.cuenta-nav-enlace:hover { color: var(--text-strong); background: var(--surface-elevated); }
+.cuenta-nav-enlace.activo { color: var(--text-strong); border-left-color: var(--btn-primary-bg); font-weight: 600; }
+.cuenta-nav-salir { margin: var(--spacing-xxs) 0 0; padding-top: var(--spacing-xxs); border-top: 1px solid var(--hairline); }
+.cuenta-contenido { min-width: 0; max-width: 720px; }
+.cuenta-titulo { margin: 0 0 var(--spacing-md); font-size: var(--type-title-lg-size); font-weight: 600; line-height: 1.3; color: var(--text-strong); }
+.cuenta-ayuda { margin: 0 0 var(--spacing-md); font-size: var(--type-body-md-size); color: var(--text-muted); }
+.cuenta-tarjeta { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rounded-xl); padding: var(--spacing-lg); }
+.campo-error { display: flex; gap: var(--spacing-xs); align-items: flex-start; margin: var(--spacing-xs) 0 0; font-size: var(--type-body-sm-size); color: var(--danger-text); }
+.campo-error i { flex-shrink: 0; margin-top: 2px; }
+[aria-invalid="true"] { border-color: var(--danger-text) !important; }
+.direccion-campos { min-width: 0; margin: 0 0 var(--spacing-md); padding: 0; border: 0; }
+.direccion-leyenda { float: none; width: auto; margin: 0 0 var(--spacing-sm); padding: 0; font-size: var(--type-title-sm-size); font-weight: 600; line-height: 1.4; color: var(--text-strong); }
+.direccion-rejilla { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-md); }
+.direccion-campo[hidden] { display: none; }
+@media (min-width: 768px) {
+  .cuenta-grid { grid-template-columns: 240px minmax(0, 1fr); gap: var(--spacing-xl); }
+  .cuenta-nav { position: sticky; top: calc(64px + var(--spacing-lg)); }
+  .direccion-rejilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .direccion-ancho { grid-column: 1 / -1; }
+}

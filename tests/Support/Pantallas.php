@@ -38,6 +38,8 @@ final class Pantallas {
             "mis_pedidos"       => ["cliente", fn($f) => $pub()->misPedidos()],
             "mis_pedidos_vacio" => ["cliente_sin_pedidos", fn($f) => $pub()->misPedidos()],
             "mi_perfil"         => ["cliente", fn($f) => $pub()->miPerfil()],
+            "mi_direccion"      => ["cliente", fn($f) => $pub()->miDireccion()],
+            "mi_clave"          => ["cliente", fn($f) => $pub()->miClave()],
             "con_aviso_exito"   => ["invitado+aviso_exito", fn($f) => $pub()->carrito()],
             "con_aviso_error"   => ["invitado+aviso_error", fn($f) => $pub()->carrito()],
             // ── Acceso ──

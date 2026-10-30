@@ -143,14 +143,14 @@ final class CsrfPorSesionTest extends TestCase {
     public function testCambiarLaClaveDesdeMiPerfilRenuevaElToken(): void {
         [$uid, $email] = $this->clienteConClave();
         $nueva = "Otra-frase-de-prueba-del-perfil-2026";
-        $r = $this->accion("PedidoController", "miPerfil", ["actual" => self::CLAVE, "nueva" => $nueva, "confirmar" => $nueva], $this->sesionDe($uid, $email));
+        $r = $this->accion("PedidoController", "miClave", ["actual" => self::CLAVE, "nueva" => $nueva, "confirmar" => $nueva], $this->sesionDe($uid, $email));
         $this->assertStringContainsString("Contraseña actualizada correctamente.", $r["salida"]);
         $this->esTokenNuevo($r);
     }
 
     public function testUnCambioDeClaveRechazadoNoRenuevaElToken(): void {
         [$uid, $email] = $this->clienteConClave();
-        $r = $this->accion("PedidoController", "miPerfil", ["actual" => "no es", "nueva" => "Otra-frase-larga-2026", "confirmar" => "Otra-frase-larga-2026"], $this->sesionDe($uid, $email));
+        $r = $this->accion("PedidoController", "miClave", ["actual" => "no es", "nueva" => "Otra-frase-larga-2026", "confirmar" => "Otra-frase-larga-2026"], $this->sesionDe($uid, $email));
         $this->assertStringContainsString("no es correcta", $r["salida"]);
         $this->assertSame(self::VIEJO, $r["sesion"]["csrf_token"]);
     }
