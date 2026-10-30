@@ -52,11 +52,11 @@ final class CuentaClienteTest extends BaseDatos {
     // ── Perfil ───────────────────────────────────────────────────────
 
     public function testPerfilGuardaElNombreYNormalizaElTelefono(): void {
-        [, $destino] = $this->accion("miPerfil", ["nombre" => "Ana Pérez", "telefono" => "+507 6542 0519"]);
+        [, $destino] = $this->accion("miPerfil", ["nombre" => "Ana Pérez", "telefono" => "+507 6123 4567"]);
         $this->assertSame(APP_URL . "/?action=mi_perfil", $destino);
         $f = $this->fila();
         $this->assertSame("Ana Pérez", $f["nombre"]);
-        $this->assertSame("6542-0519", $f["telefono"]);
+        $this->assertSame("6123-4567", $f["telefono"]);
     }
 
     public function testPerfilConTelefonoInvalidoNoGuardaYConservaLoEscrito(): void {
@@ -131,6 +131,16 @@ final class CuentaClienteTest extends BaseDatos {
         $this->assertNull($x->query("//*[@id='dir-grupo-distrito'][@hidden]")->item(0));
         $this->assertNotNull($x->query("//*[@id='dir-grupo-corregimiento'][@hidden]")->item(0), "no se muestra una lista de un corregimiento inventado");
         $this->assertNotNull($x->query("//select[@name='corregimiento'][@disabled]")->item(0), "oculto y sin enviarse");
+    }
+
+    public function testLoQueEscribeLaPersonaSaleEscapadoEnLosFormularios(): void {
+        $malo = '"><script>alert(1)</script>';
+        [$html] = $this->accion("miDireccion", $this->dirValida(["calle" => $malo, "barriada" => $malo, "casa" => $malo, "referencia" => $malo]));
+        $this->assertStringNotContainsString("<script>alert(1)", $html);
+        $this->assertStringContainsString("&lt;script&gt;alert(1)&lt;/script&gt;", $html, "el valor vuelve al campo, escapado");
+        $this->assertStringContainsString('class="campo-error"', $html);
+        [$html] = $this->accion("miPerfil", ["nombre" => $malo, "telefono" => $malo]);
+        $this->assertStringNotContainsString("<script>alert(1)", $html);
     }
 
     public function testSinSesionVaAlAcceso(): void {

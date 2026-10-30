@@ -142,7 +142,7 @@ class DireccionPanama {
 
     /**
      * Teléfono de Panamá: celular de 8 dígitos que empieza por 6 o fijo de 7 dígitos (sin restringir el primero), con +507, 507 o
-     * 00507 al inicio, espacios, guiones, puntos o paréntesis opcionales. Devuelve el número normalizado («6542-0519» o «123-4567»)
+     * 00507 al inicio, espacios, guiones, puntos o paréntesis opcionales. Devuelve el número normalizado («6123-4567» o «123-4567»)
      * o null si no vale. Rechaza dígitos todos iguales y la escalera 1234567 / 12345678.
      */
     public static function telefono(mixed $v): ?string {
