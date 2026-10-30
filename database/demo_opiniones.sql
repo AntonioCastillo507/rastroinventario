@@ -2,6 +2,7 @@
 -- Marca de «dato demo»: auto_pub = 2 (el formulario público escribe 1 y el valor por defecto es 0).
 -- La tabla comentarios no guarda correo ni usuario, así que ese valor es lo que las identifica;
 -- database/quitar_demo.sql las borra por él. Se puede repetir: primero quita las demo anteriores.
+-- Las de 4 y 5 estrellas quedan destacadas para la portada (comentarios.destacado, migración 005); la de 3 no.
 -- Cada reseña se pega a la primera pieza que lleve ese nombre; si la pieza no existe, esa reseña no se inserta.
 -- Uso:  mysql -u root -h 127.0.0.1 -P 3306 --default-character-set=utf8mb4 NOMBRE_BASE < database\demo_opiniones.sql
 -- (en la base real: respaldo en C:\wamp64\respaldo_rastro\ antes y verificación con SELECT después)
@@ -10,8 +11,8 @@ SET NAMES utf8mb4;
 
 DELETE FROM comentarios WHERE auto_pub = 2;
 
-INSERT INTO comentarios (parte_id, nombre_visitante, comentario, rating, auto_pub, publicado, creado_en)
-SELECT p.id, d.nombre, d.texto, d.rating, 2, 1, NOW() - INTERVAL d.dias DAY - INTERVAL d.horas HOUR
+INSERT INTO comentarios (parte_id, nombre_visitante, comentario, rating, auto_pub, publicado, destacado, creado_en)
+SELECT p.id, d.nombre, d.texto, d.rating, 2, 1, d.rating >= 4, NOW() - INTERVAL d.dias DAY - INTERVAL d.horas HOUR
 FROM (
   SELECT 'Puerta Delantera Izquierda' COLLATE utf8mb4_unicode_ci AS pieza, 'Marcos Villarreal' AS nombre, 5 AS rating, 2 AS dias, 3 AS horas,
          'Vine por la puerta de mi Hyundai y quedó perfecta, mismo color y sin golpes. Me atendieron rápido y hasta me ayudaron a cargarla al carro.' AS texto
