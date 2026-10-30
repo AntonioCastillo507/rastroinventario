@@ -13,19 +13,61 @@ CREATE TABLE `roles` (
   UNIQUE KEY `nombre` (`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Division politico-administrativa de Panama (datos en seed_panama.sql). implicito = 1: unidad que solo completa
+-- la cadena (distrito ficticio de Guna Yala, area unica de Naso Tjer Di); el formulario no la muestra.
+CREATE TABLE `provincias` (
+  `codigo` char(2) NOT NULL,
+  `nombre` varchar(80) NOT NULL,
+  `tipo` enum('provincia','comarca') NOT NULL DEFAULT 'provincia',
+  PRIMARY KEY (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `distritos` (
+  `codigo` char(4) NOT NULL,
+  `provincia_codigo` char(2) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `implicito` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`codigo`),
+  KEY `provincia_codigo` (`provincia_codigo`),
+  CONSTRAINT `distritos_ibfk_1` FOREIGN KEY (`provincia_codigo`) REFERENCES `provincias` (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `corregimientos` (
+  `codigo` char(6) NOT NULL,
+  `distrito_codigo` char(4) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `implicito` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`codigo`),
+  KEY `distrito_codigo` (`distrito_codigo`),
+  CONSTRAINT `corregimientos_ibfk_1` FOREIGN KEY (`distrito_codigo`) REFERENCES `distritos` (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `usuarios` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
   `telefono` varchar(30) DEFAULT NULL,
   `direccion` text,
+  `dir_provincia` char(2) DEFAULT NULL,
+  `dir_distrito` char(4) DEFAULT NULL,
+  `dir_corregimiento` char(6) DEFAULT NULL,
+  `dir_calle` varchar(80) DEFAULT NULL,
+  `dir_casa` varchar(60) DEFAULT NULL,
+  `dir_barriada` varchar(80) DEFAULT NULL,
+  `dir_referencia` varchar(120) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `activo` tinyint(1) DEFAULT '1',
   `intentos_fallidos` tinyint DEFAULT '0',
   `bloqueado` tinyint(1) DEFAULT '0',
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
+  UNIQUE KEY `email` (`email`),
+  KEY `dir_provincia` (`dir_provincia`),
+  KEY `dir_distrito` (`dir_distrito`),
+  KEY `dir_corregimiento` (`dir_corregimiento`),
+  CONSTRAINT `usuarios_ibfk_dir_provincia` FOREIGN KEY (`dir_provincia`) REFERENCES `provincias` (`codigo`),
+  CONSTRAINT `usuarios_ibfk_dir_distrito` FOREIGN KEY (`dir_distrito`) REFERENCES `distritos` (`codigo`),
+  CONSTRAINT `usuarios_ibfk_dir_corregimiento` FOREIGN KEY (`dir_corregimiento`) REFERENCES `corregimientos` (`codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `marcas` (
@@ -92,6 +134,13 @@ CREATE TABLE `pedidos` (
   `cliente_telefono` varchar(30) NOT NULL,
   `cliente_email` varchar(150) NOT NULL,
   `cliente_direccion` text NOT NULL,
+  `entrega_provincia` varchar(80) DEFAULT NULL,
+  `entrega_distrito` varchar(100) DEFAULT NULL,
+  `entrega_corregimiento` varchar(100) DEFAULT NULL,
+  `entrega_calle` varchar(80) DEFAULT NULL,
+  `entrega_casa` varchar(60) DEFAULT NULL,
+  `entrega_barriada` varchar(80) DEFAULT NULL,
+  `entrega_referencia` varchar(120) DEFAULT NULL,
   `cliente_notas` text,
   `usuario_id` int DEFAULT NULL,
   `estado` enum('pendiente','procesando','entregado','cancelado') DEFAULT 'pendiente',

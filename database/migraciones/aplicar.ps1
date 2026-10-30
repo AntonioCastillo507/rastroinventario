@@ -5,7 +5,8 @@
 #
 # Sin -Confirmar no hace nada (solo dice que haria). El respaldo va a C:\wamp64\respaldo_rastro\
 # (fuera del proyecto, porque lleva hashes de contrasena) y la migracion no se aplica si el
-# respaldo no existe o esta vacio. Solo acepta rastroinventario, rastroinventario_test y rastroinventario_check.
+# respaldo no existe o esta vacio. Tambien aplica los datos de database/ con nombre seed_*.sql (por ejemplo
+#   -Archivo seed_panama.sql, que va despues de la migracion 006). Solo acepta rastroinventario, rastroinventario_test y rastroinventario_check.
 param(
     [Parameter(Mandatory = $true)][string]$Base,
     [string]$Archivo     = "001_password_resets.sql",
@@ -27,7 +28,8 @@ $dump  = Join-Path $BinMysql "mysqldump.exe"
 foreach ($e in @($mysql, $dump)) { if (-not (Test-Path $e)) { throw "No encuentro $e (usa -BinMysql)." } }
 
 $aqui = Split-Path -Parent $MyInvocation.MyCommand.Path
-$sql  = Join-Path $aqui $Archivo
+# Los datos seed_*.sql viven en database/, una carpeta mas arriba que las migraciones
+$sql  = if ($Archivo -like "seed_*") { Join-Path (Split-Path -Parent $aqui) $Archivo } else { Join-Path $aqui $Archivo }
 if (-not (Test-Path $sql)) { throw "No existe la migracion $sql" }
 
 $cli = @("-u", $Usuario, "-h", $Servidor, "-P", "$Puerto")

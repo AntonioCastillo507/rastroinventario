@@ -1,4 +1,4 @@
-# Crea una base de Rastroinventario desde cero: schema.sql + seed_basico.sql (+ demo.sql).
+# Crea una base de Rastroinventario desde cero: schema.sql + seed_basico.sql + seed_panama.sql (+ demo.sql).
 #
 #   .\database\instalar.ps1 -Base rastroinventario
 #   .\database\instalar.ps1 -Base rastroinventario_test -Recrear
@@ -23,7 +23,7 @@ if ($Base -notmatch '^[A-Za-z0-9_]{1,64}$') { throw "Nombre de base no valido: $
 if (-not (Test-Path $Mysql)) { throw "No encuentro mysql.exe en $Mysql (usa -Mysql con la ruta correcta)." }
 
 $aqui = Split-Path -Parent $MyInvocation.MyCommand.Path
-$archivos = @("schema.sql", "seed_basico.sql")
+$archivos = @("schema.sql", "seed_basico.sql", "seed_panama.sql")
 if ($Demo) { $archivos += "demo.sql" }
 foreach ($a in $archivos) {
     if (-not (Test-Path (Join-Path $aqui $a))) { throw "Falta $a en $aqui" }
