@@ -162,6 +162,11 @@ final class CuentaClienteTest extends BaseDatos {
             $this->assertSame(APP_URL . "/?action=$accion", $actuales->item(0)->attributes->getNamedItem("href")->nodeValue);
             $this->assertSame(4, $x->query("//nav[@aria-label='Mi cuenta']//li/a")->length, "perfil, pedidos, dirección y contraseña");
             $this->assertSame(1, $x->query("//nav[@aria-label='Mi cuenta']//form[@method='post'][@action='" . APP_URL . "/logout.php']")->length, "salir es POST");
+            $this->assertSame(5, $x->query("//nav[@aria-label='Mi cuenta']//i[@aria-hidden='true' and starts-with(@class,'bi bi-')]")->length, "un icono por opción y uno para cerrar sesión");
+            foreach (["bi-person", "bi-bag-check", "bi-geo-alt", "bi-key", "bi-box-arrow-right"] as $icono) $this->assertSame(1, $x->query("//nav[@aria-label='Mi cuenta']//i[contains(@class,'$icono')]")->length, $icono);
+            $salir = $x->query("//nav[@aria-label='Mi cuenta']//form//button")->item(0);
+            $this->assertSame("Cerrar sesión", trim($salir->textContent));
+            $this->assertStringContainsString("cuenta-nav-peligro", $salir->getAttribute("class"), "en el rojo de peligro");
             $this->assertSame(1, $x->query("//h1")->length);
         }
     }

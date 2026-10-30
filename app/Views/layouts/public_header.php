@@ -54,7 +54,7 @@ $cartCount = count($_SESSION["cart"]??[]);
               <li><a class="dropdown-item" href="<?=APP_URL?>/?action=mis_pedidos"><i aria-hidden="true" class="bi bi-bag-check me-2"></i>Mis Pedidos</a></li>
               <?php endif; ?>
               <li><hr class="dropdown-divider" style="border-color:var(--border)"></li>
-              <li><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="dropdown-item text-danger" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button></form></li>
+              <li><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="dropdown-item item-peligro" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button></form></li>
             </ul>
           </div>
         <?php else: ?>

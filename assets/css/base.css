@@ -840,11 +840,17 @@ legend + * { clear: both; }
 .cuenta { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-xxl); }
 .cuenta-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-lg); align-items: start; }
 .cuenta-nav { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rounded-xl); padding: var(--spacing-xs); }
-.cuenta-nav-lista { list-style: none; margin: 0; padding: 0; }
-.cuenta-nav-enlace { display: flex; align-items: center; width: 100%; min-height: 44px; padding: 0 var(--spacing-md); border: 0; border-left: 3px solid transparent; border-radius: var(--rounded-md); background: transparent; color: var(--text); font: inherit; font-size: var(--type-body-md-size); font-weight: 500; text-align: left; text-decoration: none; cursor: pointer; }
-.cuenta-nav-enlace:hover { color: var(--text-strong); background: var(--surface-elevated); }
-.cuenta-nav-enlace.activo { color: var(--text-strong); border-left-color: var(--btn-primary-bg); font-weight: 600; }
-.cuenta-nav-salir { margin: var(--spacing-xxs) 0 0; padding-top: var(--spacing-xxs); border-top: 1px solid var(--hairline); }
+.cuenta-nav-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.cuenta-nav-enlace { position: relative; display: flex; align-items: center; gap: var(--spacing-sm); width: 100%; min-height: 44px; padding: 0 var(--spacing-sm); border: 0; border-radius: var(--rounded-md); background: none; color: var(--text); font-family: var(--font-text); font-size: var(--type-nav-link-size); font-weight: var(--type-nav-link-weight); line-height: var(--type-nav-link-line-height); text-align: left; text-decoration: none; cursor: pointer; }
+.cuenta-nav-enlace i { flex-shrink: 0; width: 20px; font-size: 18px; line-height: 1; text-align: center; }
+.cuenta-nav-enlace:hover { background: var(--surface-elevated); color: var(--text-strong); }
+.cuenta-nav-enlace.activo { background: var(--surface-elevated); color: var(--text-strong); font-weight: 600; }
+.cuenta-nav-enlace.activo::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 0 var(--rounded-sm) var(--rounded-sm) 0; background: var(--logo); }
+.cuenta-nav-enlace:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.cuenta-nav-salir { margin: var(--spacing-xs) 0 0; padding-top: var(--spacing-xs); border-top: 1px solid var(--hairline); }
+.cuenta-nav-peligro, .cuenta-nav-peligro:hover { color: var(--danger-text); }
+/* Cerrar sesión en los desplegables de la cuenta (tienda y panel): rojo de peligro, texto e icono */
+.dropdown-item.item-peligro, .dropdown-item.item-peligro i, .dropdown-item.item-peligro:hover { color: var(--danger-text) !important; }
 .cuenta-contenido { min-width: 0; max-width: 720px; }
 .cuenta-titulo { margin: 0 0 var(--spacing-md); font-size: var(--type-title-lg-size); font-weight: 600; line-height: 1.3; color: var(--text-strong); }
 .cuenta-ayuda { margin: 0 0 var(--spacing-md); font-size: var(--type-body-md-size); color: var(--text-muted); }

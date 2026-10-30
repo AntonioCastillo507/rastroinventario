@@ -9,6 +9,7 @@ $menuGrupos = [
   ["Catálogo",       [["partes","Partes","box-seam","/admin/?mod=partes","partes"],["autos","Autos","car-front","/admin/?mod=autos","autos"],["marcas","Marcas","tags","/admin/?mod=marcas","autos"],["secciones","Secciones","diagram-3","/admin/?mod=secciones","secciones"]]],
   ["Ventas",         [["pedidos","Pedidos","bag-check","/admin/?mod=pedidos","pedidos"],["ventas","Ventas","cart-check","/admin/?mod=ventas","ventas"],["reportes","Reportes","file-earmark-bar-graph","/admin/?mod=reportes","ventas"],["comentarios","Comentarios","chat-dots","/admin/?mod=comentarios","comentarios"]]],
   ["Administración", [["usuarios","Usuarios","people","/admin/?mod=usuarios","usuarios"],["roles","Roles","shield-lock","/admin/?mod=roles","roles"],["seguridad","Seguridad","shield-check","/admin/?mod=seguridad","seguridad"]]],
+  ["Cuenta",         [["mi_clave","Cambiar contraseña","key","/admin/?mod=usuarios&action=mi_clave",null]]], // de quien tiene sesión, sin permiso de módulo
 ];
 $uidPanel = (int)($_SESSION["user"]["id"] ?? 0);
 $modulosVisibles = $uidPanel ? (new UserModel())->modulosVisibles($uidPanel) : [];
@@ -49,7 +50,7 @@ $inicialPanel = mb_strtoupper(mb_substr($nombrePanel !== "" ? $nombrePanel : "?"
       <div class="admin-grupo">
         <p class="admin-grupo-titulo" id="grupo<?=(int)$pgi?>"><?=htmlspecialchars($pgrupo)?></p>
         <ul class="admin-grupo-lista" aria-labelledby="grupo<?=(int)$pgi?>">
-          <?php foreach($pmodulos as [$pclave,$ptexto,$picono,$pruta]): $pact=!$esMiClave && $modActivo===$pclave; ?>
+          <?php foreach($pmodulos as [$pclave,$ptexto,$picono,$pruta]): $pact=$pclave==="mi_clave" ? $esMiClave : (!$esMiClave && $modActivo===$pclave); ?>
           <li><a class="admin-enlace<?=$pact?" activo":""?>" href="<?=APP_URL.htmlspecialchars($pruta)?>"<?=$pact?' aria-current="page"':""?>><i aria-hidden="true" class="bi bi-<?=htmlspecialchars($picono)?>"></i><span class="admin-enlace-texto"><?=htmlspecialchars($ptexto)?></span></a></li>
           <?php endforeach; ?>
         </ul>
@@ -73,10 +74,9 @@ $inicialPanel = mb_strtoupper(mb_substr($nombrePanel !== "" ? $nombrePanel : "?"
             <i aria-hidden="true" class="bi bi-chevron-down admin-cuenta-flecha"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end admin-cuenta-menu">
-            <li><a class="dropdown-item" href="<?=APP_URL?>/admin/?mod=usuarios&amp;action=mi_clave"<?=$esMiClave?' aria-current="page"':""?>><i aria-hidden="true" class="bi bi-key me-2"></i>Cambiar mi contraseña</a></li>
             <li><a class="dropdown-item" href="<?=APP_URL?>/"><i aria-hidden="true" class="bi bi-shop me-2"></i>Ver la tienda</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="dropdown-item" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Salir</button></form></li>
+            <li><form method="post" action="<?=APP_URL?>/logout.php" class="m-0"><?=CsrfToken::field()?><button type="submit" class="dropdown-item item-peligro" data-no-bloquear><i aria-hidden="true" class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button></form></li>
           </ul>
         </div>
       </div>

@@ -12,7 +12,7 @@ use Tests\Support\Pantallas;
  * título, tema y menú de cuenta (Salir por POST), y módulos según los permisos del rol.
  */
 final class PanelEstructuraTest extends BaseDatos {
-    private const GRUPOS = ["General" => ["Dashboard"], "Catálogo" => ["Partes", "Autos", "Marcas", "Secciones"], "Ventas" => ["Pedidos", "Ventas", "Reportes", "Comentarios"], "Administración" => ["Usuarios", "Roles", "Seguridad"]];
+    private const GRUPOS = ["General" => ["Dashboard"], "Catálogo" => ["Partes", "Autos", "Marcas", "Secciones"], "Ventas" => ["Pedidos", "Ventas", "Reportes", "Comentarios"], "Administración" => ["Usuarios", "Roles", "Seguridad"], "Cuenta" => ["Cambiar contraseña"]];
 
     protected function setUp(): void {
         parent::setUp();
@@ -92,12 +92,19 @@ final class PanelEstructuraTest extends BaseDatos {
         $this->assertSame("A", trim($x->query("//header//span[contains(@class,'admin-cuenta-inicial')]")->item(0)->textContent));
     }
 
-    public function testElMenuDeLaCuentaTieneContrasenaTiendaYSalirPorPost(): void {
+    public function testElMenuDeLaCuentaTieneTiendaYCerrarSesionPorPostYLaContrasenaVaEnLaBarraLateral(): void {
         $x = Html::xpath(Pantallas::render($this->db, "admin_dashboard"));
         $menu = "//header//ul[contains(@class,'dropdown-menu')]";
-        $clave = $x->query("$menu//a[normalize-space()='Cambiar mi contraseña']");
+        $this->assertSame(0, $x->query("$menu//a[contains(@href,'mi_clave')]")->length, "la contraseña ya no está en el desplegable");
+        $this->assertSame(["Ver la tienda", "Cerrar sesión"], array_map(fn($n) => trim($n->textContent), iterator_to_array($x->query("$menu//a | $menu//button"))));
+        // Barra lateral: grupo «Cuenta» con la contraseña, antes del botón de contraer
+        $grupo = "//aside//div[contains(@class,'admin-grupo')][.//p[normalize-space()='Cuenta']]";
+        $clave = $x->query("$grupo//a[normalize-space()='Cambiar contraseña']");
         $this->assertSame(1, $clave->length);
         $this->assertStringContainsString("mod=usuarios&action=mi_clave", $clave->item(0)->getAttribute("href"));
+        $this->assertSame(1, $x->query("$grupo//a//i[contains(@class,'bi-key')]")->length, "con su icono de llave");
+        $this->assertSame(1, $x->query("$grupo/following::button[@data-panel-menu-toggle]")->length, "queda encima de «Contraer menú»");
+        $this->assertSame(1, $x->query("//aside//p[normalize-space()='Cuenta']")->length);
         $tienda = $x->query("$menu//a[normalize-space()='Ver la tienda']");
         $this->assertSame(1, $tienda->length);
         $this->assertSame("", $tienda->item(0)->getAttribute("target"), "la tienda abre en la misma pestaña");
@@ -106,7 +113,9 @@ final class PanelEstructuraTest extends BaseDatos {
         $this->assertSame("post", strtolower($form->item(0)->getAttribute("method")));
         $this->assertStringEndsWith("/logout.php", $form->item(0)->getAttribute("action"));
         $this->assertSame(1, Html::contar($x, "$menu//form//input[@type='hidden' and @name='csrf_token' and string-length(@value)>0]"), "con token CSRF");
-        $this->assertSame("Salir", trim($x->query("$menu//form//button[@type='submit']")->item(0)->textContent));
+        $boton = $x->query("$menu//form//button[@type='submit']")->item(0);
+        $this->assertSame("Cerrar sesión", trim($boton->textContent));
+        $this->assertStringContainsString("item-peligro", $boton->getAttribute("class"), "en el rojo de peligro");
         $this->assertSame(0, Html::contar($x, "//a[contains(@href,'logout.php')]"), "ningún enlace de salida por GET");
     }
 
@@ -177,24 +186,27 @@ final class PanelEstructuraTest extends BaseDatos {
         $x = $this->renderComo($uid, "partes");
         $textos = [];
         foreach ($x->query("//aside//nav//a") as $a) $textos[] = trim($a->textContent);
-        $this->assertSame(["Dashboard", "Partes", "Pedidos"], $textos, "el panel de inicio siempre; el resto según permisos");
+        $this->assertSame(["Dashboard", "Partes", "Pedidos", "Cambiar contraseña"], $textos, "el panel de inicio y la contraseña propia siempre; el resto según permisos");
         $grupos = [];
         foreach ($x->query("//aside//p[contains(@class,'admin-grupo-titulo')]") as $p) $grupos[] = trim($p->textContent);
-        $this->assertSame(["General", "Catálogo", "Ventas"], $grupos, "un grupo sin módulos no aparece");
+        $this->assertSame(["General", "Catálogo", "Ventas", "Cuenta"], $grupos, "un grupo sin módulos no aparece; Cuenta es de todos");
     }
 
     public function testReportesSigueElPermisoDeVentas(): void {
         $x = $this->renderComo($this->conRol(["ventas" => 1]), "dashboard");
         $textos = [];
         foreach ($x->query("//aside//nav//a") as $a) $textos[] = trim($a->textContent);
-        $this->assertSame(["Dashboard", "Ventas", "Reportes"], $textos, "ReporteController exige el permiso de ventas");
+        $this->assertSame(["Dashboard", "Ventas", "Reportes", "Cambiar contraseña"], $textos, "ReporteController exige el permiso de ventas");
     }
 
     public function testMiContrasenaNoMarcaNingunModuloYSeLlamaComoEs(): void {
         $x = $this->renderComo($this->conRol(["usuarios" => 1]), "usuarios", "mi_clave");
-        $this->assertSame(0, Html::contar($x, "//aside//a[@aria-current='page']"), "es de la cuenta, no del módulo Usuarios");
+        $actuales = $x->query("//aside//a[@aria-current='page']");
+        $this->assertSame(1, $actuales->length, "solo se marca su opción del grupo Cuenta, no el módulo Usuarios");
+        $this->assertStringContainsString("mi_clave", $actuales->item(0)->getAttribute("href"));
         $this->assertSame("Mi contraseña", trim($x->query("//p[contains(@class,'admin-topbar-titulo')]")->item(0)->textContent));
-        $this->assertSame(1, Html::contar($x, "//header//a[@aria-current='page' and normalize-space()='Cambiar mi contraseña']"));
+        $this->assertSame(1, Html::contar($x, "//aside//a[@aria-current='page' and normalize-space()='Cambiar contraseña']"));
+        $this->assertSame(0, Html::contar($x, "//header//a[@aria-current='page']"));
     }
 
     public function testElNombreDeLaPersonaSeEscapa(): void {
