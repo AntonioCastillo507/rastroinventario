@@ -115,7 +115,7 @@ final class Pantallas {
         $admin = (int)$db->query("SELECT id FROM usuarios WHERE email = 'volumen.1@example.invalid'")->fetchColumn();
         $db->prepare("INSERT INTO usuario_roles (usuario_id, rol_id) SELECT ?, id FROM roles WHERE nombre = 'Administrador'")->execute([$admin]);
         $cliente = Datos::usuario($db);
-        $db->prepare("UPDATE usuarios SET nombre = 'Cliente de prueba', telefono = '6000-0000', direccion = 'Calle inventada 1' WHERE id = ?")->execute([$cliente]);
+        $db->prepare("UPDATE usuarios SET nombre = 'Cliente de prueba', telefono = '6000-0000', direccion = 'Calle inventada 1', dir_provincia = '08', dir_distrito = '0808', dir_corregimiento = (SELECT codigo FROM corregimientos WHERE nombre = 'Bella Vista' AND distrito_codigo = '0808'), dir_calle = 'Calle inventada 1', dir_casa = 'Casa 1', dir_barriada = 'Bella Vista' WHERE id = ?")->execute([$cliente]);
         $parte = Datos::parte($db, 25.50, 12, "Pieza de pantalla");
         $db->prepare("UPDATE partes SET auto_id = ?, seccion_id = ? WHERE id = ?")->execute([$v["autos"][0], $v["secciones"][0], $parte]);
         $db->prepare("INSERT INTO comentarios (parte_id, nombre_visitante, comentario, rating, publicado, destacado) VALUES (?, 'Visitante', 'Funciona muy bien', 4, 1, 1)")->execute([$parte]);
@@ -150,7 +150,7 @@ final class Pantallas {
                     break;
                 case "datos_error":
                     $_SESSION["carrito_error"] = "La contraseña debe tener al menos 8 caracteres.";
-                    \FormViejo::guardar("carrito", ["cliente_nombre" => "Rosa Escrita", "cliente_email" => "rosa@example.invalid", "cliente_direccion" => "Calle de lo escrito 5"], ["cliente_nombre", "cliente_email", "cliente_direccion"]);
+                    \FormViejo::guardar("carrito", ["cliente_nombre" => "Rosa Escrita", "cliente_email" => "rosa@example.invalid", "calle" => "Calle de lo escrito 5"], ["cliente_nombre", "cliente_email", "calle"]);
                     break;
                 case "pedido":
                     $_SESSION["pedido_exitoso"] = $f["pedido"];

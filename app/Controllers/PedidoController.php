@@ -4,6 +4,26 @@ class PedidoController extends BaseController {
     private ParteModel  $pam;
     public function __construct() { $this->pm=new PedidoModel(); $this->pam=new ParteModel(); }
 
+    private const CAMPOS_DIR = ["provincia","distrito","corregimiento","calle","casa","barriada","referencia"];
+    private const MSG_TEL = "Escribe un teléfono de Panamá: celular de 8 dígitos que empieza por 6, o fijo de 7 dígitos.";
+
+    /** Dirección del formulario de compra, validada contra la base: los nombres de la copia salen de ahí, nunca del POST */
+    private function direccionDelFormulario(): array {
+        $in=[]; foreach (self::CAMPOS_DIR as $k) $in[$k]=Sanitizer::post($k);
+        $r=DireccionPanama::validar($in,new GeoPanamaModel());
+        return ["datos"=>$r["datos"],"mensaje"=>$r["ok"]?"":(string)array_values($r["errores"])[0]];
+    }
+
+    /** Campos del formulario que se devuelven rellenos si la compra vuelve con error (la contraseña nunca) */
+    private static function camposViejos(array $extra): array { return array_merge(self::CAMPOS_DIR,["guardar_direccion"],$extra); }
+
+    /** Tras una compra de un cliente con cuenta: guarda la dirección si marcó la casilla y el teléfono si su perfil no tenía */
+    private function guardarEnPerfil(array $u, array $dir, string $tel): void {
+        $g=!empty($_POST["guardar_direccion"])?DireccionPanama::paraUsuario($dir)+["direccion"=>$dir["texto"]]:[];
+        if (trim((string)($u["telefono"]??""))==="") $g["telefono"]=$tel;
+        if ($g) (new UserModel())->update((int)$u["id"],$g);
+    }
+
     // ── Formulario de compra ──────────────────────────────────────
     /** "Comprar ahora" del detalle manda ?cantidad=N: es el valor inicial del campo si no hay datos guardados de un intento anterior */
     private static function conCantidadInicial(array $viejo, array $parte): array {
@@ -37,15 +57,17 @@ class PedidoController extends BaseController {
         $nombre   = Sanitizer::post("cliente_nombre");
         $tel      = Sanitizer::post("cliente_telefono");
         $email    = Sanitizer::email(Sanitizer::post("cliente_email"));
-        $dir      = Sanitizer::post("cliente_direccion");
+        $dd       = $this->direccionDelFormulario();
         $pass     = $_POST["nueva_pass"]??"";
         $notas    = Sanitizer::post("cliente_notas");
         // Si vuelve con error, la persona recupera lo escrito (la contraseña nunca se guarda)
-        $conservar=fn()=>FormViejo::guardar("compra",$_POST,["cliente_nombre","cliente_telefono","cliente_email","cliente_direccion","cliente_notas","cantidad"]);
+        $conservar=fn()=>FormViejo::guardar("compra",$_POST,self::camposViejos(["cliente_nombre","cliente_telefono","cliente_email","cliente_notas","cantidad"]));
         CsrfToken::verify(APP_URL."/?action=comprar&id=".$parteId,$conservar); // sin token válido vuelve al formulario con lo escrito
 
-        $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass,$email,$nombre)->numeric("cantidad",$cantidad,1);
-        if (!$v->isValid()){ $conservar(); $_SESSION["compra_error"]=$v->first(); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->password("pass",$pass,$email,$nombre)->numeric("cantidad",$cantidad,1);
+        $telOk=$tel!==""?DireccionPanama::telefono($tel):null;
+        if (!$v->isValid()||$telOk===null||!$dd["datos"]){ $conservar(); $_SESSION["compra_error"]=!$v->isValid()?$v->first():($telOk===null&&$tel!==""?self::MSG_TEL:$dd["mensaje"]); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        $tel=$telOk; $dir=$dd["datos"];
 
         $parte=$this->pam->findById($parteId);
         if (!$parte||!$parte["activo"]){ $conservar(); $_SESSION["compra_error"]="Esta pieza ya no está disponible."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
@@ -60,14 +82,14 @@ class PedidoController extends BaseController {
             $conservar(); $_SESSION["compra_error"]="Ya existe una cuenta con ese correo. Inicia sesión para continuar con tu compra.";
             $this->redirect(APP_URL."/?action=comprar&id=".$parteId);
         } else {
-            $uid=$um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT),"telefono"=>$tel,"direccion"=>$dir]);
+            $uid=$um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT),"telefono"=>$tel,"direccion"=>$dir["texto"],...DireccionPanama::paraUsuario($dir)]);
             if (!$uid){ $conservar(); $_SESSION["compra_error"]="Error al crear la cuenta."; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
             $um->assignClienteRole($uid);
             $usuarioId=$uid;
         }
 
         // Stock y pedido en una sola transacción: si algo falla, el stock vuelve y la cuenta recién creada se retira
-        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]],$errCompra);
+        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,...DireccionPanama::paraPedido($dir),"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]],$errCompra);
         if (!$pedidoId){ $um->hardDelete($usuarioId); $conservar(); $_SESSION["compra_error"]=$errCompra; $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
         EmailJsService::get()->enviarBienvenida($email,$nombre);
         EmailJsService::get()->enviarConfirmacionCompra($email,$nombre,$pedidoId,$this->totalPedido($pedidoId));
@@ -87,9 +109,10 @@ class PedidoController extends BaseController {
         if (empty($_SESSION["user"])) $this->redirect(APP_URL."/login.php");
         $parteId  = Sanitizer::post("parte_id","int");
         $cantidad = Sanitizer::post("cantidad","int");
-        $dir      = Sanitizer::post("direccion_entrega");
+        $dd       = $this->direccionDelFormulario();
+        $tel      = DireccionPanama::telefono(Sanitizer::post("cliente_telefono"));
         $notas    = Sanitizer::post("cliente_notas");
-        $conservar=fn()=>FormViejo::guardar("compra_conf",$_POST,["direccion_entrega","cliente_notas","cantidad"]);
+        $conservar=fn()=>FormViejo::guardar("compra_conf",$_POST,self::camposViejos(["cliente_telefono","cliente_notas","cantidad"]));
         CsrfToken::verify(APP_URL."/?action=comprar&id=".$parteId,$conservar);
 
         $parte=$this->pam->findById($parteId);
@@ -97,12 +120,15 @@ class PedidoController extends BaseController {
         if (!$parte||!$parte["activo"]){ $this->flash("Esta pieza ya no está disponible.","danger"); $this->redirect(APP_URL."/"); }
         if ($parte["cantidad"]<$cantidad){ $this->flash("Stock insuficiente.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
         if ((float)$parte["precio"]<0.01){ $this->flash("Esta pieza no tiene un precio válido.","danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
-        if (!$dir){ $conservar(); $this->flash("Escribe una dirección de entrega.","danger"); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        if ($tel===null){ $conservar(); $this->flash(self::MSG_TEL,"danger"); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        if (!$dd["datos"]){ $conservar(); $this->flash($dd["mensaje"],"danger"); $this->redirect(APP_URL."/?action=comprar&id=".$parteId); }
+        $dir=$dd["datos"];
 
         $um=new UserModel(); $u=$um->findById($_SESSION["user"]["id"]);
         // Stock y pedido en una sola transacción: si registrar() falla, el stock vuelve
-        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$u["nombre"],"cliente_telefono"=>$u["telefono"]??"","cliente_email"=>$u["email"],"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$_SESSION["user"]["id"]],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]],$errCompra);
+        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$u["nombre"],"cliente_telefono"=>$tel,"cliente_email"=>$u["email"],...DireccionPanama::paraPedido($dir),"cliente_notas"=>$notas,"usuario_id"=>$_SESSION["user"]["id"]],[["parte_id"=>$parteId,"parte_nombre"=>$parte["nombre"],"precio_unitario"=>$parte["precio"],"cantidad"=>$cantidad]],$errCompra);
         if (!$pedidoId){ $this->flash($errCompra,"danger"); $this->redirect(APP_URL."/?action=detalle&id=".$parteId); }
+        $this->guardarEnPerfil($u,$dir,$tel);
         EmailJsService::get()->enviarConfirmacionCompra($u["email"],$u["nombre"],$pedidoId,$this->totalPedido($pedidoId));
 
         $_SESSION["pedido_exitoso"]=$pedidoId;
@@ -336,9 +362,10 @@ class PedidoController extends BaseController {
         ksort($cart); // siempre se bloquean las piezas en el mismo orden (por id): dos pedidos con las mismas piezas no se interbloquean
 
         $notas=Sanitizer::post("cliente_notas");
-        $dir  =Sanitizer::post("cliente_direccion");
+        $dd   =$this->direccionDelFormulario();
+        $telOk=DireccionPanama::telefono(Sanitizer::post("cliente_telefono"));
         // Si vuelve con error, la persona recupera lo escrito (la contraseña nunca se guarda)
-        $conservar=fn()=>FormViejo::guardar("carrito",$_POST,["cliente_nombre","cliente_telefono","cliente_email","cliente_direccion","cliente_notas"]);
+        $conservar=fn()=>FormViejo::guardar("carrito",$_POST,self::camposViejos(["cliente_nombre","cliente_telefono","cliente_email","cliente_notas"]));
         $datos=APP_URL."/?action=carrito_datos"; // paso 2: errores del formulario
         CsrfToken::verify($datos,$conservar);
 
@@ -365,15 +392,17 @@ class PedidoController extends BaseController {
         $cuentaNueva=false;
         if (!empty($_SESSION["user"])&&in_array("Cliente",$_SESSION["user_roles"]??[])) {
             $um=new UserModel(); $u=$um->findById($_SESSION["user"]["id"]);
-            $nombre=$u["nombre"]; $tel=$u["telefono"]??""; $email=$u["email"]; $usuarioId=$u["id"];
-            $dir=$dir?:($u["direccion"]??"");
-            if (!$dir){ $conservar(); $this->flash("Escribe una dirección de entrega.","danger"); $this->redirect($datos); }
+            $nombre=$u["nombre"]; $email=$u["email"]; $usuarioId=$u["id"];
+            if ($telOk===null){ $conservar(); $this->flash(self::MSG_TEL,"danger"); $this->redirect($datos); }
+            if (!$dd["datos"]){ $conservar(); $this->flash($dd["mensaje"],"danger"); $this->redirect($datos); }
+            $tel=$telOk; $dir=$dd["datos"];
         } else {
             // ── Invitado — cuenta obligatoria ─────────────────────
             $nombre=Sanitizer::post("cliente_nombre"); $tel=Sanitizer::post("cliente_telefono");
             $email=Sanitizer::email(Sanitizer::post("cliente_email")); $pass=$_POST["nueva_pass"]??"";
-            $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->required("dir",$dir,"Dirección")->password("pass",$pass,$email,$nombre);
-            if (!$v->isValid()){ $conservar(); $_SESSION["carrito_error"]=$v->first(); $this->redirect($datos); }
+            $v=(new Validator())->required("nombre",$nombre,"Nombre")->required("telefono",$tel,"Teléfono")->required("email",$email,"Correo")->email("email",$email)->password("pass",$pass,$email,$nombre);
+            if (!$v->isValid()||$telOk===null||!$dd["datos"]){ $conservar(); $_SESSION["carrito_error"]=!$v->isValid()?$v->first():($telOk===null&&$tel!==""?self::MSG_TEL:$dd["mensaje"]); $this->redirect($datos); }
+            $tel=$telOk; $dir=$dd["datos"];
             $um=new UserModel(); $existe=$um->findByEmail($email);
             if ($existe){
                 // No se asigna el pedido a una cuenta ajena sin autenticarse.
@@ -381,17 +410,18 @@ class PedidoController extends BaseController {
                 $this->redirect($datos);
             }
             else {
-                $uid=$um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT),"telefono"=>$tel,"direccion"=>$dir]);
+                $uid=$um->create(["nombre"=>$nombre,"email"=>$email,"password"=>password_hash($pass,PASSWORD_BCRYPT),"telefono"=>$tel,"direccion"=>$dir["texto"],...DireccionPanama::paraUsuario($dir)]);
                 $um->assignClienteRole($uid); $usuarioId=$uid; $cuentaNueva=true;
             }
         }
 
         // Todo o nada: si una pieza ya no alcanza o registrar() falla, se deshace todo (y la cuenta recién creada se retira)
-        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,"cliente_direccion"=>$dir,"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],$items,$errCompra);
+        $pedidoId=$this->apartarYRegistrar(["cliente_nombre"=>$nombre,"cliente_telefono"=>$tel,"cliente_email"=>$email,...DireccionPanama::paraPedido($dir),"cliente_notas"=>$notas,"usuario_id"=>$usuarioId],$items,$errCompra);
         if (!$pedidoId){
             if ($cuentaNueva) $um->hardDelete($usuarioId);
             $conservar(); $_SESSION["carrito_error"]=$errCompra; $this->redirect(APP_URL."/?action=carrito");
         }
+        if (!$cuentaNueva) $this->guardarEnPerfil($u,$dir,$tel);
         if ($cuentaNueva){
             $_SESSION["user"]=["id"=>$usuarioId,"nombre"=>$nombre,"email"=>$email];
             $_SESSION["user_roles"]=["Cliente"]; session_regenerate_id(true); CsrfToken::rotar();

@@ -162,19 +162,24 @@ final class CarritoPantallasTest extends BaseDatos {
         foreach (["csrf_token", "cliente_nombre", "cliente_telefono", "cliente_email", "nueva_pass"] as $campo) {
             $this->assertSame(1, $x->query(".//input[@name='$campo']", $f)->length, $campo);
         }
-        foreach (["cliente_direccion", "cliente_notas"] as $campo) $this->assertSame(1, $x->query(".//textarea[@name='$campo']", $f)->length, $campo);
+        $this->assertSame(1, $x->query(".//textarea[@name='cliente_notas']", $f)->length, "cliente_notas");
+        foreach (["calle", "casa", "barriada", "referencia"] as $campo) $this->assertSame(1, $x->query(".//input[@name='$campo']", $f)->length, $campo);
+        foreach (["provincia", "distrito", "corregimiento"] as $campo) $this->assertSame(1, $x->query(".//select[@name='$campo']", $f)->length, $campo);
+        $this->assertSame(0, $x->query(".//*[@name='cliente_direccion']", $f)->length, "ya no hay un texto libre de dirección");
         $this->assertSame(0, $x->query(".//input[contains(@name,'precio') or contains(@name,'total') or contains(@name,'subtotal') or contains(@name,'itbms') or @name='cantidad']", $f)->length, "ni precios ni totales ni cantidades en el formulario");
         $this->assertSame("new-password", $x->query(".//input[@name='nueva_pass']", $f)->item(0)->getAttribute("autocomplete"));
         $legendas = array_map(fn($n) => trim($n->textContent), iterator_to_array($x->query("//form[@id='form-datos']//legend")));
-        $this->assertSame(["Entrega", "Tu cuenta"], $legendas, "la cuenta es un bloque aparte: F2 lo cambia sin tocar la entrega");
+        $this->assertSame(["Entrega", "Dirección en Panamá", "Tu cuenta"], $legendas, "la cuenta es un bloque aparte: F2 lo cambia sin tocar la entrega");
     }
 
     public function testElClienteConSesionNoEscribeSusDatosNiVeLaContrasena(): void {
         $x = $this->pantalla("carrito_datos_cliente");
         $this->assertSame(0, $x->query("//input[@name='nueva_pass' or @name='cliente_nombre' or @name='cliente_email']")->length);
         $this->assertStringContainsString("Compras como", $this->texto($x, "//form[@id='form-datos']"));
-        $this->assertSame("Calle inventada 1", $this->texto($x, "//textarea[@name='cliente_direccion']"), "la dirección del perfil viene puesta");
-        $this->assertSame(["Entrega"], array_map(fn($n) => trim($n->textContent), iterator_to_array($x->query("//form[@id='form-datos']//legend"))));
+        $this->assertSame("Calle inventada 1", $x->query("//input[@name='calle']")->item(0)->getAttribute("value"), "la dirección del perfil viene puesta");
+        $this->assertNotNull($x->query("//input[@name='guardar_direccion']")->item(0), "casilla para guardar la dirección");
+        $this->assertNotNull($x->query("//input[@name='cliente_telefono']")->item(0), "el cliente confirma su teléfono de contacto");
+        $this->assertSame(["Entrega", "Dirección en Panamá"], array_map(fn($n) => trim($n->textContent), iterator_to_array($x->query("//form[@id='form-datos']//legend"))));
     }
 
     public function testUnErrorConservaLoEscritoYNuncaLaContrasena(): void {
@@ -182,7 +187,7 @@ final class CarritoPantallasTest extends BaseDatos {
         $this->assertStringContainsString("La contraseña debe tener al menos", $this->texto($x, "//div[@role='alert']"));
         $this->assertSame("Rosa Escrita", $x->query("//input[@name='cliente_nombre']")->item(0)->getAttribute("value"));
         $this->assertSame("rosa@example.invalid", $x->query("//input[@name='cliente_email']")->item(0)->getAttribute("value"));
-        $this->assertSame("Calle de lo escrito 5", $this->texto($x, "//textarea[@name='cliente_direccion']"));
+        $this->assertSame("Calle de lo escrito 5", $x->query("//input[@name='calle']")->item(0)->getAttribute("value"));
         $this->assertFalse($x->query("//input[@name='nueva_pass']")->item(0)->hasAttribute("value"));
     }
 

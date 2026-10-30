@@ -862,3 +862,5 @@ legend + * { clear: both; }
   .direccion-rejilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .direccion-ancho { grid-column: 1 / -1; }
 }
+.direccion-linea { display: block; }
+.direccion-nota { display: block; font-size: var(--type-body-sm-size); color: var(--text-muted); }

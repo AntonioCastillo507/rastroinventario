@@ -290,7 +290,7 @@ final class CarritoServidorTest extends TestCase {
             $cart = [$mayor => ["parte_id" => $mayor, "nombre" => "x", "precio" => 0.01, "cantidad" => 1, "max" => 9, "thumbnail" => null, "marca" => ""],
                      $menor => ["parte_id" => $menor, "nombre" => "y", "precio" => 0.01, "cantidad" => 2, "max" => 9, "thumbnail" => null, "marca" => ""]];
             $r = Proceso::accion(["clase" => "PedidoController", "accion" => "procesarCarrito", "csrf" => true, "ip" => "203.0.113.81", "correo" => "ok",
-                "post" => ["cliente_direccion" => "Calle 1", "cliente_notas" => "", "resumen_visto" => Datos::huella($this->db, [$mayor => 1, $menor => 2])], "sesion" => ["csrf_token" => self::TOKEN, "user" => ["id" => $uid, "nombre" => "Cliente orden", "email" => $email], "user_roles" => ["Cliente"], "cart" => $cart,
+                "post" => [...Datos::dirPost(), "cliente_notas" => "", "resumen_visto" => Datos::huella($this->db, [$mayor => 1, $menor => 2])], "sesion" => ["csrf_token" => self::TOKEN, "user" => ["id" => $uid, "nombre" => "Cliente orden", "email" => $email], "user_roles" => ["Cliente"], "cart" => $cart,
                     "cart_deshacer" => ["id" => $menor, "cantidad" => 1, "nombre" => "x", "hasta" => time() + 100]]]);
             $pid = (int)$r["sesion"]["pedido_exitoso"];
             $this->assertGreaterThan(0, $pid);
@@ -311,7 +311,7 @@ final class CarritoServidorTest extends TestCase {
     }
 
     public function testUnCarritoVacioNoCreaPedidoYVuelveAlCarrito(): void {
-        $r = $this->accion("procesarCarrito", 0, ["cliente_direccion" => "Calle 1"], ["cart" => []], false);
+        $r = $this->accion("procesarCarrito", 0, [...Datos::dirPost()], ["cart" => []], false);
         $this->assertSame("warning", $r["sesion"]["flash"]["type"]);
         $this->assertArrayNotHasKey("pedido_exitoso", $r["sesion"]);
     }

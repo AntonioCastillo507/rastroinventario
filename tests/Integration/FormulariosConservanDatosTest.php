@@ -5,6 +5,7 @@ use PDO;
 use PHPUnit\Framework\TestCase;
 use Tests\Support\BaseDatos;
 use Tests\Support\ClienteHttp;
+use Tests\Support\Datos;
 use Tests\Support\Html;
 use Tests\Support\ServidorTemporal;
 
@@ -56,6 +57,8 @@ final class FormulariosConservanDatosTest extends TestCase {
         return $n->item(0)->hasAttribute("value") ? $n->item(0)->getAttribute("value") : null;
     }
 
+    private const DIR = ["provincia" => "08", "distrito" => "0808", "calle" => "Calle 50", "casa" => "Casa 5-B", "barriada" => "Bella Vista", "referencia" => "Portón azul"];
+
     private function texto(string $html, string $name): string {
         $n = Html::xpath($html)->query("//textarea[@name='$name']");
         $this->assertSame(1, $n->length, "textarea $name");
@@ -91,8 +94,8 @@ final class FormulariosConservanDatosTest extends TestCase {
     public function testLaCompraDeInvitadoConErrorConservaTodoMenosLaContrasena(): void {
         $email = $this->correo("compra");
         $r = $this->web->postConToken("/index.php?action=comprar&id=$this->parteId", "/index.php?action=procesar_compra", [
-            "parte_id" => $this->parteId, "cantidad" => 2, "cliente_nombre" => "Pedro Prueba", "cliente_telefono" => "6111-2222", "cliente_email" => $email,
-            "cliente_direccion" => "Calle 5, casa 7\nreferencia: portón azul", "cliente_notas" => "Llamar antes", "nueva_pass" => "corta",
+            "parte_id" => $this->parteId, "cantidad" => 2, "cliente_nombre" => "Pedro Prueba", "cliente_email" => $email,
+            ...Datos::dirPost(self::DIR + ["cliente_telefono" => "6111-2222"]), "cliente_notas" => "Llamar antes", "nueva_pass" => "corta",
         ]);
         $this->assertSame(302, $r["codigo"]);
         $pagina = $this->web->get(ClienteHttp::ruta($r["ubicacion"]))["cuerpo"];
@@ -101,7 +104,9 @@ final class FormulariosConservanDatosTest extends TestCase {
         $this->assertSame("6111-2222", $this->valor($pagina, "cliente_telefono"));
         $this->assertSame($email, $this->valor($pagina, "cliente_email"));
         $this->assertSame("2", $this->valor($pagina, "cantidad"));
-        $this->assertSame("Calle 5, casa 7\nreferencia: portón azul", str_replace("\r\n", "\n", $this->texto($pagina, "cliente_direccion")));
+        $this->assertSame("Calle 50", $this->valor($pagina, "calle"));
+        $this->assertSame("Portón azul", $this->valor($pagina, "referencia"));
+        $this->assertSame("08", Html::xpath($pagina)->query("//select[@name='provincia']/option[@selected]/@value")->item(0)->nodeValue);
         $this->assertSame("Llamar antes", $this->texto($pagina, "cliente_notas"));
         $this->assertNull($this->valor($pagina, "nueva_pass"));
         $this->assertSame("", $this->valor($this->web->get(ClienteHttp::ruta($r["ubicacion"]))["cuerpo"], "cliente_nombre"), "una sola vez");
@@ -111,8 +116,8 @@ final class FormulariosConservanDatosTest extends TestCase {
         $email = $this->correo("carrito");
         $this->web->postConToken("/index.php?action=detalle&id=$this->parteId", "/index.php?action=agregar_carrito&id=$this->parteId", []);
         $r = $this->web->confirmarPaso2([
-            "cliente_nombre" => "Rosa Carrito", "cliente_telefono" => "6333-4444", "cliente_email" => $email,
-            "cliente_direccion" => "Avenida Central 10", "cliente_notas" => "Dejar con el vigilante", "nueva_pass" => "corta",
+            "cliente_nombre" => "Rosa Carrito", "cliente_email" => $email,
+            ...Datos::dirPost(["calle" => "Avenida Central 10", "cliente_telefono" => "6333-4444"] + self::DIR), "cliente_notas" => "Dejar con el vigilante", "nueva_pass" => "corta",
         ]);
         $this->assertSame(302, $r["codigo"]);
         $pagina = $this->web->get("/index.php?action=carrito_datos")["cuerpo"];
@@ -120,7 +125,7 @@ final class FormulariosConservanDatosTest extends TestCase {
         $this->assertSame("Rosa Carrito", $this->valor($pagina, "cliente_nombre"));
         $this->assertSame("6333-4444", $this->valor($pagina, "cliente_telefono"));
         $this->assertSame($email, $this->valor($pagina, "cliente_email"));
-        $this->assertSame("Avenida Central 10", $this->texto($pagina, "cliente_direccion"));
+        $this->assertSame("Avenida Central 10", $this->valor($pagina, "calle"));
         $this->assertSame("Dejar con el vigilante", $this->texto($pagina, "cliente_notas"));
         $this->assertNull($this->valor($pagina, "nueva_pass"));
     }

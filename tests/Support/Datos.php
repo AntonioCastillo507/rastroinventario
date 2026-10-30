@@ -15,6 +15,13 @@ final class Datos {
         return (int)$db->lastInsertId();
     }
 
+    /** Campos de dirección de Panamá tal como los manda el formulario de compra (Bella Vista, Panamá); $c cambia lo que haga falta */
+    public static function dirPost(array $c = []): array {
+        static $corr = null;
+        $corr ??= (string)\Database::get()->query("SELECT codigo FROM corregimientos WHERE nombre = 'Bella Vista' AND distrito_codigo = '0808'")->fetchColumn();
+        return $c + ["provincia" => "08", "distrito" => "0808", "corregimiento" => $corr, "calle" => "Calle 50", "casa" => "Casa 5-B", "barriada" => "Bella Vista", "referencia" => "", "cliente_telefono" => "6123-4567"];
+    }
+
     public static function usuario(PDO $db): int {
         self::$n++;
         $email = "prueba" . self::$n . "." . bin2hex(random_bytes(4)) . "@example.invalid";

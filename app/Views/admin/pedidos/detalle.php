@@ -80,7 +80,7 @@ $pasoActual=array_search($pedido["estado"],array_keys($pasos),true);
         <div><dt>Nombre</dt><dd><?=htmlspecialchars($pedido["cliente_nombre"])?></dd></div>
         <div><dt>Correo</dt><dd><a href="mailto:<?=htmlspecialchars($pedido["cliente_email"])?>"><?=htmlspecialchars($pedido["cliente_email"])?></a></dd></div>
         <div><dt>Teléfono</dt><dd><a href="tel:<?=htmlspecialchars($tel)?>" class="num"><?=htmlspecialchars($pedido["cliente_telefono"])?></a></dd></div>
-        <div><dt>Dirección de entrega</dt><dd><?=htmlspecialchars($pedido["cliente_direccion"])?></dd></div>
+        <div><dt>Dirección de entrega</dt><dd><?php include BASE_PATH."/app/Views/layouts/direccion_texto.php"; ?></dd></div>
         <div><dt>Cuenta</dt><dd><?=$pedido["usuario_id"]?"<span class=\"chip-success\">Usuario #".(int)$pedido["usuario_id"]."</span>":"<span class=\"chip-neutral\">Sin cuenta</span>"?></dd></div>
       </dl>
     </section>

@@ -74,6 +74,27 @@ class DireccionPanama {
         return $ref !== "" ? $t . ". Ref.: " . $ref : $t;
     }
 
+    /**
+     * Líneas de la dirección de entrega de un pedido, para mostrarla o imprimirla: calle y casa, barriada, corregimiento/distrito/provincia
+     * y referencia. Un pedido anterior al formulario (sin campos separados) devuelve su texto libre tal cual, en una sola línea.
+     * @return list<string>
+     */
+    public static function lineas(array $pedido): array {
+        if (trim((string)($pedido["entrega_calle"] ?? "")) === "") {
+            $t = trim((string)($pedido["cliente_direccion"] ?? ""));
+            return $t === "" ? [] : [$t];
+        }
+        $l = [];
+        foreach ([[$pedido["entrega_calle"], $pedido["entrega_casa"] ?? null], [$pedido["entrega_barriada"] ?? null],
+                  [$pedido["entrega_corregimiento"] ?? null, $pedido["entrega_distrito"] ?? null, $pedido["entrega_provincia"] ?? null]] as $grupo) {
+            $t = implode(", ", array_filter($grupo, fn($x) => $x !== null && trim((string)$x) !== ""));
+            if ($t !== "") $l[] = $t;
+        }
+        $ref = trim((string)($pedido["entrega_referencia"] ?? ""));
+        if ($ref !== "") $l[] = "Ref.: " . $ref;
+        return $l;
+    }
+
     /** Columnas de pedidos para la copia fija (los nombres, no los códigos) más el texto compuesto */
     public static function paraPedido(array $d): array {
         return [

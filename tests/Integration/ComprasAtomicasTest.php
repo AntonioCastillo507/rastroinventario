@@ -133,7 +133,7 @@ final class ComprasAtomicasTest extends TestCase {
         $email = "invitado." . bin2hex(random_bytes(4)) . "@example.invalid";
         $this->correos[] = $email;
         return $extra + ["parte_id" => $parte, "cantidad" => 2, "cliente_nombre" => "Invitado de Prueba", "cliente_telefono" => "555-0100",
-            "cliente_email" => $email, "cliente_direccion" => "Calle Inventada 123", "nueva_pass" => self::CLAVE, "cliente_notas" => ""];
+            "cliente_email" => $email, ...Datos::dirPost(), "nueva_pass" => self::CLAVE, "cliente_notas" => ""];
     }
 
     private const MARCA_FALLA = "__FALLA_PEDIDO__";
@@ -143,7 +143,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testConfirmarCompraNormalDescuentaYRegistra(): void {
         [$uid, $email] = $this->cliente();
         $p = $this->parte(10);
-        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 3, "direccion_entrega" => "Calle 1", "cliente_notas" => ""], $this->sesionDe($uid, $email));
+        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 3, ...Datos::dirPost(), "cliente_notas" => ""], $this->sesionDe($uid, $email));
         $this->assertArrayHasKey("pedido_exitoso", $r["sesion"], $this->mensaje($r));
         $this->assertSame(7, $this->stock($p));
         $this->assertSame(1, $this->pedidosDe($email));
@@ -152,7 +152,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testConfirmarCompraSiRegistrarFallaElStockVuelve(): void {
         [$uid, $email] = $this->cliente();
         $p = $this->parte(10);
-        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 3, "direccion_entrega" => "Calle 1",
+        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 3, ...Datos::dirPost(),
             "cliente_notas" => self::MARCA_FALLA], $this->sesionDe($uid, $email));
         $this->assertSame(10, $this->stock($p), "el stock volvió");
         $this->assertSame(0, $this->pedidosDe($email), "no quedó pedido");
@@ -166,7 +166,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testConfirmarCompraRechazaUnaPiezaInactivaSinDescontar(): void {
         [$uid, $email] = $this->cliente();
         $p = $this->parte(10, 10.00, false);
-        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 1, "direccion_entrega" => "Calle 1", "cliente_notas" => ""], $this->sesionDe($uid, $email));
+        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 1, ...Datos::dirPost(), "cliente_notas" => ""], $this->sesionDe($uid, $email));
         $this->assertSame(10, $this->stock($p));
         $this->assertSame(0, $this->pedidosDe($email));
         $this->assertSame("Esta pieza ya no está disponible.", $this->mensaje($r));
@@ -176,7 +176,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testConfirmarCompraSinStockSuficienteNoDescuenta(): void {
         [$uid, $email] = $this->cliente();
         $p = $this->parte(2);
-        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 3, "direccion_entrega" => "Calle 1", "cliente_notas" => ""], $this->sesionDe($uid, $email));
+        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 3, ...Datos::dirPost(), "cliente_notas" => ""], $this->sesionDe($uid, $email));
         $this->assertSame(2, $this->stock($p));
         $this->assertSame("Stock insuficiente.", $this->mensaje($r));
     }
@@ -225,7 +225,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testCarritoNormalDescuentaTodasLasPiezasYRegistraUnPedido(): void {
         [$uid, $email] = $this->cliente();
         $a = $this->parte(10); $b = $this->parte(5);
-        $r = $this->accion("procesarCarrito", ["cliente_direccion" => "Calle 1", "cliente_notas" => ""],
+        $r = $this->accion("procesarCarrito", [...Datos::dirPost(), "cliente_notas" => ""],
             $this->sesionDe($uid, $email) + ["cart" => $this->carrito([[$a, 2], [$b, 1]])]);
         $this->assertArrayHasKey("pedido_exitoso", $r["sesion"], $this->mensaje($r));
         $this->assertSame([8, 4], [$this->stock($a), $this->stock($b)]);
@@ -236,7 +236,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testCarritoConUnaPiezaInactivaNoDescuentaNada(): void {
         [$uid, $email] = $this->cliente();
         $viva = $this->parte(10); $muerta = $this->parte(10, 10.00, false);
-        $r = $this->accion("procesarCarrito", ["cliente_direccion" => "Calle 1", "cliente_notas" => ""],
+        $r = $this->accion("procesarCarrito", [...Datos::dirPost(), "cliente_notas" => ""],
             $this->sesionDe($uid, $email) + ["cart" => $this->carrito([[$viva, 2], [$muerta, 1]])]);
         $this->assertSame([10, 10], [$this->stock($viva), $this->stock($muerta)], "ninguna pieza se descontó");
         $this->assertSame(0, $this->pedidosDe($email));
@@ -248,7 +248,7 @@ final class ComprasAtomicasTest extends TestCase {
         $muerta = $this->parte(10, 10.00, false);
         $d = $this->datosInvitado($muerta);
         $r = $this->accion("procesarCarrito", ["cliente_nombre" => $d["cliente_nombre"], "cliente_telefono" => "555-0100", "cliente_email" => $d["cliente_email"],
-            "cliente_direccion" => "Calle 1", "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["cart" => $this->carrito([[$muerta, 1]])]);
+            ...Datos::dirPost(), "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["cart" => $this->carrito([[$muerta, 1]])]);
         $this->assertSame(10, $this->stock($muerta));
         $this->assertFalse($this->existeCuenta($d["cliente_email"]), "el carrito se valida antes de crear cuentas");
         $this->assertArrayNotHasKey("user", $r["sesion"]);
@@ -258,7 +258,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testCarritoSiRegistrarFallaTodoElStockVuelve(): void {
         [$uid, $email] = $this->cliente();
         $a = $this->parte(10); $b = $this->parte(5);
-        $r = $this->accion("procesarCarrito", ["cliente_direccion" => "Calle 1", "cliente_notas" => self::MARCA_FALLA],
+        $r = $this->accion("procesarCarrito", [...Datos::dirPost(), "cliente_notas" => self::MARCA_FALLA],
             $this->sesionDe($uid, $email) + ["cart" => $this->carrito([[$a, 2], [$b, 1]])]);
         $this->assertSame([10, 5], [$this->stock($a), $this->stock($b)], "las dos piezas volvieron");
         $this->assertSame(0, $this->pedidosDe($email));
@@ -271,7 +271,7 @@ final class ComprasAtomicasTest extends TestCase {
         $a = $this->parte(10);
         $d = $this->datosInvitado($a);
         $r = $this->accion("procesarCarrito", ["cliente_nombre" => $d["cliente_nombre"], "cliente_telefono" => "555-0100", "cliente_email" => $d["cliente_email"],
-            "cliente_direccion" => "Calle 1", "nueva_pass" => self::CLAVE, "cliente_notas" => self::MARCA_FALLA], ["cart" => $this->carrito([[$a, 2]])]);
+            ...Datos::dirPost(), "nueva_pass" => self::CLAVE, "cliente_notas" => self::MARCA_FALLA], ["cart" => $this->carrito([[$a, 2]])]);
         $this->assertSame(10, $this->stock($a));
         $this->assertFalse($this->existeCuenta($d["cliente_email"]));
         $this->assertArrayNotHasKey("user", $r["sesion"]);
@@ -281,7 +281,7 @@ final class ComprasAtomicasTest extends TestCase {
         $a = $this->parte(10);
         $d = $this->datosInvitado($a);
         $r = $this->accion("procesarCarrito", ["cliente_nombre" => $d["cliente_nombre"], "cliente_telefono" => "555-0100", "cliente_email" => $d["cliente_email"],
-            "cliente_direccion" => "Calle 1", "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["cart" => $this->carrito([[$a, 2]])]);
+            ...Datos::dirPost(), "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["cart" => $this->carrito([[$a, 2]])]);
         $this->assertArrayHasKey("pedido_exitoso", $r["sesion"], $this->mensaje($r));
         $this->assertSame($d["cliente_email"], $r["sesion"]["user"]["email"]);
         $this->assertSame(8, $this->stock($a));
@@ -291,7 +291,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testCarritoSiLaSegundaPiezaNoAlcanzaNoSeDescuentaNinguna(): void {
         [$uid, $email] = $this->cliente();
         $a = $this->parte(10); $b = $this->parte(1);
-        $r = $this->accion("procesarCarrito", ["cliente_direccion" => "Calle 1", "cliente_notas" => ""],
+        $r = $this->accion("procesarCarrito", [...Datos::dirPost(), "cliente_notas" => ""],
             $this->sesionDe($uid, $email) + ["cart" => $this->carrito([[$a, 2], [$b, 5]])]);
         $this->assertSame([10, 1], [$this->stock($a), $this->stock($b)]);
         $this->assertStringContainsString("Tu pedido cambió", $this->mensaje($r), "pidió 5 y hay 1: el resumen visto ya no vale");
@@ -301,7 +301,7 @@ final class ComprasAtomicasTest extends TestCase {
     public function testSiFallaLaLineaDelPedidoNoQuedaNiPedidoHuerfanoNiStockPerdido(): void {
         [$uid, $email] = $this->cliente();
         $p = $this->parte(10, 10.00, true, self::MARCA_FALLA_ITEM);
-        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 3, "direccion_entrega" => "Calle 1", "cliente_notas" => ""], $this->sesionDe($uid, $email));
+        $r = $this->accion("confirmarCompra", ["parte_id" => $p, "cantidad" => 3, ...Datos::dirPost(), "cliente_notas" => ""], $this->sesionDe($uid, $email));
         $this->assertSame(10, $this->stock($p));
         $this->assertSame(0, $this->pedidosDe($email), "el pedido ya insertado se deshizo junto con el stock");
         $this->assertStringContainsString("No se pudo registrar el pedido", $this->mensaje($r));
@@ -312,7 +312,7 @@ final class ComprasAtomicasTest extends TestCase {
         $a = $this->parte(10); $b = $this->parte(5, 10.00, true, self::MARCA_FALLA_ITEM);
         $cart = $this->carrito([[$a, 2], [$b, 1]]);
         $cart[$b]["nombre"] = self::MARCA_FALLA_ITEM;
-        $this->accion("procesarCarrito", ["cliente_direccion" => "Calle 1", "cliente_notas" => ""], $this->sesionDe($uid, $email) + ["cart" => $cart]);
+        $this->accion("procesarCarrito", [...Datos::dirPost(), "cliente_notas" => ""], $this->sesionDe($uid, $email) + ["cart" => $cart]);
         $this->assertSame([10, 5], [$this->stock($a), $this->stock($b)]);
         $this->assertSame(0, $this->pedidosDe($email));
     }

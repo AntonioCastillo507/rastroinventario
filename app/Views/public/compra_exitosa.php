@@ -16,7 +16,7 @@ include BASE_PATH."/app/Views/layouts/public_header.php";
       <div class="row g-2 mb-3">
         <div class="col-6"><div class="text-secondary small">Cliente</div><div class="text-white fw-semibold"><?=htmlspecialchars($pedido["cliente_nombre"])?></div></div>
         <div class="col-6"><div class="text-secondary small">Teléfono</div><div class="text-white fw-semibold"><?=htmlspecialchars($pedido["cliente_telefono"])?></div></div>
-        <div class="col-12"><div class="text-secondary small">Dirección de entrega</div><div class="text-white"><?=htmlspecialchars($pedido["cliente_direccion"])?></div></div>
+        <div class="col-12"><div class="text-secondary small">Dirección de entrega</div><div class="text-white"><?php include BASE_PATH."/app/Views/layouts/direccion_texto.php"; ?></div></div>
       </div>
       <hr style="border-color:var(--border)">
       <?php $monto=Itbms::dePedido($pedido); ?>

@@ -84,7 +84,7 @@ final class CarritoFallaHttpTest extends TestCase {
     private function datos(string $notas): array {
         $email = "falla." . bin2hex(random_bytes(4)) . "@example.invalid";
         $this->correos[] = $email;
-        return ["cliente_nombre" => "Invitado Falla", "cliente_telefono" => "555-0100", "cliente_email" => $email, "cliente_direccion" => "Calle Inventada 3",
+        return ["cliente_nombre" => "Invitado Falla", "cliente_telefono" => "555-0100", "cliente_email" => $email, ...Datos::dirPost(),
             "cliente_notas" => $notas, "nueva_pass" => "Frase de prueba de la falla simulada 2026"];
     }
 

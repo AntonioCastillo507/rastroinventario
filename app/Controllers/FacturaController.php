@@ -146,12 +146,19 @@ class FacturaController extends BaseController {
             "Nombre"   => $pedido["cliente_nombre"],
             "Correo"   => $pedido["cliente_email"],
             "Telefono" => $pedido["cliente_telefono"],
-            "Direccion"=> $pedido["cliente_direccion"],
         ];
         $pdf->SetXY(15, 53);
         foreach ($campos as $label => $valor) {
             $pdf->SetFont("helvetica","B",9); $pdf->Cell(30, 5, $label.":", 0, 0, "L");
             $pdf->SetFont("helvetica","",9);  $pdf->Cell(150, 5, $valor, 0, 1, "L");
+        }
+        // La dirección en varias líneas (campos separados) o, en pedidos anteriores, su texto libre
+        $lineasDir = DireccionPanama::lineas($pedido);
+        $pdf->SetFont("helvetica","B",9); $pdf->Cell(30, 5, "Direccion:", 0, 0, "L");
+        $pdf->SetFont("helvetica","",9);
+        foreach ($lineasDir ?: [""] as $i => $linea) {
+            if ($i > 0) $pdf->Cell(30, 5, "", 0, 0, "L");
+            $pdf->MultiCell(150, 5, $linea, 0, "L", false, 1);
         }
 
         // ── TABLA DE ITEMS ───────────────────────────────────────

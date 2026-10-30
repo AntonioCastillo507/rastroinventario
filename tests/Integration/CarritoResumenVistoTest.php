@@ -60,7 +60,7 @@ final class CarritoResumenVistoTest extends TestCase {
     /** Lo que el formulario del paso 2 manda para un invitado; $extra pisa cualquier campo (p. ej. resumen_visto) */
     private function post(array $cart, array $extra = [], ?string $email = null): array {
         return $extra + ["resumen_visto" => Datos::huella($this->db, $cart), "cliente_nombre" => "Invitado Visto", "cliente_telefono" => "555-0100",
-            "cliente_email" => $email ?? $this->correo(), "cliente_direccion" => "Calle Inventada 9", "cliente_notas" => "", "nueva_pass" => self::CLAVE];
+            "cliente_email" => $email ?? $this->correo(), ...Datos::dirPost(), "cliente_notas" => "", "nueva_pass" => self::CLAVE];
     }
 
     private function comprar(array $post, array $cart, string $ip = "203.0.113.83"): array {

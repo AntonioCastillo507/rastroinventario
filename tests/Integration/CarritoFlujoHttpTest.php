@@ -82,7 +82,7 @@ final class CarritoFlujoHttpTest extends TestCase {
     private function datosInvitado(string $quien): array {
         $email = "flujo.$quien." . bin2hex(random_bytes(4)) . "@example.invalid";
         $this->correos[] = $email;
-        return ["cliente_nombre" => "Invitado $quien", "cliente_telefono" => "555-0100", "cliente_email" => $email, "cliente_direccion" => "Calle Inventada 7",
+        return ["cliente_nombre" => "Invitado $quien", "cliente_telefono" => "555-0100", "cliente_email" => $email, ...Datos::dirPost(),
             "cliente_notas" => "", "nueva_pass" => self::CLAVE];
     }
 

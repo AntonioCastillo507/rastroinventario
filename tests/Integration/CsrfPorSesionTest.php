@@ -125,7 +125,7 @@ final class CsrfPorSesionTest extends TestCase {
         $email = "invitado." . bin2hex(random_bytes(4)) . "@example.invalid";
         $this->correos[] = $email;
         $r = $this->accion("PedidoController", "procesarCompra", ["parte_id" => $parte, "cantidad" => 1, "cliente_nombre" => "Invitado Token", "cliente_telefono" => "555-0100",
-            "cliente_email" => $email, "cliente_direccion" => "Calle Inventada 1", "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["csrf_token" => self::VIEJO]);
+            "cliente_email" => $email, ...Datos::dirPost(), "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["csrf_token" => self::VIEJO]);
         $this->assertArrayHasKey("pedido_exitoso", $r["sesion"], json_encode($r["sesion"]));
         $this->esTokenNuevo($r);
     }
@@ -135,7 +135,7 @@ final class CsrfPorSesionTest extends TestCase {
         $email = "invitado." . bin2hex(random_bytes(4)) . "@example.invalid";
         $this->correos[] = $email;
         $r = $this->accion("PedidoController", "procesarCarrito", ["resumen_visto" => Datos::huella($this->db, [$parte => 1]), "cliente_nombre" => "Invitado Token", "cliente_telefono" => "555-0100", "cliente_email" => $email,
-            "cliente_direccion" => "Calle Inventada 1", "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["csrf_token" => self::VIEJO, "cart" => [$parte => ["parte_id" => $parte, "nombre" => "x", "precio" => 10.0, "cantidad" => 1, "max" => 5, "thumbnail" => null, "marca" => ""]]]);
+            ...Datos::dirPost(), "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["csrf_token" => self::VIEJO, "cart" => [$parte => ["parte_id" => $parte, "nombre" => "x", "precio" => 10.0, "cantidad" => 1, "max" => 5, "thumbnail" => null, "marca" => ""]]]);
         $this->assertArrayHasKey("pedido_exitoso", $r["sesion"], json_encode($r["sesion"]));
         $this->esTokenNuevo($r);
     }
@@ -178,7 +178,7 @@ final class CsrfPorSesionTest extends TestCase {
         $this->correos[] = $email;
         $cart = [$parte => ["parte_id" => $parte, "nombre" => "x", "precio" => 10.0, "cantidad" => 2, "max" => 5, "thumbnail" => null, "marca" => ""]];
         $r = $this->accion("PedidoController", "procesarCarrito", ["cliente_nombre" => "Escrito Aquí", "cliente_telefono" => "555-0100", "cliente_email" => $email,
-            "cliente_direccion" => "Calle Inventada 1", "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["csrf_token" => self::VIEJO, "cart" => $cart], false);
+            ...Datos::dirPost(), "nueva_pass" => self::CLAVE, "cliente_notas" => ""], ["csrf_token" => self::VIEJO, "cart" => $cart], false);
         $this->assertSame("warning", $r["sesion"]["flash"]["type"]);
         $this->assertStringContainsString("caducó", $r["sesion"]["flash"]["msg"]);
         $this->assertSame("Escrito Aquí", $r["sesion"]["form_viejo"]["carrito"]["cliente_nombre"]);
@@ -194,7 +194,7 @@ final class CsrfPorSesionTest extends TestCase {
         $email = "invitado." . bin2hex(random_bytes(4)) . "@example.invalid";
         $this->correos[] = $email;
         $r = $this->accion("PedidoController", "procesarCompra", ["parte_id" => $parte, "cantidad" => 2, "cliente_nombre" => "Escrito Aquí", "cliente_telefono" => "555-0100",
-            "cliente_email" => $email, "cliente_direccion" => "Calle Inventada 1", "nueva_pass" => self::CLAVE, "cliente_notas" => "nota"], ["csrf_token" => self::VIEJO], false);
+            "cliente_email" => $email, ...Datos::dirPost(), "nueva_pass" => self::CLAVE, "cliente_notas" => "nota"], ["csrf_token" => self::VIEJO], false);
         $this->assertSame("warning", $r["sesion"]["flash"]["type"]);
         $this->assertSame("Escrito Aquí", $r["sesion"]["form_viejo"]["compra"]["cliente_nombre"]);
         $this->assertSame("2", $r["sesion"]["form_viejo"]["compra"]["cantidad"]);
@@ -207,9 +207,9 @@ final class CsrfPorSesionTest extends TestCase {
     public function testLaConfirmacionDeUnClienteSinTokenVuelveAlFormularioYNoDescuentaStock(): void {
         [$uid, $email] = $this->clienteConClave();
         $parte = $this->parte(5);
-        $r = $this->accion("PedidoController", "confirmarCompra", ["parte_id" => $parte, "cantidad" => 2, "direccion_entrega" => "Calle del cliente 5", "cliente_notas" => ""], $this->sesionDe($uid, $email), false);
+        $r = $this->accion("PedidoController", "confirmarCompra", ["parte_id" => $parte, "cantidad" => 2, ...Datos::dirPost(["calle" => "Calle del cliente 5"]), "cliente_notas" => ""], $this->sesionDe($uid, $email), false);
         $this->assertSame("warning", $r["sesion"]["flash"]["type"]);
-        $this->assertSame("Calle del cliente 5", $r["sesion"]["form_viejo"]["compra_conf"]["direccion_entrega"]);
+        $this->assertSame("Calle del cliente 5", $r["sesion"]["form_viejo"]["compra_conf"]["calle"]);
         $this->assertSame(5, Datos::stock($this->db, $parte));
         $this->assertSame(0, (int)$this->db->query("SELECT COUNT(*) FROM pedidos WHERE usuario_id = $uid")->fetchColumn());
     }
