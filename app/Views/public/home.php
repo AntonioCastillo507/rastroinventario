@@ -195,9 +195,10 @@ $nosFoto=Marca::urlSiExiste("nosotros.imagen");
         </ul>
       </div>
       <div class="opiniones-nav" data-opiniones-nav hidden>
-        <button type="button" class="marcas-nav" data-opiniones-anterior aria-label="<?=Marca::h("portada.opiniones_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
-        <button type="button" class="marcas-nav" data-opiniones-siguiente aria-label="<?=Marca::h("portada.opiniones_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
+        <button type="button" class="opiniones-flecha" data-opiniones-anterior aria-label="<?=Marca::h("portada.opiniones_anterior")?>"><i aria-hidden="true" class="bi bi-chevron-left"></i></button>
+        <button type="button" class="opiniones-flecha" data-opiniones-siguiente aria-label="<?=Marca::h("portada.opiniones_siguiente")?>"><i aria-hidden="true" class="bi bi-chevron-right"></i></button>
       </div>
+      <div class="hero-puntos opiniones-puntos" data-opiniones-puntos hidden></div>
     </div>
   </div>
 </section>

@@ -112,7 +112,7 @@ final class PortadaOpinionesTest extends BaseDatos {
         $this->assertSame("Sobre Pieza Op <Tarjeta>", trim($a->textContent));
     }
 
-    public function testElCarruselVaDentroDelContenedorYLasFlechasSonLasDeMarcas(): void {
+    public function testElCarruselVaDentroDelContenedorYLasFlechasSonChevrones(): void {
         $this->resena(Datos::parte($this->db, 10.00, 5, "Pieza Op Flechas"), "Zq Flechas", "Texto");
         $x = $this->home();
         $base = "//section[contains(@class,'portada-opiniones')]/div[contains(@class,'container-xl')]";
@@ -125,11 +125,12 @@ final class PortadaOpinionesTest extends BaseDatos {
         $this->assertSame("region", $v->getAttribute("role"));
         $this->assertNotSame("", $v->getAttribute("aria-label"));
         foreach (["anterior", "siguiente"] as $b) {
-            $btn = $x->query("$base//button[@data-opiniones-$b and contains(@class,'marcas-nav')]")->item(0);
+            $btn = $x->query("$base//button[@data-opiniones-$b and contains(@class,'opiniones-flecha')]")->item(0);
             $this->assertNotNull($btn, $b);
             $this->assertSame("button", $btn->getAttribute("type"));
             $this->assertNotSame("", $btn->getAttribute("aria-label"));
         }
+        $this->assertSame(1, Html::contar($x, "$base//div[@data-opiniones-puntos and contains(@class,'hero-puntos')]"), "puntos de paginación");
         $this->assertSame(1, Html::contar($x, "//script[contains(@src,'opiniones_carrusel.js')]"));
     }
 
@@ -150,10 +151,16 @@ final class PortadaOpinionesTest extends BaseDatos {
         $this->assertMatchesRegularExpression('~\.opinion \{ flex: 0 0 100%;~', $css, "1 visible en móvil");
         $this->assertMatchesRegularExpression('~@media \(min-width: 768px\) \{[^@]*\.opinion \{ flex-basis: calc\(\(100% - var\(--spacing-lg\)\) / 2\); \}~', $css, "2 en tableta");
         $this->assertStringContainsString("@media (min-width: 1024px) { .opinion { flex-basis: calc((100% - 2 * var(--spacing-lg)) / 3); } }", $css, "3 en escritorio");
+        $this->assertStringContainsString("scrollbar-width: none", $css, "sin barra de scroll nativa");
+        $this->assertStringContainsString(".opiniones-ventana::-webkit-scrollbar { display: none; }", $css);
+        $this->assertMatchesRegularExpression('~\.opiniones-flecha \{[^}]*width: 44px; height: 44px;[^}]*background: none; border: 0;~', $css, "chevron sin fondo ni borde, zona de 44 px");
+        $this->assertStringContainsString("opiniones-flecha:focus-visible", $css);
         $this->assertStringContainsString("line-height: 44px", $css, "enlace de la pieza de 44 px");
         $js = (string)file_get_contents(BASE_PATH . "/assets/js/opiniones_carrusel.js");
         $this->assertStringContainsString('"ArrowLeft"', $js);
         $this->assertStringContainsString('"ArrowRight"', $js);
+        $this->assertStringContainsString("aria-current", $js, "el punto activo lleva estado actual");
+        $this->assertStringContainsString("aria-label", $js);
         $this->assertStringNotContainsString("setInterval", $js, "sin movimiento automático");
         $this->assertStringNotContainsString("requestAnimationFrame", $js, "sin movimiento automático");
     }
